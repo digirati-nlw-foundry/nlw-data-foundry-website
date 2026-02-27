@@ -13,9 +13,11 @@ export default defineConfig({
     react(),
     mdx({ gfm: true }),
     iiif({
-      collections: [
-        "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/PeaceCollection-HDD001_loc.json",
-        "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/PeaceCollection-HDD002_loc.json",
+      manifests: [
+        "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085440-manifest.json",
+        "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085445-manifest.json",
+        "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085450-manifest.json",
+        "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085455-manifest.json",
       ],
     }),
   ],
