@@ -18,6 +18,7 @@ export default defineConfig({
         "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085445-manifest.json",
         "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085450-manifest.json",
         "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085455-manifest.json",
+        "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085460-manifest.json",
       ],
     }),
   ],
