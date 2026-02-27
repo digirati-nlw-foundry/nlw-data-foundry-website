@@ -1,3 +1,6 @@
+[[plugins]]
+  package = "./plugins/netlify-plugin-cache-iiif"
+
 [[headers]]
   for = "/iiif/*" # you can configure the correct paths here
   [headers.values]
