@@ -13,6 +13,7 @@ export default defineConfig({
     react(),
     mdx({ gfm: true }),
     iiif({
+      serverUrl: process.env.IIIF_URL || undefined,
       manifests: [
         "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085440-manifest.json",
         "https://datasyllwr.llgc.org.uk/manifests/PeacePetition/loc/manifests/6085445-manifest.json",
