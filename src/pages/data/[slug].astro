@@ -1,0 +1,45 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { components } from "../../lib/mdx-components";
+
+export async function getStaticPaths() {
+  const pages = await getCollection("dataCards");
+  return pages.map((page: any) => ({
+    params: { slug: page.id },
+    props: { page },
+  }));
+}
+
+interface Props {
+  page: CollectionEntry<"pages">;
+}
+
+const { page } = Astro.props;
+
+const { Content } = await render(page);
+---
+
+<Layout>
+  <div class="bg-red-700 py-8">
+    <div class="prose max-w-4xl mx-auto mt-8 text-white">
+      <a class="text-white" href="/data" class="underline">Back to data</a>
+      <h1 class="text-white">{page.data.title}</h1>
+      <p>{page.data.description}</p>
+      <div>
+        {page.data.tags.map((tag) => (
+          <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="prose prose-teal max-w-4xl mx-auto mt-8">
+    <Content components={components} />
+
+    <pre>{JSON.stringify(page.data, null, 2)}</pre>
+  </div>
+</Layout>

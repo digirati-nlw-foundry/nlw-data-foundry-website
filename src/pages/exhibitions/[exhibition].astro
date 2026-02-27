@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const exhibitions = await getCollection("exhibitions");
+  return exhibitions.map((data: any) => ({
+    params: { exhibition: data.id },
+    props: { data },
+  }));
+}
+
+interface Props {
+  data: CollectionEntry<"exhibitions">;
+}
+
+const { data } = Astro.props;
+---
+
+<Layout>
+  <div class="prose max-w-4xl mx-auto mt-8">
+    <pre>{JSON.stringify(data, null, 2)}</pre>
+  </div>
+</Layout>
