@@ -1,0 +1,105 @@
+---
+import { getCollection } from "astro:content";
+import ListingCard from "../../components/ListingCard.astro";
+import SearchForm from "../../components/SearchForm.astro";
+import Layout from "../../layouts/Layout.astro";
+import { getDataCards } from "../../lib/data-cards";
+import { getLocalizedString, LOCALES, type Locale } from "../../lib/i18n";
+import { homeCopy } from "../../lib/site";
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({
+    params: { locale },
+  }));
+}
+
+const locale = Astro.params.locale as Locale;
+const dataCards = await getDataCards();
+const exhibitions = await getCollection("exhibitions");
+
+const featuredDatasets = dataCards
+  .filter((entry) => entry.featured)
+  .sort(
+    (left, right) => (left.featuredOrder ?? 99) - (right.featuredOrder ?? 99),
+  )
+  .slice(0, 3);
+
+const homepageDatasets =
+  featuredDatasets.length > 0 ? featuredDatasets : dataCards.slice(0, 3);
+
+const featuredExhibitions = exhibitions
+  .filter((entry) => entry.data.featured)
+  .sort(
+    (left, right) =>
+      (left.data.featuredOrder ?? 99) - (right.data.featuredOrder ?? 99),
+  )
+  .slice(0, 3);
+
+const title = getLocalizedString(homeCopy.title, locale);
+const description = getLocalizedString(homeCopy.summary, locale);
+---
+
+<Layout locale={locale} title={title} description={description} pageType="homepage" section="home">
+  <section class="relative bg-[url('/catalogue_search.jpg')] min-h-[50lvh] bg-cover bg-center flex items-center justify-center p-8">
+    <div class="absolute inset-0 bg-black/30" aria-hidden="true"></div>
+
+    <div class="relative z-10 bg-white rounded w-full max-w-2xl p-8 shadow-2xl">
+      <h2 class="text-2xl font-bold mb-2 text-center">{getLocalizedString(homeCopy.searchLabel, locale)}</h2>
+      <div class="mb-4">
+        <SearchForm locale={locale} variant="hero" />
+      </div>
+    </div>
+  </section>
+
+  <div class="site-width">
+    <section class="py-8 px-4 flex flex-col gap-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold mt-1">{getLocalizedString(homeCopy.featuredDatasets, locale)}</h2>
+        <a class="inline-flex items-center px-4 py-2 border border-gray-400 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors" href={`/${locale}/data`}>
+          {locale === "en" ? "Browse all data" : "Pori'r holl ddata"}
+        </a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          homepageDatasets.map((entry) => (
+            <ListingCard
+              locale={locale}
+              href={`/${locale}/data/${entry.slug}`}
+              title={entry.title}
+              summary={entry.description ?? entry.title}
+              eyebrow={{ en: "Dataset", cy: "Set ddata" }}
+              accent={entry.accent}
+              tags={entry.tags}
+            />
+          ))
+        }
+      </div>
+    </section>
+
+    {
+      featuredExhibitions.length > 0 && (
+        <section class="py-8 px-4 flex flex-col gap-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-bold mt-1">{getLocalizedString(homeCopy.featuredExhibitions, locale)}</h2>
+            <a class="inline-flex items-center px-4 py-2 border border-gray-400 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors" href={`/${locale}/exhibitions`}>
+              {locale === "en" ? "Browse all exhibitions" : "Pori'r holl arddangosfeydd"}
+            </a>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredExhibitions.map((entry) => (
+              <ListingCard
+                locale={locale}
+                href={`/${locale}/exhibitions/${entry.id}`}
+                title={entry.data.title}
+                summary={entry.data.summary}
+                eyebrow={{ en: "Exhibition", cy: "Arddangosfa" }}
+                accent={entry.data.accent}
+                tags={entry.data.tags}
+              />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
+</Layout>

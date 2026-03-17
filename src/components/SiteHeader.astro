@@ -1,0 +1,162 @@
+---
+import { Icon } from "astro-icon/components";
+import type { Locale } from "../lib/i18n";
+import {
+  buildLocalizedPath,
+  getLocalizedString,
+  swapLocalePath,
+} from "../lib/i18n";
+import { localeNames, navItems } from "../lib/site";
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+const alternateLocale = locale === "en" ? "cy" : "en";
+const alternateHref = swapLocalePath(currentPath, alternateLocale);
+---
+
+<header class="bg-white border-b border-gray-200 shadow-sm" data-pagefind-ignore>
+  <div class="site-width px-5">
+
+    <!-- Top bar: logo + utility controls -->
+    <div class="flex items-center justify-between h-16 gap-4">
+      <a class="flex items-center shrink-0" href={buildLocalizedPath(locale)}>
+        <img
+          src="/llgc_logo.png"
+          alt={locale === "en" ? "National Library of Wales" : "Llyfrgell Genedlaethol Cymru"}
+          class="h-10 w-auto"
+        />
+      </a>
+
+      <div class="flex items-center gap-3">
+        <!-- Language switcher — always visible -->
+        <a
+          class="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 text-gray-700 transition-colors"
+          href={alternateHref}
+          hreflang={alternateLocale}
+          lang={alternateLocale}
+        >
+          {getLocalizedString(localeNames[alternateLocale], locale)}
+        </a>
+
+        <!-- Search button — always visible -->
+        <a
+          class="bg-blue-800 p-2 rounded-full text-white hover:bg-blue-900 transition-colors"
+          href={buildLocalizedPath(locale, "search")}
+          aria-label={locale === "en" ? "Search" : "Chwilio"}
+        >
+          <Icon name="mdi:magnify" class="w-5 h-5" />
+        </a>
+
+        <!-- Hamburger — mobile only -->
+        <button
+          type="button"
+          class="lg:hidden flex items-center justify-center p-2 rounded text-gray-600 hover:bg-gray-100 transition-colors"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          aria-label={locale === "en" ? "Open menu" : "Agor y ddewislen"}
+          data-menu-toggle
+        >
+          <Icon name="mdi:menu" class="w-6 h-6" data-icon-open />
+          <Icon name="mdi:close" class="w-6 h-6 hidden" data-icon-close />
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop nav — hidden below lg -->
+    <nav
+      class="hidden lg:flex gap-1 pb-0"
+      aria-label={locale === "en" ? "Primary" : "Prif lywio"}
+    >
+      {
+        navItems.map((item) => {
+          const href = buildLocalizedPath(locale, item.slug);
+          const active =
+            item.slug === ""
+              ? currentPath === buildLocalizedPath(locale)
+              : currentPath.startsWith(href);
+
+          return (
+            <a
+              href={href}
+              class:list={[
+                "text-sm px-3 py-3 border-b-2 transition-colors whitespace-nowrap",
+                active
+                  ? "border-blue-800 text-blue-800 font-semibold"
+                  : "border-transparent text-gray-600 hover:text-blue-800 hover:border-blue-300",
+              ]}
+            >
+              {getLocalizedString(item.label, locale)}
+            </a>
+          );
+        })
+      }
+    </nav>
+
+  </div>
+
+  <!-- Mobile nav drawer — toggled by JS -->
+  <nav
+    id="mobile-nav"
+    class="hidden lg:hidden border-t border-gray-200 bg-white"
+    aria-label={locale === "en" ? "Primary" : "Prif lywio"}
+  >
+    <ul class="flex flex-col divide-y divide-gray-100 px-4 py-2">
+      {
+        navItems.map((item) => {
+          const href = buildLocalizedPath(locale, item.slug);
+          const active =
+            item.slug === ""
+              ? currentPath === buildLocalizedPath(locale)
+              : currentPath.startsWith(href);
+
+          return (
+            <li>
+              <a
+                href={href}
+                class:list={[
+                  "flex items-center py-3 text-sm font-medium transition-colors",
+                  active
+                    ? "text-blue-800"
+                    : "text-gray-700 hover:text-blue-800",
+                ]}
+              >
+                {getLocalizedString(item.label, locale)}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector("[data-menu-toggle]");
+  const mobileNav = document.getElementById("mobile-nav");
+  const iconOpen = toggle?.querySelector("[data-icon-open]");
+  const iconClose = toggle?.querySelector("[data-icon-close]");
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    const next = !isOpen;
+
+    toggle.setAttribute("aria-expanded", String(next));
+    mobileNav?.classList.toggle("hidden", !next);
+    iconOpen?.classList.toggle("hidden", next);
+    iconClose?.classList.toggle("hidden", !next);
+  });
+
+  // Close the drawer if the viewport grows past the lg breakpoint
+  window.matchMedia("(min-width: 1024px)").addEventListener("change", (e) => {
+    if (e.matches) {
+      toggle?.setAttribute("aria-expanded", "false");
+      mobileNav?.classList.add("hidden");
+      iconOpen?.classList.remove("hidden");
+      iconClose?.classList.add("hidden");
+    }
+  });
+</script>

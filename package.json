@@ -4,25 +4,31 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
+    "build:site": "astro build",
+    "build": "pnpm run build:site && pnpm exec pagefind --site dist",
+    "preview": "pnpm run build:site && pnpm exec pagefind --site dist --serve",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/netlify": "^6.6.4",
     "@astrojs/react": "^4.4.2",
+    "@fontsource/lato": "^5.2.7",
+    "@iconify-json/mdi": "^1.2.3",
     "@tailwindcss/vite": "^4.2.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.17.1",
+    "astro-icon": "^1.1.5",
     "iiif-hss": "https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@c687dfa",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.7",
     "@netlify/cache-utils": "^6.0.5",
-    "@tailwindcss/typography": "^0.5.19"
+    "@tailwindcss/typography": "^0.5.19",
+    "pagefind": "^1.4.0"
   }
 }

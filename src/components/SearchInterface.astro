@@ -1,0 +1,347 @@
+---
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const unavailableLabel =
+  locale === "en"
+    ? import.meta.env.DEV
+      ? "Search in pnpm dev requires pnpm preview running as well so /pagefind assets can be proxied locally."
+      : "The search index is unavailable right now."
+    : import.meta.env.DEV
+      ? "Mae chwilio yn pnpm dev angen pnpm preview i redeg hefyd fel y gellir dirprwyo asedau /pagefind yn lleol."
+      : "Nid yw'r mynegai chwilio ar gael ar hyn o bryd.";
+
+const labels =
+  locale === "en"
+    ? {
+        heading: "Global search",
+        summary:
+          "Search datasets, exhibitions, and support pages from one place. Results are scoped to the current site language.",
+        searchLabel: "Search term",
+        searchPlaceholder: "Search datasets, exhibitions, and guidance",
+        typeLabel: "Content type",
+        tagLabel: "Tags",
+        empty: "Enter a search term or choose filters to begin.",
+        loading: "Loading search index...",
+        unavailable: unavailableLabel,
+        noResults: "No results matched your search.",
+        results: "results",
+        clear: "Clear filters",
+      }
+    : {
+        heading: "Chwilio eang",
+        summary:
+          "Chwiliwch setiau data, arddangosfeydd, a thudalennau cymorth o un lle. Mae'r canlyniadau wedi'u cyfyngu i iaith gyfredol y wefan.",
+        searchLabel: "Term chwilio",
+        searchPlaceholder: "Chwilio setiau data, arddangosfeydd, a chanllawiau",
+        typeLabel: "Math o gynnwys",
+        tagLabel: "Tagiau",
+        empty: "Rhowch derm chwilio neu dewiswch hidlwyr i ddechrau.",
+        loading: "Wrthi'n llwytho'r mynegai chwilio...",
+        unavailable: unavailableLabel,
+        noResults: "Ni chafwyd canlyniadau.",
+        results: "canlyniad",
+        clear: "Clirio hidlwyr",
+      };
+---
+
+<div class="py-10">
+  <!-- Page intro -->
+  <div class="mb-10">
+    <p class="text-xs font-semibold uppercase tracking-widest text-blue-700 mb-2">
+      {locale === "en" ? "Search" : "Chwilio"}
+    </p>
+    <h1 class="text-4xl font-bold text-gray-900 mb-3">{labels.heading}</h1>
+    <p class="text-lg text-gray-600 max-w-2xl">{labels.summary}</p>
+  </div>
+
+  <!-- Search root -->
+  <div
+    class="flex flex-col lg:flex-row gap-8 items-start"
+    data-search-root
+    data-search-locale={locale}
+    data-search-labels={JSON.stringify(labels)}
+  >
+    <!-- Filters sidebar -->
+    <aside class="w-full lg:w-64 shrink-0">
+      <form class="flex flex-col gap-6" data-search-form>
+        <!-- Search input -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold text-gray-700" for="pagefind-query">
+            {labels.searchLabel}
+          </label>
+          <input
+            id="pagefind-query"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            type="search"
+            name="q"
+            placeholder={labels.searchPlaceholder}
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Type filter -->
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-gray-700">{labels.typeLabel}</h2>
+            <button
+              class="text-xs font-medium text-blue-700 hover:underline"
+              data-clear-filters
+              type="button"
+            >
+              {labels.clear}
+            </button>
+          </div>
+          <div class="flex flex-col gap-2" data-search-filter-group="type"></div>
+        </div>
+
+        <!-- Tag filter -->
+        <div class="flex flex-col gap-3" data-tag-filter hidden>
+          <h2 class="text-sm font-semibold text-gray-700">{labels.tagLabel}</h2>
+          <div class="flex flex-col gap-2" data-search-filter-group="tag"></div>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Results -->
+    <section class="flex-1 min-w-0">
+      <p class="text-sm text-gray-500 mb-6" data-search-status>{labels.loading}</p>
+      <div class="flex flex-col gap-4" data-search-results></div>
+    </section>
+  </div>
+</div>
+
+<script is:inline>
+  const roots = document.querySelectorAll("[data-search-root]");
+  const hiddenTypeFilters = new Set(["homepage"]);
+  const typeBoosts = {
+    dataset: 2,
+    exhibition: 1,
+    page: 0,
+    homepage: 0,
+  };
+
+  for (const root of roots) {
+    const labels = JSON.parse(root.dataset.searchLabels || "{}");
+    const form = root.querySelector("[data-search-form]");
+    const input = form?.querySelector('input[name="q"]');
+    const resultsNode = root.querySelector("[data-search-results]");
+    const statusNode = root.querySelector("[data-search-status]");
+    const clearButton = root.querySelector("[data-clear-filters]");
+    const typeContainer = root.querySelector('[data-search-filter-group="type"]');
+    const tagContainer = root.querySelector('[data-search-filter-group="tag"]');
+    const tagGroup = root.querySelector("[data-tag-filter]");
+    const params = new URLSearchParams(window.location.search);
+    let pagefind;
+    let activeFilters = { type: new Set(), tag: new Set() };
+
+    function syncFromUrl() {
+      const query = params.get("q") || "";
+      if (input) input.value = query;
+      activeFilters = {
+        type: new Set(
+          params.getAll("type").filter((value) => !hiddenTypeFilters.has(value)),
+        ),
+        tag: new Set(params.getAll("tag")),
+      };
+    }
+
+    function updateUrl(query) {
+      const next = new URLSearchParams();
+      if (query) next.set("q", query);
+      for (const value of activeFilters.type) next.append("type", value);
+      for (const value of activeFilters.tag) next.append("tag", value);
+      const nextUrl = `${window.location.pathname}${next.toString() ? `?${next.toString()}` : ""}`;
+      window.history.replaceState({}, "", nextUrl);
+    }
+
+    function getSelectedValues(name) {
+      return Array.from(activeFilters[name]).sort();
+    }
+
+    function buildFilterMarkup(container, name, values) {
+      if (!container) return;
+      container.innerHTML = "";
+      const typeLabels = {
+        dataset: root.dataset.searchLocale === "cy" ? "Set ddata" : "Dataset",
+        exhibition: root.dataset.searchLocale === "cy" ? "Arddangosfa" : "Exhibition",
+        page: root.dataset.searchLocale === "cy" ? "Tudalen" : "Page",
+        homepage: root.dataset.searchLocale === "cy" ? "Tudalen" : "Page",
+      };
+      for (const value of values) {
+        const id = `${name}-${value}`;
+        const checked = activeFilters[name].has(value);
+        const label = document.createElement("label");
+        label.className = "flex items-center gap-2.5 cursor-pointer group";
+        label.innerHTML = `
+          <input
+            type="checkbox"
+            name="${name}"
+            value="${value}"
+            ${checked ? "checked" : ""}
+            id="${id}"
+            class="w-4 h-4 rounded border-gray-300 text-blue-600 accent-blue-600 cursor-pointer"
+          />
+          <span class="text-sm text-gray-700 group-hover:text-gray-900">
+            ${name === "type" ? (typeLabels[value] || value) : value}
+          </span>
+        `;
+        container.appendChild(label);
+      }
+    }
+
+    function collectFilters() {
+      const filters = {};
+      if (activeFilters.type.size) filters.type = getSelectedValues("type");
+      if (activeFilters.tag.size) filters.tag = getSelectedValues("tag");
+      return filters;
+    }
+
+    function sortResults(items) {
+      return items.sort((left, right) => {
+        if (right.typeBoost !== left.typeBoost) {
+          return right.typeBoost - left.typeBoost;
+        }
+
+        return right.score - left.score;
+      });
+    }
+
+    function renderResults(items) {
+      if (!resultsNode || !statusNode) return;
+      resultsNode.innerHTML = "";
+
+      if (items.length === 0) {
+        statusNode.textContent = labels.noResults;
+        return;
+      }
+
+      statusNode.textContent = `${items.length} ${labels.results}`;
+
+      const typeLabels = {
+        dataset: root.dataset.searchLocale === "cy" ? "Set ddata" : "Dataset",
+        exhibition: root.dataset.searchLocale === "cy" ? "Arddangosfa" : "Exhibition",
+        page: root.dataset.searchLocale === "cy" ? "Tudalen" : "Page",
+        homepage: root.dataset.searchLocale === "cy" ? "Tudalen" : "Page",
+      };
+      const sectionLabels = {
+        home: root.dataset.searchLocale === "cy" ? "Hafan" : "Home",
+        data: root.dataset.searchLocale === "cy" ? "Data" : "Data",
+        exhibitions: root.dataset.searchLocale === "cy" ? "Arddangosfeydd" : "Exhibitions",
+        "using-the-data":
+          root.dataset.searchLocale === "cy" ? "Defnyddio'r Data" : "Using the Data",
+        "policies-governance":
+          root.dataset.searchLocale === "cy" ? "Polisiau a Llywodraethu" : "Policies & Governance",
+        "case-studies":
+          root.dataset.searchLocale === "cy" ? "Astudiaethau Achos" : "Case Studies",
+        "help-support":
+          root.dataset.searchLocale === "cy" ? "Cymorth a Chefnogaeth" : "Help & Support",
+        about: root.dataset.searchLocale === "cy" ? "Amdanom ni" : "About",
+        search: root.dataset.searchLocale === "cy" ? "Chwilio" : "Search",
+      };
+
+      for (const item of items) {
+        const typePart = typeLabels[item.meta.type] || item.meta.type || "";
+        const sectionPart = item.meta.section
+          ? ` · ${sectionLabels[item.meta.section] || item.meta.section}`
+          : "";
+
+        const article = document.createElement("article");
+        article.className =
+          "group rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md hover:border-gray-300 transition-all";
+        article.innerHTML = `
+          <p class="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-1">
+            ${typePart}${sectionPart}
+          </p>
+          <h2 class="text-base font-bold text-gray-900 mb-1.5">
+            <a href="${item.url}" class="hover:underline">${item.meta.title || item.url}</a>
+          </h2>
+          <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
+            ${item.excerpt || item.meta.summary || ""}
+          </p>
+        `;
+        resultsNode.appendChild(article);
+      }
+    }
+
+    async function runSearch() {
+      if (!pagefind || !statusNode) return;
+      const query = input?.value?.trim() || "";
+      const filters = collectFilters();
+      updateUrl(query);
+      statusNode.textContent = labels.loading;
+
+      const search = await pagefind.search(query || null, { filters });
+      const loaded = await Promise.all(
+        search.results.map(async (result) => {
+          const data = await result.data();
+          return {
+            ...data,
+            score: result.score ?? 0,
+            typeBoost: typeBoosts[data.meta.type] ?? 0,
+          };
+        }),
+      );
+      renderResults(sortResults(loaded));
+    }
+
+    async function init() {
+      syncFromUrl();
+
+      try {
+        pagefind = await import("/pagefind/pagefind.js");
+      } catch (error) {
+        if (statusNode) statusNode.textContent = labels.unavailable;
+        return;
+      }
+
+      const availableFilters = await pagefind.filters();
+      const typeValues = Object.keys(availableFilters.type || {}).filter(
+        (value) => !hiddenTypeFilters.has(value),
+      );
+      buildFilterMarkup(typeContainer, "type", typeValues);
+      const tagValues = Object.keys(availableFilters.tag || {});
+      buildFilterMarkup(tagContainer, "tag", tagValues);
+      if (tagGroup) tagGroup.hidden = tagValues.length === 0;
+
+      form?.addEventListener("change", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLInputElement)) return;
+        if (target.name !== "type" && target.name !== "tag") return;
+        if (target.checked) {
+          activeFilters[target.name].add(target.value);
+        } else {
+          activeFilters[target.name].delete(target.value);
+        }
+        runSearch();
+      });
+
+      form?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        runSearch();
+      });
+
+      input?.addEventListener("input", () => {
+        window.clearTimeout(input._pagefindTimer);
+        input._pagefindTimer = window.setTimeout(runSearch, 200);
+      });
+
+      clearButton?.addEventListener("click", () => {
+        activeFilters.type.clear();
+        activeFilters.tag.clear();
+        for (const checkbox of form?.querySelectorAll('input[type="checkbox"]') || []) {
+          checkbox.checked = false;
+        }
+        runSearch();
+      });
+
+      runSearch();
+    }
+
+    init();
+  }
+</script>

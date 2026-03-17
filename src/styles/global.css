@@ -1,2 +1,16 @@
+@import "@fontsource/lato/400.css";
+@import "@fontsource/lato/700.css";
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@theme {
+  --default-font-family: "Lato", sans-serif;
+}
+
+body {
+  --default-accent: #2b4db8;
+}
+
+.site-width {
+  @apply max-w-[102.5rem] mx-auto;
+}

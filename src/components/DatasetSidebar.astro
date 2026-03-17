@@ -1,0 +1,131 @@
+---
+import {
+  formatDateTime,
+  getLocalizedString,
+  type Locale,
+  type LocalizedString,
+} from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  tagLabels: string[];
+  datasetIdentifier?: string;
+  institutionLabels: string[];
+  accent: string;
+  team?: LocalizedString;
+  rights?: LocalizedString;
+  license?: string;
+  updated?: LocalizedString;
+  ingestedAt?: string;
+}
+
+const {
+  locale,
+  tagLabels,
+  datasetIdentifier,
+  institutionLabels,
+  accent,
+  team,
+  rights,
+  license,
+  updated,
+  ingestedAt,
+} = Astro.props;
+---
+
+<aside class="lg:col-span-1" style={`--accent: ${accent};`}>
+  <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 sticky top-6">
+    <p class="text-xs font-semibold uppercase tracking-widest text-(--accent) mb-1">
+      {locale === "en" ? "Dataset" : "Set ddata"}
+    </p>
+    <h2 class="text-xl font-bold text-gray-900 mb-5">
+      {locale === "en" ? "Key details" : "Manylion allweddol"}
+    </h2>
+
+    <dl class="flex flex-col divide-y divide-gray-200">
+      {institutionLabels.length > 0 && (
+        <div class="py-3 first:pt-0 last:pb-0">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+            {locale === "en" ? "Institutions" : "Sefydliadau"}
+          </dt>
+          <dd class="text-sm text-gray-800">{institutionLabels.join(", ")}</dd>
+        </div>
+      )}
+
+      {datasetIdentifier && (
+        <div class="py-3 first:pt-0 last:pb-0">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+            {locale === "en" ? "Dataset ID" : "ID set ddata"}
+          </dt>
+          <dd class="text-sm text-gray-800">{datasetIdentifier}</dd>
+        </div>
+      )}
+
+      {team && (
+        <div class="py-3 first:pt-0 last:pb-0">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+            {locale === "en" ? "Team" : "Tîm"}
+          </dt>
+          <dd class="text-sm text-gray-800">{getLocalizedString(team, locale)}</dd>
+        </div>
+      )}
+
+      {rights && (
+        <div class="py-3 first:pt-0 last:pb-0">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+            {locale === "en" ? "Rights" : "Hawliau"}
+          </dt>
+          <dd class="text-sm text-gray-800">{getLocalizedString(rights, locale)}</dd>
+        </div>
+      )}
+
+      {license && (
+        <div class="py-3 first:pt-0 last:pb-0">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+            {locale === "en" ? "License" : "Trwydded"}
+          </dt>
+          <dd class="text-sm text-gray-800">{license}</dd>
+        </div>
+      )}
+
+      {updated && (
+        <div class="py-3 first:pt-0 last:pb-0">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+            {locale === "en" ? "Updated" : "Diweddarwyd"}
+          </dt>
+          <dd class="text-sm text-gray-800">{getLocalizedString(updated, locale)}</dd>
+        </div>
+      )}
+
+      {ingestedAt && (
+        <div class="py-3 first:pt-0 last:pb-0">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+            {locale === "en" ? "Ingested" : "Mewnforiwyd"}
+          </dt>
+          <dd class="text-sm text-gray-800">{formatDateTime(ingestedAt, locale)}</dd>
+        </div>
+      )}
+
+      <div class="py-3 first:pt-0 last:pb-0">
+        <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">
+          {locale === "en" ? "Tags" : "Tagiau"}
+        </dt>
+        <dd>
+          {tagLabels.length > 0 ? (
+            <ul class="flex flex-wrap gap-1.5">
+              {tagLabels.map((tag) => (
+                <li class="px-2 py-0.5 rounded-full text-xs font-medium bg-(--accent)/10 text-(--accent)">
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <span class="text-sm text-gray-400 italic">
+              {locale === "en" ? "Not yet assigned" : "Heb eu neilltuo eto"}
+            </span>
+          )}
+        </dd>
+      </div>
+    </dl>
+  </div>
+</aside>

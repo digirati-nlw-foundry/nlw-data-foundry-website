@@ -1,0 +1,151 @@
+---
+import { getCollection, render } from "astro:content";
+import PageHero from "../../../components/PageHero.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { getLocalizedString, LOCALES, type Locale } from "../../../lib/i18n";
+
+export async function getStaticPaths() {
+  const exhibitions = await getCollection("exhibitions");
+
+  return LOCALES.flatMap((locale) =>
+    exhibitions.map((entry) => ({
+      params: { locale, slug: entry.id },
+      props: { entry, locale },
+    })),
+  );
+}
+
+const { entry, locale } = Astro.props as {
+  entry: Awaited<ReturnType<typeof getCollection<"exhibitions">>>[number];
+  locale: Locale;
+};
+
+const { Content } = await render(entry);
+const title = getLocalizedString(entry.data.title, locale);
+const description = getLocalizedString(entry.data.summary, locale);
+const tags = (entry.data.tags || []).map((tag) =>
+  getLocalizedString(tag, locale),
+);
+const hasBody = (entry.body || "").trim().length > 0;
+
+function localizeInternalHref(href: string) {
+  if (href.startsWith("/en/")) {
+    return `/${locale}/${href.replace(/^\/en\//, "")}`;
+  }
+
+  return href;
+}
+---
+
+<Layout locale={locale} title={title} description={description} pageType="exhibition" section="exhibitions" tags={tags}>
+  <PageHero
+    compact
+    backHref={`/${locale}/exhibitions`}
+    backLabel={locale === "en" ? "Back to exhibitions" : "Yn ôl i'r arddangosfeydd"}
+    eyebrow={getLocalizedString(entry.data.theme, locale)}
+    heading={title}
+    summary={description}
+  />
+
+  <div class="site-width px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8 pb-16">
+
+    <!-- Main content -->
+    <main class="lg:col-span-2 flex flex-col gap-8">
+      <article class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-widest text-blue-700 mb-1">
+          {locale === "en" ? "Theme" : "Thema"}
+        </p>
+        <h2 class="text-xl font-bold text-gray-900 mb-3">
+          {getLocalizedString(entry.data.theme, locale)}
+        </h2>
+        <p class="text-gray-600 leading-relaxed">{description}</p>
+        {tags.length > 0 && (
+          <ul class="flex flex-wrap gap-2 mt-4" aria-label={locale === "en" ? "Tags" : "Tagiau"}>
+            {tags.map((tag) => (
+              <li class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">{tag}</li>
+            ))}
+          </ul>
+        )}
+      </article>
+
+      {hasBody && (
+        <article class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div class="prose prose-lg prose-slate max-w-none
+            prose-headings:font-bold prose-headings:text-gray-900
+            prose-a:text-blue-700 prose-a:no-underline hover:prose-a:underline
+            prose-code:bg-gray-100 prose-code:rounded prose-code:px-1
+            prose-pre:bg-gray-900 prose-pre:text-gray-100">
+            <Content />
+          </div>
+        </article>
+      )}
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="lg:col-span-1 flex flex-col gap-6">
+      {entry.data.externalLinks && (
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-6">
+          <p class="text-xs font-semibold uppercase tracking-widest text-blue-700 mb-1">
+            {locale === "en" ? "Links" : "Dolenni"}
+          </p>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">
+            {locale === "en" ? "Relevant links" : "Dolenni perthnasol"}
+          </h2>
+          <ul class="flex flex-col gap-2">
+            {entry.data.externalLinks.map((link) => (
+              <li>
+                <a
+                  class="text-blue-700 hover:underline text-sm"
+                  href={localizeInternalHref(link.href)}
+                >
+                  {getLocalizedString(link.label, locale)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {entry.data.relatedDatasets && (
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-6">
+          <p class="text-xs font-semibold uppercase tracking-widest text-blue-700 mb-1">
+            {locale === "en" ? "Data" : "Data"}
+          </p>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">
+            {locale === "en" ? "Related datasets" : "Setiau data cysylltiedig"}
+          </h2>
+          <ul class="flex flex-col gap-2">
+            {entry.data.relatedDatasets.map((slug) => (
+              <li>
+                <a
+                  class="text-blue-700 hover:underline text-sm"
+                  href={`/${locale}/data/${slug}`}
+                >
+                  {slug}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {entry.data.manifestUrl && (
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-6">
+          <p class="text-xs font-semibold uppercase tracking-widest text-blue-700 mb-1">
+            IIIF
+          </p>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">
+            {locale === "en" ? "Manifest" : "Maniffest"}
+          </h2>
+          <a
+            class="inline-block bg-blue-800 text-white px-4 py-2 rounded-sm text-sm font-medium hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-600 ring-offset-1 transition-colors"
+            href={entry.data.manifestUrl}
+          >
+            {locale === "en" ? "Open IIIF manifest" : "Agor y maniffest IIIF"}
+          </a>
+        </div>
+      )}
+    </aside>
+
+  </div>
+</Layout>

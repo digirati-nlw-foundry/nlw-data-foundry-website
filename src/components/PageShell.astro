@@ -1,0 +1,33 @@
+---
+import type { Locale } from "../lib/i18n";
+import { getLocalizedString } from "../lib/i18n";
+import type { SitePage } from "../lib/pages";
+import PageHero from "./PageHero.astro";
+
+interface Props {
+  locale: Locale;
+  page: SitePage;
+  Content: any;
+  hasBody: boolean;
+}
+
+const { locale, page, Content, hasBody } = Astro.props as Props;
+---
+
+<PageHero
+  eyebrow={locale === "en" ? "Information" : "Gwybodaeth"}
+  heading={getLocalizedString(page.title, locale)}
+  summary={getLocalizedString(page.intro, locale)}
+/>
+
+{
+  hasBody && (
+    <section class="py-12 px-4 sm:px-0">
+      <div class="max-w-4xl mx-auto">
+        <div class="prose prose-lg prose-slate max-w-none">
+          <Content />
+        </div>
+      </div>
+    </section>
+  )
+}

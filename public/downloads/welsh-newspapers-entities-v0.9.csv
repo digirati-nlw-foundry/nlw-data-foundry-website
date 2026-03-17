@@ -1,0 +1,4 @@
+issue_id,entity,type,confidence
+WNP-1901-001,Aberystwyth,Place,0.92
+WNP-1901-002,David Lloyd George,Person,0.78
+WNP-1901-003,Cambrian News,Organisation,0.84

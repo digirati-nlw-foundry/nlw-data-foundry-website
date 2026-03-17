@@ -1,0 +1,37 @@
+---
+import type { Locale } from "../lib/i18n";
+import { getLocalizedString } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  table: {
+    caption: Record<Locale, string>;
+    columns: Record<Locale, string>[];
+    rows: string[][];
+  };
+}
+
+const { locale, table } = Astro.props;
+---
+
+<div class="table-card">
+  <p class="table-card__caption">{getLocalizedString(table.caption, locale)}</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          {table.columns.map((column) => <th>{getLocalizedString(column, locale)}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          table.rows.map((row) => (
+            <tr>
+              {row.map((cell) => <td>{cell}</td>)}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

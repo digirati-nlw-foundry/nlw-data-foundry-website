@@ -1,0 +1,37 @@
+---
+interface Props {
+  eyebrow?: string;
+  heading: string;
+  summary?: string;
+  backHref?: string;
+  backLabel?: string;
+  compact?: boolean;
+}
+
+const {
+  eyebrow,
+  heading,
+  summary,
+  backHref,
+  backLabel,
+  compact = false,
+} = Astro.props;
+---
+
+<section class={`bg-slate-700 ${compact ? "py-10" : "py-16"} text-white`}>
+  <div class="px-4 sm:px-6 lg:px-8">
+    {backHref && (
+      <a href={backHref} class="inline-flex items-center gap-1.5 text-sm text-slate-300 hover:text-white mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        {backLabel}
+      </a>
+    )}
+    {eyebrow && (
+      <p class="text-sm font-semibold uppercase tracking-widest text-slate-300 mb-2">{eyebrow}</p>
+    )}
+    <h1 class="text-4xl font-bold mb-4">{heading}</h1>
+    {summary && <p class="text-lg text-slate-300 max-w-3xl">{summary}</p>}
+  </div>
+</section>

@@ -1,0 +1,16 @@
+[
+  {
+    "annotation_id": "PP-001",
+    "canvas_id": "6085440-canvas-1",
+    "entity": "Aberystwyth",
+    "type": "Place",
+    "confidence": 0.93
+  },
+  {
+    "annotation_id": "PP-002",
+    "canvas_id": "6085440-canvas-2",
+    "entity": "Women's Peace Petition",
+    "type": "Organisation",
+    "confidence": 0.88
+  }
+]

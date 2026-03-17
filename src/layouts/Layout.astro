@@ -1,47 +1,74 @@
 ---
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import type { Locale } from "../lib/i18n";
+import { getLocalizedString } from "../lib/i18n";
 import "../styles/global.css";
----
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body class="flex flex-col min-h-screen">
-	  <header class="bg-gray-800 text-white p-4">
-			<div class="max-w-5xl mx-auto flex gap-2">
-			<div>
-			  <a href="/">NLW Foundry</a>
-			</div>
-			<div class="flex-1"></div>
-			<div>
-	      <ul class="flex gap-4">
-					<li><a href="/about">About</a></li>
-					<li><a href="/data">Data</a></li>
-					<li><a href="/exhibitions">Exhibitions</a></li>
-				</ul>
-			</div>
-			</div>
-		</header>
-		<main class="flex-1">
-		  <slot />
-		</main>
-		<footer class="bg-gray-800 text-white/50 p-8 mt-8">
-      <div class="max-w-5xl mx-auto text-center">
-        &copy; {new Date().getFullYear()} National Library of Wales
-      </div>
-	</body>
-</html>
+import { siteTitle } from "../lib/site";
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  pageType: "dataset" | "exhibition" | "page" | "homepage";
+  section?: string;
+  tags?: string[];
+}
+
+const {
+  locale,
+  title,
+  description,
+  pageType,
+  section = "general",
+  tags = [],
+} = Astro.props;
+const currentPath = Astro.url.pathname;
+const fullTitle = `${title} | ${getLocalizedString(siteTitle, locale)}`;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta data-pagefind-meta="title[content]" content={title} />
+    <meta data-pagefind-meta="type[content]" content={pageType} />
+    <meta data-pagefind-meta="summary[content]" content={description} />
+    <meta data-pagefind-meta="section[content]" content={section} />
+    <meta data-pagefind-filter="type[content]" content={pageType} />
+    <meta data-pagefind-filter="section[content]" content={section} />
+    {tags.map((tag) => <meta data-pagefind-filter="tag[content]" content={tag} />)}
+    <title>{fullTitle}</title>
+    <script is:inline>
+      (() => {
+        const stored = window.localStorage.getItem("nlw-theme");
+        const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = stored || preferred;
+      })();
+    </script>
+  </head>
+  <body>
+    <SiteHeader locale={locale} currentPath={currentPath} />
+    <main class={pageType === "homepage" ? "" : "site-width px-6"} data-pagefind-body>
+      <slot />
+    </main>
+    <SiteFooter locale={locale} />
+
+    <script is:inline>
+      const button = document.querySelector("[data-theme-toggle]");
+      const setTheme = (value) => {
+        document.documentElement.dataset.theme = value;
+        window.localStorage.setItem("nlw-theme", value);
+      };
+      button?.addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        setTheme(next);
+      });
+    </script>
+  </body>
+</html>

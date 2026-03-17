@@ -1,0 +1,27 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SearchInterface from "../../components/SearchInterface.astro";
+import { LOCALES, type Locale } from "../../lib/i18n";
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({
+    params: { locale },
+  }));
+}
+
+const locale = Astro.params.locale as Locale;
+---
+
+<Layout
+  locale={locale}
+  title={locale === "en" ? "Search" : "Chwilio"}
+  description={
+    locale === "en"
+      ? "Search datasets, exhibitions, and support pages across the platform."
+      : "Chwiliwch setiau data, arddangosfeydd, a thudalennau cymorth ar draws y llwyfan."
+  }
+  pageType="page"
+  section="search"
+>
+  <SearchInterface locale={locale} />
+</Layout>

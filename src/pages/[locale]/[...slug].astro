@@ -1,0 +1,37 @@
+---
+import { render } from "astro:content";
+import PageShell from "../../components/PageShell.astro";
+import Layout from "../../layouts/Layout.astro";
+import { getLocalizedString, LOCALES, type Locale } from "../../lib/i18n";
+import { getPages, type SitePage } from "../../lib/pages";
+
+export async function getStaticPaths() {
+  const pages = await getPages();
+
+  return LOCALES.flatMap((locale) =>
+    pages.map((page) => ({
+      params: { locale, slug: page.slug },
+      props: { page, locale },
+    })),
+  );
+}
+
+const { page, locale } = Astro.props as {
+  locale: Locale;
+  page: SitePage;
+};
+
+const entry = page.entries[locale] ?? page.entries.en;
+const { Content } = await render(entry);
+const hasBody = (entry.body || "").trim().length > 0;
+---
+
+<Layout
+  locale={locale}
+  title={getLocalizedString(page.title, locale)}
+  description={getLocalizedString(page.description, locale)}
+  pageType="page"
+  section={page.section}
+>
+  <PageShell locale={locale} page={page} Content={Content} hasBody={hasBody} />
+</Layout>

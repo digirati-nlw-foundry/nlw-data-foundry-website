@@ -1,0 +1,73 @@
+---
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  datasetIdentifier?: string;
+  tagLabels: string[];
+  accent: string;
+}
+
+const { locale, title, description, datasetIdentifier, tagLabels, accent } =
+  Astro.props;
+---
+
+<div
+  class="border-b border-gray-200 py-10 mb-10"
+  style={`--accent: ${accent};`}
+>
+  <a
+    href={`/${locale}/data`}
+    class="inline-flex items-center gap-1.5 text-sm font-medium text-(--accent) hover:underline mb-6"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-4 h-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+    {locale === "en" ? "Back to data" : "Yn ôl i'r data"}
+  </a>
+
+  {
+    datasetIdentifier && (
+      <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">
+        {datasetIdentifier}
+      </p>
+    )
+  }
+
+  <h1 class="text-4xl font-bold text-gray-900 mb-4 leading-tight">{title}</h1>
+
+  {
+    description && (
+      <p class="text-lg text-gray-600 max-w-3xl leading-relaxed">
+        {description}
+      </p>
+    )
+  }
+
+  {
+    tagLabels.length > 0 && (
+      <ul
+        class="flex flex-wrap gap-2 mt-6"
+        aria-label={locale === "en" ? "Tags" : "Tagiau"}
+      >
+        {tagLabels.map((tag) => (
+          <li class="px-3 py-1 rounded-full text-sm font-medium bg-(--accent)/10 text-(--accent)">
+            {tag}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>

@@ -1,0 +1,90 @@
+---
+import { Icon } from "astro-icon/components";
+import type { Locale } from "../lib/i18n";
+import { buildLocalizedPath, getLocalizedString } from "../lib/i18n";
+import { footerColumns, legalLinks, siteTagline, siteTitle } from "../lib/site";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+function localizeInternalHref(href: string) {
+  if (href.startsWith("/en/")) {
+    return buildLocalizedPath(locale, href.replace(/^\/en\//, ""));
+  }
+
+  return href;
+}
+---
+
+<footer class="bg-slate-100 py-12" data-pagefind-ignore>
+  <div class="site-width grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="border-r border-gray-300">
+      <h3 class="font-semibold text-gray-700 mb-3">
+        {locale === "en" ? "Address" : "Cyfeiriad"}
+      </h3>
+      <p class="text-gray-600 mb-3">
+        The National Library of Wales<br />
+        Aberystwyth<br />
+        Ceredigion<br />
+        SY23 3BU
+      </p>
+      <a href="https://maps.app.goo.gl/2CqpeBq1UDLb7xEz6" target="_blank" class="text-blue-600 hover:underline inline-flex gap-2 items-center">
+        {locale === "en" ? "View on map" : "Chwilio ar gwaith"}<Icon name="mdi:map"/>
+      </a>
+
+      <h3 class="font-semibold text-gray-700 mt-6 mb-3">{getLocalizedString(footerColumns[0].title, locale)}</h3>
+      <ul>
+        {footerColumns[0].links.map((link) => (
+          <li class="mb-1">
+            <a class="hover:underline" href={localizeInternalHref(link.href)}>{getLocalizedString(link.label, locale)}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {
+      footerColumns.slice(1).map((column, n) => (
+        <div class={n === footerColumns.slice(1).length - 1 ? "" : "border-r border-gray-300"}>
+          <h3 class="font-semibold text-gray-700 mb-3">{getLocalizedString(column.title, locale)}</h3>
+          <ul>
+            {column.links.map((link) => (
+              <li class="mb-1">
+                <a class="hover:underline" href={localizeInternalHref(link.href)}>{getLocalizedString(link.label, locale)}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+
+    <div class="">
+      <h3 class="font-semibold text-gray-700 mb-3">{locale === "en" ? "Stay connected" : "Cadw mewn cysylltiad"}</h3>
+      <p class="mb-4">
+        {locale === "en"
+          ? "Use the support pages, dataset citations, and enquiry links to stay aligned with future releases."
+          : "Defnyddiwch y tudalennau cymorth, dyfyniadau setiau data, a dolenni ymholiadau i gadw mewn cysylltiad â chyhoeddiadau'r dyfodol."}
+      </p>
+      <a class="text-white bg-blue-800 py-2 px-4 hover:bg-blue-900 focus:ring-2 focus:ring-blue-600 focus:outline-none ring-offset-1 rounded-sm inline-block" href="mailto:enquiry@library.wales">
+        {locale === "en" ? "Email the team" : "Ebostio'r tîm"}
+      </a>
+    </div>
+  </div>
+
+  <div class="site-width my-6 py-6 border-t border-b border-gray-300">
+    <img class="h-16" src="/logo-wg.svg" alt="Logo - Welsh Government" title="Logo - Welsh Government" />
+  </div>
+
+  <div class="site-width flex gap-8">
+    <p>&copy; {new Date().getFullYear()} National Library of Wales</p>
+    <div class="flex gap-4">
+      {
+        legalLinks.map((link) => (
+          <a class="underline" href={link.href}>{getLocalizedString(link.label, locale)}</a>
+        ))
+      }
+    </div>
+  </div>
+</footer>

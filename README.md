@@ -1,46 +1,45 @@
-# Astro Starter Kit: Basics
+# NLW Data Foundry Website
+
+Astro site for the NLW Data Foundry experience.
+
+## Commands
+
+All commands run from the repository root.
+
+| Command | Action |
+| :------ | :----- |
+| `pnpm install` | Install dependencies |
+| `pnpm dev` | Start the Astro development server for layout and content work |
+| `pnpm build:site` | Build the Astro site into `dist/` without generating the Pagefind index |
+| `pnpm build` | Build the site and generate the production search index in `dist/pagefind` |
+| `pnpm preview` | Build the site, generate the Pagefind index, and serve the built output locally on Pagefind's preview server |
+| `pnpm astro -- --help` | Show Astro CLI help |
+
+## Local Search Workflow
+
+Search works locally in two ways:
+
+1. Run `pnpm preview` on its own to serve the built site with the generated Pagefind index.
+2. Run `pnpm dev` and `pnpm preview` together to test search inside the dev site. The dev server proxies `/pagefind/*` requests to the preview server.
+
+To test search in the dev site, use two terminals:
 
 ```sh
-pnpm create astro@latest -- --template basics
+# Terminal 1
+pnpm dev
+
+# Terminal 2
+pnpm preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+By default `pnpm preview` serves the Pagefind-backed build at `http://localhost:1414`, and `pnpm dev` proxies `/pagefind/*` there.
 
-## 🚀 Project Structure
+If you only need to verify the generated assets, run:
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+```sh
+pnpm build
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+Then confirm that `dist/pagefind/pagefind.js` exists.
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+If you need a different preview origin for the proxy, set `PAGEFIND_DEV_SERVER_URL` before starting `pnpm dev`.

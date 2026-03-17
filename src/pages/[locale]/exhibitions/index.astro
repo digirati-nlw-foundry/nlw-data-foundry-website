@@ -1,0 +1,77 @@
+---
+import { getCollection } from "astro:content";
+import ListingCard from "../../../components/ListingCard.astro";
+import PageHero from "../../../components/PageHero.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { getLocalizedString, LOCALES, type Locale } from "../../../lib/i18n";
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({
+    params: { locale },
+  }));
+}
+
+const locale = Astro.params.locale as Locale;
+const exhibitions = await getCollection("exhibitions");
+const themes = Array.from(
+  new Set(
+    exhibitions.map((entry) => getLocalizedString(entry.data.theme, locale)),
+  ),
+).sort((left, right) => left.localeCompare(right));
+---
+
+<Layout
+  locale={locale}
+  title={locale === "en" ? "Exhibitions" : "Arddangosfeydd"}
+  description={
+    locale === "en"
+      ? "Explore exhibitions and thematic stories connected to National Library of Wales data collections."
+      : "Archwiliwch arddangosfeydd a straeon thematig sy'n gysylltiedig â chasgliadau data Llyfrgell Genedlaethol Cymru."
+  }
+  pageType="page"
+  section="exhibitions"
+  tags={themes}
+>
+  <PageHero
+    compact
+    eyebrow={locale === "en" ? "Exhibitions" : "Arddangosfeydd"}
+    heading={locale === "en" ? "Featured exhibitions" : "Arddangosfeydd dan sylw"}
+    summary={locale === "en"
+      ? "Exhibitions connect structured data with interpretation, storytelling, and themed discovery paths."
+      : "Mae arddangosfeydd yn cysylltu data strwythuredig â dehongli, adrodd straeon, a llwybrau darganfod thematig."}
+  />
+
+  <section class="site-width px-4 py-8 flex flex-col gap-4">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-widest text-blue-700 mb-1">
+        {locale === "en" ? "Themes" : "Themâu"}
+      </p>
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">
+        {locale === "en" ? "Thematic stories" : "Straeon thematig"}
+      </h2>
+    </div>
+    <ul class="flex flex-wrap gap-2">
+      {themes.map((theme) => (
+        <li class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">{theme}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="site-width px-4 pb-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        exhibitions.map((entry) => (
+          <ListingCard
+            locale={locale}
+            href={`/${locale}/exhibitions/${entry.id}`}
+            title={entry.data.title}
+            summary={entry.data.summary}
+            eyebrow={{ en: "Exhibition", cy: "Arddangosfa" }}
+            accent={entry.data.accent}
+            tags={entry.data.tags}
+          />
+        ))
+      }
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,49 @@
+---
+import { Icon } from "astro-icon/components";
+import type { Locale } from "../lib/i18n";
+import { buildLocalizedPath } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  query?: string;
+  variant?: "hero" | "compact";
+}
+
+const { locale, query = "", variant = "compact" } = Astro.props;
+
+const labels = {
+  en: {
+    input: "Search NLW Data",
+    placeholder: "Search for a term, collection, or place",
+    button: "Search",
+  },
+  cy: {
+    input: "Chwilio Data LlGC",
+    placeholder: "Chwiliwch am derm, casgliad, neu le",
+    button: "Chwilio",
+  },
+};
+
+const copy = labels[locale];
+---
+<form
+  class="flex w-full p-2"
+  action={buildLocalizedPath(locale, "search")}
+  method="get"
+  role="search"
+>
+  <label class="sr-only" for={`search-${variant}`}>{copy.input}</label>
+  <input
+    id={`search-${variant}`}
+    class="flex-1 rounded-l-sm border border-gray-300 p-3"
+    type="search"
+    name="q"
+    value={query}
+    placeholder={copy.placeholder}
+    autocomplete="off"
+  />
+  <button class="px-8 bg-blue-800 text-white rounded-r-sm text-sm flex gap-2 items-center hover:bg-blue-900 active:shadow-inner" type="submit">
+    <Icon name="mdi:magnify" class="w-5 h-5" />
+    {copy.button}
+  </button>
+</form>

@@ -1,0 +1,91 @@
+---
+import { render } from "astro:content";
+import DatasetFileList from "../../../components/DatasetFileList.astro";
+import DatasetHero from "../../../components/DatasetHero.astro";
+import DatasetSidebar from "../../../components/DatasetSidebar.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { getDataCards, type SiteDataCard } from "../../../lib/data-cards";
+import { getLocalizedString, LOCALES, type Locale } from "../../../lib/i18n";
+
+export async function getStaticPaths() {
+  const dataCards = await getDataCards();
+
+  return LOCALES.flatMap((locale) =>
+    dataCards.map((card) => ({
+      params: { locale, slug: card.slug },
+      props: { card, locale },
+    })),
+  );
+}
+
+const { card, locale } = Astro.props as {
+  card: SiteDataCard;
+  locale: Locale;
+};
+
+const entry = card.entries[locale] ?? card.entries.en;
+const { Content } = await render(entry);
+const title = getLocalizedString(card.title, locale);
+const description = getLocalizedString(card.description, locale);
+const tagLabels = card.tags.map((tag) => getLocalizedString(tag, locale));
+const institutionLabels = card.institutions.map((institution) =>
+  getLocalizedString(institution, locale),
+);
+const hasBody = (entry.body || "").trim().length > 0;
+const datasetIdentifier = card.datasetId;
+const accent = card.accent ?? "var(--default-accent)";
+const hasFiles = card.files.active.length > 0 || card.files.archived.length > 0;
+---
+
+<Layout locale={locale} title={title} description={description} pageType="dataset" section="data" tags={tagLabels}>
+
+  <DatasetHero
+    locale={locale}
+    title={title}
+    description={description}
+    datasetIdentifier={datasetIdentifier}
+    tagLabels={tagLabels}
+    accent={accent}
+  />
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-16" style={`--accent: ${accent};`}>
+
+    <main class="lg:col-span-2 px-2">
+      {hasBody ? (
+        <div class="prose prose-lg prose-slate max-w-none
+          prose-headings:font-bold prose-headings:text-gray-900
+          prose-a:text-(--accent) prose-a:no-underline hover:prose-a:underline
+          prose-code:bg-gray-100 prose-code:rounded prose-code:px-1
+          prose-pre:bg-gray-900 prose-pre:text-gray-100">
+          <Content />
+        </div>
+      ) : (
+        <div class="flex flex-col items-center justify-center h-full min-h-48 rounded-xl border border-dashed border-gray-200 text-gray-400 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mb-2 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 12h6m-3-3v6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {locale === "en" ? "No additional content yet." : "Dim cynnwys ychwanegol eto."}
+        </div>
+      )}
+
+      {hasFiles && (
+        <DatasetFileList locale={locale} accent={accent} files={card.files} />
+      )}
+    </main>
+
+    <DatasetSidebar
+      locale={locale}
+      tagLabels={tagLabels}
+      datasetIdentifier={datasetIdentifier}
+      institutionLabels={institutionLabels}
+      accent={accent}
+      team={card.team}
+      rights={card.rights}
+      license={card.license}
+      updated={card.updated}
+      ingestedAt={card.ingestedAt}
+    />
+
+  </div>
+
+</Layout>
