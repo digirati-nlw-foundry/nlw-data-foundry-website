@@ -1,0 +1,8 @@
+---
+import { getContext } from "../../../context/markdown-frontmatter";
+import { RightsUsage as RightsUsageComponent } from "../datasets/RightsUsage";
+
+const context = getContext();
+---
+
+<RightsUsageComponent frontmatter={context.frontmatter} />

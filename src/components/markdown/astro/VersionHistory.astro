@@ -1,0 +1,8 @@
+---
+import { getContext } from "../../../context/markdown-frontmatter";
+import { VersionHistory as VersionHistoryComponent } from "../datasets/VersionHistory";
+
+const context = getContext();
+---
+
+<VersionHistoryComponent frontmatter={context.frontmatter} />

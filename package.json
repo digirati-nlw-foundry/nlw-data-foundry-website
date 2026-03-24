@@ -13,6 +13,7 @@
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/netlify": "^6.6.4",
     "@astrojs/react": "^4.4.2",
+    "@astropub/context": "^0.1.0",
     "@fontsource/lato": "^5.2.7",
     "@iconify-json/mdi": "^1.2.3",
     "@tailwindcss/vite": "^4.2.1",

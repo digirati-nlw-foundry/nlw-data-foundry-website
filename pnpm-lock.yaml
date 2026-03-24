@@ -17,6 +17,9 @@ importers:
       '@astrojs/react':
         specifier: ^4.4.2
         version: 4.4.2(@types/node@25.3.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(yaml@2.8.2)
+      '@astropub/context':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@fontsource/lato':
         specifier: ^5.2.7
         version: 5.2.7
@@ -111,6 +114,9 @@ packages:
 
   '@astrojs/underscore-redirects@1.0.0':
     resolution: {integrity: sha512-qZxHwVnmb5FXuvRsaIGaqWgnftjCuMY+GSbaVZdBmE4j8AfgPqKPxYp8SUERyJcjpKCEmO4wD6ybuGH8A2kVRQ==}
+
+  '@astropub/context@0.1.0':
+    resolution: {integrity: sha512-6VRX3z9mhFvw9RN4hrQCrcFhcdom9lk2FUJuFOab9Vg9chInlY2LNFhHXF4HjTELIwAk3ABpUQrPpHXQ4Pf2Vw==}
 
   '@atlas-viewer/iiif-image-api@2.2.2':
     resolution: {integrity: sha512-MicA6fkWOJSWZ4fuOmh57ETVcCdnMaNhjzNtM29Xf6deGPtk8V4Vd46SWy3dM/cdo8gdHQdsvoJNkzzKo9CsXA==}
@@ -5204,6 +5210,8 @@ snapshots:
       - supports-color
 
   '@astrojs/underscore-redirects@1.0.0': {}
+
+  '@astropub/context@0.1.0': {}
 
   '@atlas-viewer/iiif-image-api@2.2.2':
     dependencies:

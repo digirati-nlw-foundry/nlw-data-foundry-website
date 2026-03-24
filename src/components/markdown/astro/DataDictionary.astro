@@ -1,0 +1,8 @@
+---
+import { getContext } from "../../../context/markdown-frontmatter";
+import { DataDictionary as DataDictionaryComponent } from "../datasets/DataDictionary";
+
+const context = getContext();
+---
+
+<DataDictionaryComponent frontmatter={context.frontmatter} />

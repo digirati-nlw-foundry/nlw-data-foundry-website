@@ -1,6 +1,11 @@
 ---
 import type { SiteDataCardFileGroup } from "../lib/data-cards";
-import { formatDateTime, type Locale } from "../lib/i18n";
+import { contentTypeLabel, formatBytes } from "../lib/file-utils";
+import {
+  formatDateRelative,
+  formatDateTimeShort,
+  type Locale,
+} from "../lib/i18n";
 
 interface Props {
   locale: Locale;
@@ -13,236 +18,197 @@ interface Props {
 
 const { locale, accent, files } = Astro.props;
 
-function formatBytes(value?: number) {
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    return undefined;
-  }
-
-  if (value < 1024) {
-    return `${value} B`;
-  }
-
-  const units = ["KB", "MB", "GB", "TB"];
-  let size = value / 1024;
-  let unitIndex = 0;
-
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex += 1;
-  }
-
-  const precision = size >= 100 ? 0 : size >= 10 ? 1 : 2;
-
-  return `${size.toFixed(precision)} ${units[unitIndex]}`;
-}
+const hasActive = files.active.length > 0;
+const hasArchived = files.archived.length > 0;
 ---
 
-<section class="mt-10 rounded-xl border border-gray-200 bg-white p-6 shadow-sm" style={`--accent: ${accent};`}>
-  <p class="text-xs font-semibold uppercase tracking-widest text-(--accent) mb-1">
-    {locale === "en" ? "Dataset files" : "Ffeiliau set ddata"}
-  </p>
-  <h2 class="text-2xl font-bold text-gray-900 mb-2">
-    {locale === "en" ? "Files and versions" : "Ffeiliau a fersiynau"}
-  </h2>
-  <p class="text-sm text-gray-600 mb-6">
-    {locale === "en"
-      ? "The backend-generated file manifest is shown here so users can inspect each available version and download link."
-      : "Dangosir y maniffest ffeiliau a gynhyrchir gan y backend yma fel y gall defnyddwyr archwilio pob fersiwn a dolen lawrlwytho sydd ar gael."}
-  </p>
+<section
+  class="mt-10 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden"
+  style={`--accent: ${accent};`}
+>
+  <!-- Header -->
+  <div class="px-6 pt-6 pb-5 border-b border-gray-100">
+    <h2 class="text-xl font-bold text-gray-900">
+      {locale === "en" ? "Files & versions" : "Ffeiliau a fersiynau"}
+    </h2>
+  </div>
 
-  <div class="space-y-8">
-    {files.active.length > 0 && (
-      <section>
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          {locale === "en" ? "Active files" : "Ffeiliau gweithredol"}
-        </h3>
-        <div class="space-y-5">
-          {files.active.map((group) => (
-            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <div class="flex items-center justify-between gap-3 mb-4">
-                <h4 class="text-base font-semibold text-gray-900">
-                  {locale === "en"
-                    ? `Version ${group.version}`
-                    : `Fersiwn ${group.version}`}
-                </h4>
-                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+  <div class="divide-y divide-gray-100">
+    <!-- Active files -->
+    {hasActive && files.active.map((group) => (
+      <div>
+        <!-- Version header row -->
+        <div class="flex items-center gap-3 px-6 py-3 bg-gray-50 border-b border-gray-100">
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <!-- Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE -->
+              <path fill="currentColor" d="M6.5 20q-2.275 0-3.887-1.575T1 14.575q0-1.95 1.175-3.475T5.25 9.15q.575-2.025 2.138-3.4T11 4.075v8.075L9.4 10.6L8 12l4 4l4-4l-1.4-1.4l-1.6 1.55V4.075q2.575.35 4.288 2.313T19 11q1.725.2 2.863 1.488T23 15.5q0 1.875-1.312 3.188T18.5 20z"/>
+            </svg>
+            {locale === "en" ? `Version ${group.version}` : `Fersiwn ${group.version}`}
+          </span>
+          <span class="ml-auto inline-flex items-center rounded-full bg-(--accent)/10 px-2 py-0.5 text-xs font-medium text-(--accent)">
+            {locale === "en"
+              ? `${group.files.length} file${group.files.length === 1 ? "" : "s"}`
+              : `${group.files.length} ffeil`}
+          </span>
+          <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+            {locale === "en" ? "Active" : "Gweithredol"}
+          </span>
+        </div>
+
+        <!-- File rows -->
+        <ul class="divide-y divide-gray-100">
+          {group.files.map((file) => (
+            <li class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50/60 transition-colors">
+              <!-- File icon -->
+              <div class="shrink-0 w-8 h-8 rounded-lg bg-(--accent)/10 flex items-center justify-center" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+              </div>
+
+              <!-- Name + meta -->
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold text-gray-900 truncate" title={file.fileName}>
+                  {file.fileName}
+                </p>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
+                  {file.contentType && (
+                    <span class="text-xs text-gray-400 font-mono">
+                      {contentTypeLabel(file.contentType)}
+                    </span>
+                  )}
+                  {typeof file.fileSizeBytes === "number" && (
+                    <span class="text-xs text-gray-400">
+                      {formatBytes(file.fileSizeBytes)}
+                    </span>
+                  )}
+                  {file.ingestedAt && (
+                    <span
+                      class="text-xs text-gray-400"
+                      title={formatDateTimeShort(file.ingestedAt, locale)}
+                    >
+                      {formatDateRelative(file.ingestedAt, locale)}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <!-- Download button -->
+              {file.apiLink && (
+                <a
+                  href={file.apiLink}
+                  class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-(--accent) px-3 py-1.5 text-xs font-semibold text-(--accent) hover:bg-(--accent) hover:text-white transition-colors"
+                  aria-label={`${locale === "en" ? "Download" : "Lawrlwytho"} ${file.fileName}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  {locale === "en" ? "Download" : "Lawrlwytho"}
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+
+    <!-- Archived files -->
+    {hasArchived && (
+      <details class="group">
+        <summary class="flex cursor-pointer items-center gap-3 px-6 py-3 bg-gray-50 hover:bg-gray-100 transition-colors select-none list-none [&::-webkit-details-marker]:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+          <span class="text-xs font-semibold text-gray-500">
+            {locale === "en"
+              ? `${files.archived.reduce((n, g) => n + g.files.length, 0)} archived file${files.archived.reduce((n, g) => n + g.files.length, 0) === 1 ? "" : "s"}`
+              : `${files.archived.reduce((n, g) => n + g.files.length, 0)} ffeil archifedig`}
+          </span>
+        </summary>
+
+        <div class="divide-y divide-gray-100">
+          {files.archived.map((group) => (
+            <div>
+              <!-- Version header row -->
+              <div class="flex items-center gap-3 px-6 py-3 bg-gray-50/50 border-b border-gray-100">
+                <span class="text-xs font-semibold text-gray-500">
+                  {locale === "en" ? `Version ${group.version}` : `Fersiwn ${group.version}`}
+                </span>
+                <span class="ml-auto inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">
                   {locale === "en"
                     ? `${group.files.length} file${group.files.length === 1 ? "" : "s"}`
                     : `${group.files.length} ffeil`}
-                </p>
+                </span>
+                <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 ring-1 ring-inset ring-gray-400/20">
+                  {locale === "en" ? "Archived" : "Archifedig"}
+                </span>
               </div>
 
-              <ul class="space-y-4">
+              <!-- File rows -->
+              <ul class="divide-y divide-gray-100">
                 {group.files.map((file) => (
-                  <li class="rounded-lg border border-gray-200 bg-white p-4">
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                      <div class="min-w-0">
-                        <p class="text-base font-semibold text-gray-900 break-all">
-                          {file.fileName}
-                        </p>
-                        <dl class="mt-3 grid grid-cols-1 gap-2 text-sm text-gray-700">
-                          {file.contentType && (
-                            <div>
-                              <dt class="font-medium text-gray-500">
-                                {locale === "en" ? "Content type" : "Math o gynnwys"}
-                              </dt>
-                              <dd>{file.contentType}</dd>
-                            </div>
-                          )}
+                  <li class="flex items-center gap-4 px-6 py-4 opacity-70 hover:opacity-100 transition-opacity">
+                    <!-- File icon -->
+                    <div class="shrink-0 w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                      </svg>
+                    </div>
 
-                          {typeof file.fileSizeBytes === "number" && (
-                            <div>
-                              <dt class="font-medium text-gray-500">
-                                {locale === "en" ? "Size" : "Maint"}
-                              </dt>
-                              <dd>{formatBytes(file.fileSizeBytes)}</dd>
-                            </div>
-                          )}
-
-                          {file.ingestedAt && (
-                            <div>
-                              <dt class="font-medium text-gray-500">
-                                {locale === "en" ? "Ingested" : "Mewnforiwyd"}
-                              </dt>
-                              <dd>{formatDateTime(file.ingestedAt, locale)}</dd>
-                            </div>
-                          )}
-
-                          {file.apiLink && (
-                            <div>
-                              <dt class="font-medium text-gray-500">
-                                {locale === "en" ? "Download" : "Lawrlwytho"}
-                              </dt>
-                              <dd>
-                                <a
-                                  href={file.apiLink}
-                                  class="inline-flex items-center text-(--accent) hover:underline"
-                                >
-                                  {locale === "en"
-                                    ? "Download file"
-                                    : "Lawrlwytho'r ffeil"}
-                                </a>
-                              </dd>
-                            </div>
-                          )}
-
-                          <div>
-                            <dt class="font-medium text-gray-500">
-                              {locale === "en" ? "Storage path" : "Llwybr storio"}
-                            </dt>
-                            <dd class="break-all">
-                              <code class="rounded bg-gray-100 px-1 py-0.5 text-xs text-gray-700">
-                                {file.fileUrl}
-                              </code>
-                            </dd>
-                          </div>
-
-                          {file.sha256 && (
-                            <div>
-                              <dt class="font-medium text-gray-500">SHA-256</dt>
-                              <dd class="break-all">
-                                <code class="rounded bg-gray-100 px-1 py-0.5 text-xs text-gray-700">
-                                  {file.sha256}
-                                </code>
-                              </dd>
-                            </div>
-                          )}
-                        </dl>
+                    <!-- Name + meta -->
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-medium text-gray-600 truncate" title={file.fileName}>
+                        {file.fileName}
+                      </p>
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
+                        {file.contentType && (
+                          <span class="text-xs text-gray-400 font-mono">
+                            {contentTypeLabel(file.contentType)}
+                          </span>
+                        )}
+                        {typeof file.fileSizeBytes === "number" && (
+                          <span class="text-xs text-gray-400">
+                            {formatBytes(file.fileSizeBytes)}
+                          </span>
+                        )}
+                        {file.ingestedAt && (
+                          <span
+                            class="text-xs text-gray-400"
+                            title={formatDateTimeShort(file.ingestedAt, locale)}
+                          >
+                            {formatDateRelative(file.ingestedAt, locale)}
+                          </span>
+                        )}
                       </div>
                     </div>
+
+                    <!-- Download button (muted for archived) -->
+                    {file.apiLink && (
+                      <a
+                        href={file.apiLink}
+                        class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-colors"
+                        aria-label={`${locale === "en" ? "Download" : "Lawrlwytho"} ${file.fileName}`}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="7 10 12 15 17 10" />
+                          <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        {locale === "en" ? "Download" : "Lawrlwytho"}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-      </section>
-    )}
-
-    {files.archived.length > 0 && (
-      <section>
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          {locale === "en" ? "Archived files" : "Ffeiliau archifedig"}
-        </h3>
-        <div class="space-y-5">
-          {files.archived.map((group) => (
-            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <div class="flex items-center justify-between gap-3 mb-4">
-                <h4 class="text-base font-semibold text-gray-900">
-                  {locale === "en"
-                    ? `Version ${group.version}`
-                    : `Fersiwn ${group.version}`}
-                </h4>
-                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-                  {locale === "en"
-                    ? `${group.files.length} file${group.files.length === 1 ? "" : "s"}`
-                    : `${group.files.length} ffeil`}
-                </p>
-              </div>
-
-              <ul class="space-y-4">
-                {group.files.map((file) => (
-                  <li class="rounded-lg border border-gray-200 bg-white p-4">
-                    <p class="text-base font-semibold text-gray-900 break-all">
-                      {file.fileName}
-                    </p>
-                    <dl class="mt-3 grid grid-cols-1 gap-2 text-sm text-gray-700">
-                      {file.contentType && (
-                        <div>
-                          <dt class="font-medium text-gray-500">
-                            {locale === "en" ? "Content type" : "Math o gynnwys"}
-                          </dt>
-                          <dd>{file.contentType}</dd>
-                        </div>
-                      )}
-
-                      {typeof file.fileSizeBytes === "number" && (
-                        <div>
-                          <dt class="font-medium text-gray-500">
-                            {locale === "en" ? "Size" : "Maint"}
-                          </dt>
-                          <dd>{formatBytes(file.fileSizeBytes)}</dd>
-                        </div>
-                      )}
-
-                      {file.ingestedAt && (
-                        <div>
-                          <dt class="font-medium text-gray-500">
-                            {locale === "en" ? "Ingested" : "Mewnforiwyd"}
-                          </dt>
-                          <dd>{formatDateTime(file.ingestedAt, locale)}</dd>
-                        </div>
-                      )}
-
-                      <div>
-                        <dt class="font-medium text-gray-500">
-                          {locale === "en" ? "Storage path" : "Llwybr storio"}
-                        </dt>
-                        <dd class="break-all">
-                          <code class="rounded bg-gray-100 px-1 py-0.5 text-xs text-gray-700">
-                            {file.fileUrl}
-                          </code>
-                        </dd>
-                      </div>
-
-                      {file.sha256 && (
-                        <div>
-                          <dt class="font-medium text-gray-500">SHA-256</dt>
-                          <dd class="break-all">
-                            <code class="rounded bg-gray-100 px-1 py-0.5 text-xs text-gray-700">
-                              {file.sha256}
-                            </code>
-                          </dd>
-                        </div>
-                      )}
-                    </dl>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
+      </details>
     )}
   </div>
 </section>

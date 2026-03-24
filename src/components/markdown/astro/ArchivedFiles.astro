@@ -1,0 +1,8 @@
+---
+import { getContext } from "../../../context/markdown-frontmatter";
+import { ArchivedFiles as ArchivedFilesComponent } from "../datasets/ArchivedFiles";
+
+const context = getContext();
+---
+
+<ArchivedFilesComponent frontmatter={context.frontmatter} />

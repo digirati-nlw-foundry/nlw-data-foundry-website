@@ -1,0 +1,8 @@
+---
+import { getContext } from "../../../context/markdown-frontmatter";
+import { CurrentFiles as CurrentFilesComponent } from "../datasets/CurrentFiles";
+
+const context = getContext();
+---
+
+<CurrentFilesComponent frontmatter={context.frontmatter} />
