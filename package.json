@@ -21,7 +21,7 @@
     "@types/react-dom": "^19.2.3",
     "astro": "^5.17.1",
     "astro-icon": "^1.1.5",
-    "iiif-hss": "https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@c687dfa",
+    "iiif-hss": "https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@d024e8d",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.2.1"

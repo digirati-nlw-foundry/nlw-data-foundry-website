@@ -42,8 +42,8 @@ importers:
         specifier: ^1.1.5
         version: 1.1.5
       iiif-hss:
-        specifier: https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@c687dfa
-        version: https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@c687dfa(@babel/runtime@7.28.6)(i18next@25.8.13(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@d024e8d
+        version: https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@d024e8d(@babel/runtime@7.28.6)(i18next@25.8.13(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: ^19.2.4
         version: 19.2.4
@@ -1738,6 +1738,9 @@ packages:
   '@vue/shared@3.5.29':
     resolution: {integrity: sha512-w7SR0A5zyRByL9XUkCfdLs7t9XOHUyJ67qPGQjOou3p6GvBeBW+AVjUUmlxtZ4PIYaRvE+1LmK44O4uajlZwcg==}
 
+  '@webcontainer/env@1.1.1':
+    resolution: {integrity: sha512-6aN99yL695Hi9SuIk1oC88l9o0gmxL1nGWWQ/kNy81HigJ0FoaoTXpytCj6ItzgyCEwA9kF1wixsTuv5cjsgng==}
+
   '@whatwg-node/disposablestack@0.0.6':
     resolution: {integrity: sha512-LOtTn+JgJvX8WfBVJtF08TGrdjuFzGJc4mkP8EdDI8ADbvO7kiexYep1o8dwnt0okb0jYclCDXF13xU7Ge4zSw==}
     engines: {node: '>=18.0.0'}
@@ -2972,8 +2975,8 @@ packages:
     resolution: {integrity: sha512-Hs59xBNfUIunMFgWAbGX5cq6893IbWg4KnrjbYwX3tx0ztorVgTDA6B2sxf8ejHJ4wz8BqGUMYlnzNBer5NvGg==}
     engines: {node: '>= 4'}
 
-  iiif-hss@https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@c687dfa:
-    resolution: {tarball: https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@c687dfa}
+  iiif-hss@https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@d024e8d:
+    resolution: {tarball: https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@d024e8d}
     version: 1.0.6-next.2
     hasBin: true
 
@@ -6853,6 +6856,8 @@ snapshots:
 
   '@vue/shared@3.5.29': {}
 
+  '@webcontainer/env@1.1.1': {}
+
   '@whatwg-node/disposablestack@0.0.6':
     dependencies:
       '@whatwg-node/promise-helpers': 1.3.2
@@ -8407,7 +8412,7 @@ snapshots:
 
   ignore@7.0.5: {}
 
-  iiif-hss@https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@c687dfa(@babel/runtime@7.28.6)(i18next@25.8.13(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  iiif-hss@https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@d024e8d(@babel/runtime@7.28.6)(i18next@25.8.13(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@hono/node-server': 1.19.9(hono@4.12.2)
       '@hono/node-ws': 1.3.0(@hono/node-server@1.19.9(hono@4.12.2))(hono@4.12.2)
@@ -8416,6 +8421,7 @@ snapshots:
       '@iiif/helpers': 1.5.8(@iiif/parser@2.2.9)
       '@iiif/parser': 2.2.9
       '@rgrove/parse-xml': 4.2.0
+      '@webcontainer/env': 1.1.1
       cli-progress: 3.12.0
       commander: 13.1.0
       detect-python-interpreter: 1.0.1
