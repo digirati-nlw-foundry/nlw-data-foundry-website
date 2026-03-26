@@ -1,0 +1,161 @@
+---
+dataset_id: newspaper-dataset-example-1
+target_version: 1
+action: CREATE
+title: Newsplan Cymru
+description: An example from Newsplan Cymru
+license: 'Copyright: Newsplan Cymru'
+ingested_at: '2026-03-26T13:30:38.737961'
+files:
+  active:
+    '1':
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/newspaper-dataset-example-1/v1/newsplan - EN newsplan.csv
+        file_name: newsplan - EN newsplan.csv
+        content_type: application/vnd.ms-excel
+        file_size_bytes: 261761
+        sha256: c9b69207b06d7a3921894a29e356e32e411716df6d2d9792fbe99b0388089627
+        ingested_at: '2026-03-26T13:30:38.737961'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.newspaper-dataset-example-1_newsplan___en_newsplan
+        extracted_schema:
+          ID: int64
+          title: string
+          title_start_date: string
+          title_end_date: string
+          title_place_of_publication_01: string
+          title_place_of_publication_02: string
+          holdings_dates: string
+          notes: string
+          holdings: string
+          newTitles: string
+          incorporatedLink: int64
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/newspaper-dataset-example-1/v1/files/newsplan - EN newsplan.csv/download
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/newspaper-dataset-example-1/v1/Newsplan.xlsx
+        file_name: Newsplan.xlsx
+        content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        file_size_bytes: 314684
+        sha256: 258d1d181d9fbfe5ce4438d06a0a459beda7075890fa6ecd41ab578576b3626e
+        ingested_at: '2026-03-26T13:30:38.905819'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.newspaper-dataset-example-1_newsplan
+        extracted_schema:
+          ID: int64
+          Teitl: string
+          Dyddiad cychwyn: string
+          Dyddiad gorffen: string
+          Lleoliad cyhoeddi 1: string
+          Lleoliad cyhoeddi 2: string
+          Dyddiadau Daliadau: string
+          Nodiadau: string
+          Daliadau: string
+          Teitlau newydd: string
+          Dolen wedi'i ymgorffori: double
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/newspaper-dataset-example-1/v1/files/Newsplan.xlsx/download
+  archived: {}
+total_size_bytes: 576445
+total_file_count: 2
+file_formats:
+  - application/vnd.ms-excel
+  - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+---
+
+# Teitl: Newsplan Cymru
+
+## Am y data
+
+* **Beth?** - e.e. Data yn deillio o drawsgrifio cyfrifon a chytundebau criw (a elwir fel arfer yn rhestrau criw), 1856-1914, ar gyfer llongau a gofrestruwd ym mhorthladd Aberystwyth, Ceredigion, Cymru, DU.
+* **Pwy?** - e.e. Trawsgrifiwyd y set ddata hon o'r cofnodion gwreiddiol a gedwir yn Llyfrgell Genedlaethol Cymru gan wirfoddolwyr fel rhan o Raglen Wirfoddoli LLGC.
+* **Dyddiad creu:** 06/07/2015 (Wedi'i guradu â llaw, nid wedi'i gynhyrchu gan beiriant)
+* **Nifer y ffeiliau:** 2 ffeil
+* **Maint:** 576445 beit
+* **Fformat(iau):** application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+* **Ieithoedd:** Saesneg
+* **Crëwr:** Rhaglen Wirfoddoli Llyfrgell Genedlaethol Cymru
+* **Cyhoeddwr:** Llyfrgell Genedlaethol Cymru
+* **Blwyddyn cyhoeddi:** 2026-03-26T13:30:38.737961
+* **Tagiau/Categorïau:** TBD
+
+## Am y ffynhonnell data
+
+### Disgrifiad
+
+An example from Newsplan Cymru
+
+### Gwybodaeth bellach
+
+Mewnosodwch ddolenni eraill, ac ati yma
+
+## Hawliau a defnydd
+
+* **Trwydded:** Copyright: Newsplan Cymru
+* **Canllawiau ail-ddefnydd:** testun rhydd i gynnwys priodoliad, ac unrhyw nodiadau eraill ar drwydded/hawliau
+* **Dyfyniad:** dyfyniad fesul fersiwn (o'r data yn yr adran uchod)
+
+Suggested citation / Dyfyniad a awgrymir : Creator - Title - version - publisher - publication year - Foundry ID URL.
+
+* **Ymholiadau Cyswllt:** Cysylltwch â'r Gwasanaeth Ymholiadau am ragor o wybodaeth
+
+
+
+<VersionHistory />
+
+
+
+## Mynediad Cyfredol
+
+* **Cyfanswm Ffeiliau:** 2
+* **Cyfanswm Maint:** 576445 beit
+* **Fformatau Ffeil:** application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+### <a id="fersiwn-1" />
+
+### Geiriadur Data (Tablau Rhyngweithiol)
+
+**Ffeil Ffynhonnell:** `newsplan - EN newsplan.csv`
+**Tabl y gellir ei holi:** `extracted_data.newspaper-dataset-example-1_newsplan___en_newsplan`
+
+| Enw Colofn                        | Math o Ddata |
+| --------------------------------- | ------------ |
+| ID                                | `int64`      |
+| title                             | `string`     |
+| title\_start\_date                | `string`     |
+| title\_end\_date                  | `string`     |
+| title\_place\_of\_publication\_01 | `string`     |
+| title\_place\_of\_publication\_02 | `string`     |
+| holdings\_dates                   | `string`     |
+| notes                             | `string`     |
+| holdings                          | `string`     |
+| newTitles                         | `string`     |
+| incorporatedLink                  | `int64`      |
+
+**Ffeil Ffynhonnell:** `Newsplan.xlsx`
+**Tabl y gellir ei holi:** `extracted_data.newspaper-dataset-example-1_newsplan`
+
+| Enw Colofn              | Math o Ddata |
+| ----------------------- | ------------ |
+| ID                      | `int64`      |
+| Teitl                   | `string`     |
+| Dyddiad cychwyn         | `string`     |
+| Dyddiad gorffen         | `string`     |
+| Lleoliad cyhoeddi 1     | `string`     |
+| Lleoliad cyhoeddi 2     | `string`     |
+| Dyddiadau Daliadau      | `string`     |
+| Nodiadau                | `string`     |
+| Daliadau                | `string`     |
+| Teitlau newydd          | `string`     |
+| Dolen wedi'i ymgorffori | `double`     |
+
+## Fersiynau blaenorol (Wedi'u harchifo)
+
+Nid oes unrhyw fersiynau wedi'u harchifo ar gael.
+
+## Dolenni perthnasol
+
+* **Safle/Tudalen/Prosiect ar LLGC:** Dim\*
+* **Tudalen gwirfoddolwyr y Llyfrgell:** [Gwirfoddoli - Llyfrgell Genedlaethol Cymru](https://www.library.wales/about-nlw/work-with-us/volunteer)
+* **Gwefan y Prosiect:** \*
+* **Gwefan y partner:** \*
+* **Arddangosfa:** \*
+* **Dogfennaeth Bresennol:** Disgrifiad o strwythur y ffeil lwytho i lawr
