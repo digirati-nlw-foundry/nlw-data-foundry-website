@@ -9,6 +9,11 @@
     "preview": "pnpm run build:site && pnpm exec pagefind --site dist --serve",
     "astro": "astro"
   },
+  "resolutions": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-reconciler": "0.29.0"
+  },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/netlify": "^6.6.4",
@@ -16,14 +21,16 @@
     "@astropub/context": "^0.1.0",
     "@fontsource/lato": "^5.2.7",
     "@iconify-json/mdi": "^1.2.3",
+    "@iiif/helpers": "^1.5.8",
     "@tailwindcss/vite": "^4.2.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.17.1",
     "astro-icon": "^1.1.5",
-    "iiif-hss": "https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@d024e8d",
+    "iiif-hss": "https://pkg.pr.new/digirati-co-uk/heritage.tudelft.nl/iiif-hss@22da7d7",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-iiif-vault": "^2.0.9",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {

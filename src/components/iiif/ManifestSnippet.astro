@@ -1,0 +1,16 @@
+---
+import { getValue } from "@iiif/helpers";
+
+interface Props {
+  manifest: any;
+}
+
+const { manifest } = Astro.props;
+---
+
+<div class="bg-gray-100 rounded-md">
+  <div class="aspect-square bg-gray-200 rounded p-2">
+    <img class="object-contain w-full h-full" src={manifest.thumbnail?.[0]?.id} alt={getValue(manifest.label)} />
+  </div>
+  <h3 class="p-2">{getValue(manifest.label)}</h3>
+</div>

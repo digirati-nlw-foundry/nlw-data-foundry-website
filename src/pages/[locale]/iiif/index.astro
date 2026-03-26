@@ -1,0 +1,50 @@
+---
+import { getValue } from "@iiif/helpers";
+import { Icon } from "astro-icon/components";
+import ManifestSnippet from "../../../components/iiif/ManifestSnippet.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { iiif } from "../../../lib/iiif.server";
+
+const { locale } = Astro.params;
+
+const title = "IIIF Root";
+const description = "";
+
+const collection = await iiif.getAllStoreCollections();
+const items = collection?.items ?? [];
+
+const manifests = items.filter((item: any) => item.type === "Manifest");
+const collections = items.filter((item: any) => item.type === "Collection");
+
+export async function getStaticPaths() {
+  return [
+    //
+    { params: { locale: "en" } },
+    { params: { locale: "cy" } },
+  ];
+}
+---
+
+<Layout locale={locale as 'en' | 'cy'} title={title} description={description} pageType="homepage" section="home">
+  <div class="site-width py-24">
+    <h1 class="text-2xl mb-8">IIIF Content</h1>
+
+    <h2 class="text-lg mb-4">All Manifests</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      {manifests.map((manifest: any) => (
+        <ManifestSnippet manifest={manifest} />
+      ))}
+    </div>
+
+    <h2 class="text-lg mb-4">All Collections</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      {collections.map((collection: any) => (
+        <div class="bg-gray-100 rounded-md">
+          <div class="aspect-square bg-gray-200 rounded p-2 text-gray-300">
+            <Icon name="mdi:folder" class="w-full h-full fill-current" />
+          </div>
+          <h3 class="p-2">{getValue(collection.label)}</h3>
+        </div>
+      ))}
+    </div>
+</Layout>

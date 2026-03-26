@@ -1,0 +1,45 @@
+---
+import { getValue } from "@iiif/helpers";
+import { Icon } from "astro-icon/components";
+import Layout from "../../../../layouts/Layout.astro";
+import { iiif } from "../../../../lib/iiif.server";
+
+const { locale } = Astro.params;
+
+const title = "IIIF Root";
+const description = "";
+
+export async function getStaticPaths() {
+  const collection = await iiif.getAllCollections();
+  return ["en", "cy"].flatMap((locale) => {
+    const paths = iiif.getCollectionStaticPathsFromCollection(collection);
+    console.log(paths);
+    return paths.map((path) => ({
+      ...path,
+      params: { locale, ...path.params },
+    }));
+  });
+}
+
+const loaded = await iiif.loadCollectionFromParams(Astro.params);
+const collection = loaded.resource;
+const label = collection?.label?.en?.[0] || loaded.meta?.label || loaded.slug;
+---
+
+<Layout locale={locale as 'en' | 'cy'} title={title} description={description} pageType="homepage" section="home">
+  <section class="stack">
+    <h1>{label}</h1>
+    <div class="panel stack">
+      <h2>Resolved JSON source</h2>
+      <p class="small">{loaded.links.json || "Unavailable"}</p>
+    </div>
+
+    <pre>{JSON.stringify(loaded, null, 2)}</pre>
+
+
+    <div class="panel stack">
+      <h2>Collection meta.json</h2>
+      <pre>{JSON.stringify(loaded.meta || {}, null, 2)}</pre>
+    </div>
+  </section>
+</Layout>
