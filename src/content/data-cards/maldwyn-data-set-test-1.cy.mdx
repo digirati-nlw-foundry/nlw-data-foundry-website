@@ -1,21 +1,21 @@
 ---
 dataset_id: maldwyn-data-set-test-1
-target_version: 2
+target_version: 3
 action: VERSION_REPLACE
 title: Maldwyn
 description: The index to the Welsh poetry of the manuscripts
 license: https://creativecommons.org/licenses/by/4.0/
-ingested_at: '2026-03-26T11:13:59.550296'
+ingested_at: '2026-03-30T09:21:06.571062'
 files:
   active:
-    '2':
-      - version_id: 2
-        file_url: s3://data-foundry-dev-warehouse/datasets/maldwyn-data-set-test-1/v2/maldwyn_chwilio.xlsx
+    '3':
+      - version_id: 3
+        file_url: s3://data-foundry-dev-warehouse/datasets/maldwyn-data-set-test-1/v3/maldwyn_chwilio.xlsx
         file_name: maldwyn_chwilio.xlsx
         content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-        file_size_bytes: 5708571
-        sha256: 4c9851ae42cc9b1442b7b2e8422eb54276f2f6270272d86b9b7804ec0f6d6327
-        ingested_at: '2026-03-26T11:13:59.550296'
+        file_size_bytes: 5705071
+        sha256: 75268e04d193d450052236a52406645083b874a460b66b6da86ebcc2d30a749f
+        ingested_at: '2026-03-30T09:21:06.571062'
         has_extracted_data: true
         data_table_identifier: extracted_data.maldwyn-data-set-test-1_maldwyn_chwilio
         extracted_schema:
@@ -30,7 +30,7 @@ files:
           Pwnc Enw: string
           Pwnc Arall: string
           Pwnc Lle: string
-        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/maldwyn-data-set-test-1/v2/files/maldwyn_chwilio.xlsx/download
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/maldwyn-data-set-test-1/v3/files/maldwyn_chwilio.xlsx/download
   archived:
     '1':
       - version_id: 1
@@ -55,7 +55,30 @@ files:
           Pwnc Arall: string
           Pwnc Lle: string
         api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/maldwyn-data-set-test-1/v1/files/maldwyn_chwilio.xlsx/download
-total_size_bytes: 5708571
+    '2':
+      - version_id: 2
+        file_url: s3://data-foundry-dev-warehouse/datasets/maldwyn-data-set-test-1/v2/maldwyn_chwilio.xlsx
+        file_name: maldwyn_chwilio.xlsx
+        content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        file_size_bytes: 5708571
+        sha256: 4c9851ae42cc9b1442b7b2e8422eb54276f2f6270272d86b9b7804ec0f6d6327
+        ingested_at: '2026-03-26T11:13:59.550296'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.maldwyn-data-set-test-1_maldwyn_chwilio
+        extracted_schema:
+          BRN: int64
+          Llinell 1af: string
+          Llinell Ola: string
+          Mesur: string
+          Math: string
+          Bardd: string
+          Tardd Llaw: string
+          Tardd Print: string
+          Pwnc Enw: string
+          Pwnc Arall: string
+          Pwnc Lle: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/maldwyn-data-set-test-1/v2/files/maldwyn_chwilio.xlsx/download
+total_size_bytes: 5705071
 total_file_count: 1
 file_formats:
   - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
