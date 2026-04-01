@@ -59,8 +59,8 @@ const dataCards = defineCollection({
   schema: z.object({
     dataset_id: z.string().min(1).optional(),
     title: z.string().min(1).optional(),
-    description: z.string().min(1).optional(),
-    license: z.string().min(1).optional(),
+    description: z.string().optional(),
+    license: z.string().optional(),
     ingested_at: z.string().min(1).optional(),
     action: z.string().min(1).optional(),
     target_version: z.number().int().positive().optional(),
