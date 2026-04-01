@@ -1,13 +1,43 @@
 ---
 title: Test dataset - not for publication
 dataset_id: test-data-set-10
-target_version: 1
-action: CREATE
-description: ''
+target_version: 2
+action: APPEND
+description: Adding a description
 license: ''
-ingested_at: '2026-03-31T07:26:35.505697'
+ingested_at: '2026-04-01T13:57:24.174668'
 files:
   active:
+    '2':
+      - version_id: 2
+        file_url: s3://data-foundry-dev-warehouse/datasets/test-data-set-10/v2/Story of John Emerys Ladd and his family.pdf
+        file_name: Story of John Emerys Ladd and his family.pdf
+        content_type: application/pdf
+        file_size_bytes: 144060
+        sha256: 38a722b29228a0fcad20797536bede1a3bc6134105a6093f875283dc565e9182
+        ingested_at: '2026-04-01T13:57:24.174668'
+        has_extracted_data: false
+        data_table_identifier: null
+        extracted_schema: null
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/test-data-set-10/v2/files/Story of John Emerys Ladd and his family.pdf/download
+      - version_id: 2
+        file_url: s3://data-foundry-dev-warehouse/datasets/test-data-set-10/v2/raw-example-geoff-charles.csv
+        file_name: raw-example-geoff-charles.csv
+        content_type: application/vnd.ms-excel
+        file_size_bytes: 2461845
+        sha256: 3a7e3c06cbbe21a6fd1c0a7b1db8d33bece9b023a8dce759b7628f55a9fe4304
+        ingested_at: '2026-04-01T13:57:24.368365'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.test-data-set-10_raw_example_geoff_charles
+        extracted_schema:
+          '1448577': int64
+          column1: string
+          '[Eisteddfod Genedlaethol yr Urdd, Rhuthun 1962]': string
+          June 21, 1962: string
+          '25 negatives : b&amp;w.': string
+          1448578|1448579|1448580|1448581|1448582|1448583|1448584|1448585|1448586|1448587|1448588|1448589|1448590|1448591|1448592|1448593|1448594|1448595|1448596|1448597|1448598|1448599|1448600|1448601|1448602: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/test-data-set-10/v2/files/raw-example-geoff-charles.csv/download
+  archived:
     '1':
       - version_id: 1
         file_url: s3://data-foundry-dev-warehouse/datasets/test-data-set-10/v1/Story of John Emerys Ladd and his family.pdf
@@ -20,10 +50,10 @@ files:
         data_table_identifier: null
         extracted_schema: null
         api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/test-data-set-10/v1/files/Story of John Emerys Ladd and his family.pdf/download
-  archived: {}
-total_size_bytes: 144060
-total_file_count: 1
+total_size_bytes: 2605905
+total_file_count: 2
 file_formats:
+  - application/vnd.ms-excel
   - application/pdf
 ---
 
