@@ -1,0 +1,119 @@
+---
+title: Chain historic weather data
+dataset_id: chain-weather-dataset-test-1
+target_version: 1
+action: CREATE
+description: Jistoric weather observation data recorded on the Chain Estate in Monmouthshire between 1877 and 1911
+license: https://creativecommons.org/publicdomain/zero/1.0/
+ingested_at: '2026-09-30T09:27:59.474469'
+files:
+  active:
+    '1':
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/chain-weather-dataset-test-1/v1/CHAIN extracted_data - MAIN.csv
+        file_name: CHAIN extracted_data - MAIN.csv
+        content_type: text/csv
+        file_size_bytes: 2353084
+        sha256: 09010e406a22f96445929da662704ad17058024a5db4bb54df7d5555aea3420f
+        ingested_at: '2026-09-30T09:27:59.474469'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.chain-weather-dataset-test-1_chain_extracted_data___main
+        extracted_schema:
+          ID: int64
+          Date: date32[day]
+          Max (F): double
+          Max (C): double
+          Min (F): double
+          Min (C): double
+          canvas: string
+          image: string
+          resource: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/chain-weather-dataset-test-1/v1/files/CHAIN extracted_data - MAIN.csv/download
+  archived: {}
+total_size_bytes: 2353084
+total_file_count: 1
+file_formats:
+  - text/csv
+---
+
+# Title: Chain historic weather data
+
+## About the data
+
+* **What?** - Weather data, including tempeterature and pressure readings, recorded on the Chain Estate in South Wales
+* **Who?** - e.g. This dataset was transcribed from the original records held at The National Library of Wales by volunteers as part of the NLW Volunteering Programme.
+* **Creation date:** 01/07/2024 (Manually curated, not machine generated)
+* **File count:** 1 files
+* **Total size:** 2,353,084 bytes
+* **File formats:** text/csv
+* **Languages:** English
+* **Creator:** The National Library of Wales Volunteer Programme
+* **Publisher:** The National Library of Wales
+* **Publication year:** 2026-09-30T09:27:59.474469
+* **Tags/Categories:** Weather
+
+## About the data source
+
+### Description
+
+Historic weather observation data recorded on the Chain Estate in Monmouthshire between 1877 and 1911
+
+### Further information
+
+Insert other links, etc. here
+
+## Version history
+
+| Version         | Files | Formats  | Size (Bytes) | Release Date |
+| --------------- | ----- | -------- | ------------ | ------------ |
+| [1](#version-1) | 1     | text/csv | 2353084      | 2026-09-30   |
+
+## Rights and usage
+
+* **License:** [https://creativecommons.org/publicdomain/zero/1.0/](https://creativecommons.org/publicdomain/zero/1.0/)
+* **Reuse guidance:** free text to include attribution, and any other notes on license/rights
+* **Citation:** citation per version (from the data in the above section)
+
+Suggested citation / Dyfyniad a awgrymir : Creator - Title - version - publisher - publication year - Foundry ID URL.
+
+* **Contact Enquiries:** Contact the Enquiries Service for further information
+
+## Current Access
+
+* **Total Files:** 1
+* **Total Size:** 2353084 bytes
+* **File Formats:** text/csv
+
+### <a id="version-1" />Version 1 (Current)
+
+* \[CHAIN extracted\_data - MAIN.csv]\(https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/chain-weather-dataset-test-1/v1/files/CHAIN extracted\_data - MAIN.csv/download) *(2353084 bytes, Uploaded: 2026-09-30)*
+
+### Data Dictionary (Interactive Tables)
+
+**Source File:** `CHAIN extracted_data - MAIN.csv`
+**Queryable Catalog Table:** `extracted_data.chain-weather-dataset-test-1_chain_extracted_data___main`
+
+| Column Name | Data Type     |
+| ----------- | ------------- |
+| ID          | `int64`       |
+| Date        | `date32[day]` |
+| Max (F)     | `double`      |
+| Max (C)     | `double`      |
+| Min (F)     | `double`      |
+| Min (C)     | `double`      |
+| canvas      | `string`      |
+| image       | `string`      |
+| resource    | `string`      |
+
+## Previous versions (Archived)
+
+No archived versions available.
+
+## Relevant links
+
+* **Site/Page/Project on NLW:** None\*
+* **Library volunteers page:** [Volunteer - National Library of Wales](https://www.library.wales/about-nlw/work-with-us/volunteer)
+* **Project Website:** \*
+* **Partner website:** \*
+* **Exhibition:** \*
+* **Existing Documentation:** Description of the structure of download file
