@@ -1,0 +1,119 @@
+---
+title: Chain historic weather data
+dataset_id: chain-weather-dataset-test-1
+target_version: 1
+action: CREATE
+description: Jistoric weather observation data recorded on the Chain Estate in Monmouthshire between 1877 and 1911
+license: https://creativecommons.org/publicdomain/zero/1.0/
+ingested_at: '2026-09-30T09:27:59.474469'
+files:
+  active:
+    '1':
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/chain-weather-dataset-test-1/v1/CHAIN extracted_data - MAIN.csv
+        file_name: CHAIN extracted_data - MAIN.csv
+        content_type: text/csv
+        file_size_bytes: 2353084
+        sha256: 09010e406a22f96445929da662704ad17058024a5db4bb54df7d5555aea3420f
+        ingested_at: '2026-09-30T09:27:59.474469'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.chain-weather-dataset-test-1_chain_extracted_data___main
+        extracted_schema:
+          ID: int64
+          Date: date32[day]
+          Max (F): double
+          Max (C): double
+          Min (F): double
+          Min (C): double
+          canvas: string
+          image: string
+          resource: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/chain-weather-dataset-test-1/v1/files/CHAIN extracted_data - MAIN.csv/download
+  archived: {}
+total_size_bytes: 2353084
+total_file_count: 1
+file_formats:
+  - text/csv
+---
+
+# Data tywydd hanesyddol Ystad Chain
+
+## Am y data
+
+* **Beth?** - Data tywydd, gan gynnwys darlleniadau tymheredd a gwasgedd, a gofnodwyd ar Ystad Chain yn Ne Cymru
+* **Pwy?** - Trawsgrifiwyd y set ddata hon o'r cofnodion gwreiddiol a gedwir yn Llyfrgell Genedlaethol Cymru gan wirfoddolwyr fel rhan o Raglen Wirfoddoli LLGC.
+* **Dyddiad creu:** 01/07/2024 (Wedi'i guradu â llaw, nid wedi'i gynhyrchu
+* **Nifer y ffeiliau:** 1 ffeil
+* **Maint:** 2353084 beit
+* **Fformat(iau):** text/csv
+* **Ieithoedd:** Saesneg
+* **Crëwr:** Rhaglen Wirfoddoli Llyfrgell Genedlaethol Cymru
+* **Cyhoeddwr:** Llyfrgell Genedlaethol Cymru
+* **Blwyddyn cyhoeddi:** 2026-09-30T09:27:59.474469
+* **Tagiau/Categorïau:** Tywydd
+
+## Am y ffynhonnell data
+
+### Disgrifiad
+
+Jistoric weather observation data recorded on the Chain Estate in Monmouthshire between 1877 and 1911
+
+### Gwybodaeth bellach
+
+Mewnosodwch ddolenni eraill, ac ati yma
+
+## Hanes fersiwn
+
+| Fersiwn         | Ffeiliau | Fformatau | Maint (Beit) | Dyddiad Rhyddhau |
+| --------------- | -------- | --------- | ------------ | ---------------- |
+| [1](#fersiwn-1) | 1        | text/csv  | 2353084      | 2026-09-30       |
+
+## Hawliau a defnydd
+
+* **Trwydded:** [https://creativecommons.org/publicdomain/zero/1.0/](https://creativecommons.org/publicdomain/zero/1.0/)
+* **Canllawiau ail-ddefnydd:** testun rhydd i gynnwys priodoliad, ac unrhyw nodiadau eraill ar drwydded/hawliau
+* **Dyfyniad:** dyfyniad fesul fersiwn (o'r data yn yr adran uchod)
+
+Suggested citation / Dyfyniad a awgrymir : Creator - Title - version - publisher - publication year - Foundry ID URL.
+
+* **Ymholiadau Cyswllt:** Cysylltwch â'r Gwasanaeth Ymholiadau am ragor o wybodaeth
+
+## Mynediad Cyfredol
+
+* **Cyfanswm Ffeiliau:** 1
+* **Cyfanswm Maint:** 2353084 beit
+* **Fformatau Ffeil:** text/csv
+
+### <a id="fersiwn-1" />Fersiwn 1 (Cyfredol)
+
+* \[CHAIN extracted\_data - MAIN.csv]\(https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/chain-weather-dataset-test-1/v1/files/CHAIN extracted\_data - MAIN.csv/download) *(2353084 beit, Wedi'i lwytho: 2026-09-30)*
+
+### Geiriadur Data (Tablau Rhyngweithiol)
+
+**Ffeil Ffynhonnell:** `CHAIN extracted_data - MAIN.csv`
+**Tabl y gellir ei holi:** `extracted_data.chain-weather-dataset-test-1_chain_extracted_data___main`
+
+| Enw Colofn | Math o Ddata  |
+| ---------- | ------------- |
+| ID         | `int64`       |
+| Date       | `date32[day]` |
+| Max (F)    | `double`      |
+| Max (C)    | `double`      |
+| Min (F)    | `double`      |
+| Min (C)    | `double`      |
+| canvas     | `string`      |
+| image      | `string`      |
+| resource   | `string`      |
+
+## Fersiynau blaenorol (Wedi'u harchifo)
+
+Nid oes unrhyw fersiynau wedi'u harchifo ar gael.
+
+## Dolenni perthnasol
+
+* **Safle/Tudalen/Prosiect ar LLGC:** Dim\*
+* **Tudalen gwirfoddolwyr y Llyfrgell:** [Gwirfoddoli - Llyfrgell Genedlaethol Cymru](https://www.library.wales/about-nlw/work-with-us/volunteer)
+* **Gwefan y Prosiect:** \*
+* **Gwefan y partner:** \*
+* **Arddangosfa:** \*
+* **Dogfennaeth Bresennol:** Disgrifiad o strwythur y ffeil lwytho i lawr
