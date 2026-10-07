@@ -1,0 +1,136 @@
+---
+featured: true
+title: Gorsedd Cymru
+dataset_id: llgc-gorsedd
+target_version: 1
+action: CREATE
+description: Discover the history of individuals who have been admitted to the Gorsedd over the years since its establishment in 1792.
+license: CC BY 4.0
+ingested_at: '2026-10-07T09:23:31.893272'
+files:
+  active:
+    '1':
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/llgc-gorsedd/v1/bardic-data-08-26.csv
+        file_name: bardic-data-08-26.csv
+        content_type: text/csv
+        file_size_bytes: 2495243
+        sha256: e88b26b19221f466882fa0ee5b4d6239a2876109e94e3c9ba110289016f67830
+        ingested_at: '2026-10-07T09:23:31.893272'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.llgc-gorsedd_bardic_data_08_26
+        extracted_schema:
+          surname: string
+          first_names: string
+          title: string
+          bardic_names: string
+          town_village: string
+          date_admitted: string
+          exam_or_honorary: string
+          type_of_membership: string
+          source: string
+          additional_info: string
+          column10: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/llgc-gorsedd/v1/files/bardic-data-08-26.csv/download
+  archived: {}
+total_size_bytes: 2495243
+total_file_count: 1
+file_formats:
+  - text/csv
+---
+
+# Title: Gorsedd Cymru
+
+## About the data
+
+* **What?** - Gorsedd is a comprehensive database of individuals who have been admitted to the Gorsedd at the National Eisteddfod of Wales. Gorsedd is a 'Beta' website for researchers, students and members of the public interested in the history of the Eisteddfod and Welsh culture.
+* **Who?** - This dataset was compiled from items in the National Library of Wales collections and recorded by volunteers as part of the National Library of Wales Volunteering Programme. We would like to extend our sincere thanks to our volunteers, Nonna, Christine, Ian, Martine and especially Owen Watkin for their dedication and valuable contributions to this project.
+* **Creation date:** 04/08/2026&#x20;
+* **File count:** 1 files
+* **Total size:** 2495243 bytes
+* **File formats:** text/csv
+* **Languages:** Welsh
+* **Creator:** The National Library of Wales Volunteer Programme
+* **Publisher:** The National Library of Wales
+* **Publication year:** 2026-10-07T09:23:31.893272
+* **Tags/Categories:** Volunteers,Eisteddfod,People
+
+## About the data source
+
+### Description
+
+The website contains information about bardic names, locations, type of membership, and their contribution to Welsh culture. The data has been collected from reliable historical sources by volunteers at the National Library of Wales.
+Note: Not all profiles are complete, it depends on the information available to the volunteers.
+
+### References to abbreviations of the sources of information about the Members of the Order
+
+* **HGB:** History of the Gorsedd of Bards, Geraint and Zonia Bowen (Llansannan, Denbigh, 1991).
+* **LMG (List of Members of the Gorsedd):** 1947, 1959, 1969.
+* **NLW MSS (National Library of Wales Manuscripts):** Manuscripts and papers of the National Library of Wales.
+* **Bangor MSS:** Manuscripts and papers of Bangor University.
+* **Comp.:** Companion to Welsh Literature (Cardiff, University of Wales Press, 1997).
+
+### Live Website
+
+# [Gorsedd Cymru](<Gorsedd Cymru Discover the history of individuals who have been admitted to the Gorsedd over the years since its establishment in 1792.>)
+
+Discover the history of individuals who have been admitted to the Gorsedd over the years since its establishment in 1792.
+
+## Version history
+
+| Version         | Files | Formats  | Size (Bytes) | Release Date |
+| --------------- | ----- | -------- | ------------ | ------------ |
+| [1](#version-1) | 1     | text/csv | 2495243      | 2026-10-07   |
+
+## Rights and usage
+
+* **License:** CC BY 4.0
+* **Reuse guidance:**&#x20;
+
+1. **Share** — copy and redistribute the material in any medium or format for any purpose, even commercially.
+2. **Adapt** — remix, transform, and build upon the material for any purpose, even commercially.
+
+* **Citation:** citation per version (from the data in the above section)
+
+Suggested citation / Dyfyniad a awgrymir : Creator - Title - version - publisher - publication year - Foundry ID URL.
+
+* **Contact Enquiries:** Contact the Enquiries Service for further information
+
+## Current Access
+
+* **Total Files:** 1
+* **Total Size:** 2495243 bytes
+* **File Formats:** text/csv
+
+### <a id="version-1" />Version 1 (Current)
+
+* [bardic-data-08-26.csv](https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/llgc-gorsedd/v1/files/bardic-data-08-26.csv/download) *(2495243 bytes, Uploaded: 2026-10-07)*
+
+### Data Dictionary (Interactive Tables)
+
+**Source File:** `bardic-data-08-26.csv`
+**Queryable Catalog Table:** `extracted_data.llgc-gorsedd_bardic_data_08_26`
+
+| Column Name          | Data Type |
+| -------------------- | --------- |
+| surname              | `string`  |
+| first\_names         | `string`  |
+| title                | `string`  |
+| bardic\_names        | `string`  |
+| town\_village        | `string`  |
+| date\_admitted       | `string`  |
+| exam\_or\_honorary   | `string`  |
+| type\_of\_membership | `string`  |
+| source               | `string`  |
+| additional\_info     | `string`  |
+| column10             | `string`  |
+
+## Previous versions (Archived)
+
+No archived versions available.
+
+## Relevant links
+
+* **Project Website:** [https://gorsedd.llyfrgell.cymru/](https://gorsedd.llyfrgell.cymru/)
+* **Library volunteers page:** [Volunteer - National Library of Wales](https://www.library.wales/about-nlw/work-with-us/volunteer)
+* **Exhibition:** TBC
