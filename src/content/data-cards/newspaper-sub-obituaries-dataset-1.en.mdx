@@ -1,0 +1,191 @@
+---
+title: Welsh Language Obituaries
+tags:
+  - Newspapers
+  - OCR
+  - Text
+dataset_id: newspaper-sub-obituaries-dataset-1
+target_version: 1
+action: CREATE
+description: OCR text for a collection of 15,000 Welsh language obituaries extracted from the Welsh newspaper online collection
+license: https://creativecommons.org/publicdomain/zero/1.0/
+ingested_at: '2026-10-08T09:23:26.672445'
+files:
+  active:
+    '1':
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/newspaper-sub-obituaries-dataset-1/v1/CY Obits.csv
+        file_name: CY Obits.csv
+        content_type: text/csv
+        file_size_bytes: 43909097
+        sha256: 5087280e43429b2f975ac3ef5c868b6044770306d21861b09faad18129d0685e
+        ingested_at: '2026-10-08T09:23:26.672445'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.newspaper-sub-obituaries-dataset-1_cy_obits
+        extracted_schema:
+          date: timestamp[us, tz=Etc/UTC]
+          ancestor_titles: string
+          mods: string
+          date_year: int64
+          useguidelines_cy: string
+          date_decade: int64
+          ancestor_UIDs: string
+          subject: string
+          article_word_count: int64
+          illustration_type: string
+          phasecode: string
+          doc_type: string
+          type: string
+          frequency: string
+          edition_statement: string
+          publisher_info_cy: string
+          date_weekday: int64
+          provider: string
+          full_text: string
+          rights: string
+          id: string
+          lang: string
+          title_en_az: string
+          timestamp: timestamp[us, tz=Etc/UTC]
+          order: int64
+          publisher_info_en: string
+          publication_date_range: string
+          indexer_version: string
+          date_month: int64
+          abstract_en: string
+          ingest_code: string
+          date_day: int64
+          collection_title: string
+          abstract_cy: string
+          parent_UID: string
+          _version_: int64
+          useguidelines_en: string
+          subtitle: string
+          publisher: string
+          title_en: string
+          illustration: string
+          region: string
+          category: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/newspaper-sub-obituaries-dataset-1/v1/files/CY Obits.csv/download
+  archived: {}
+total_size_bytes: 43909097
+total_file_count: 1
+file_formats:
+  - text/csv
+---
+
+# Welsh Language Obituaries
+
+## About the data
+
+* **What?** - 15,836 Welsh language obituaries extracted from Welsh Newspapers Online. These span 1804-1919 and provide details of the lives of notable, and ordinary people from all over Wales and beyond. OCR data is raw and does contain errors.
+* **Who?** - This data forms part of the larger Welsh Newspapers Online dataset created and managed by the National Library of Wales&#x20;
+* **Creation date:** 13/03/2013 (Manually curated, not machine generated)
+* **File count:** 1 files
+* **Total size:** 43909097 bytes
+* **File formats:** text/csv
+* **Languages:** English
+* **Creator:** The National Library of Wales
+* **Publisher:** The National Library of Wales
+* **Publication year:** 2026-10-08T09:23:26.672445
+* **Tags/Categories:**&#x20;
+
+## About the data source
+
+### Description
+
+OCR text for a collection of 15,000 Welsh language obituaries extracted from the Welsh newspaper online collection
+
+### Further information
+
+[https://newspapers.library.wales/](https://newspapers.library.wales/)
+
+## Version history
+
+| Version         | Files | Formats  | Size (Bytes) | Release Date |
+| --------------- | ----- | -------- | ------------ | ------------ |
+| [1](#version-1) | 1     | text/csv | 43909097     | 2026-10-08   |
+
+## Rights and usage
+
+* **License:** [https://creativecommons.org/publicdomain/zero/1.0/](https://creativecommons.org/publicdomain/zero/1.0/)
+* **Reuse guidance:** free text to include attribution, and any other notes on license/rights
+* **Citation:** citation per version (from the data in the above section)
+
+Suggested citation / Dyfyniad a awgrymir : Creator - Title - version - publisher - publication year - Foundry ID URL.
+
+* **Contact Enquiries:** Contact the Enquiries Service for further information
+
+## Current Access
+
+* **Total Files:** 1
+* **Total Size:** 43909097 bytes
+* **File Formats:** text/csv
+
+### <a id="version-1" />Version 1 (Current)
+
+* \[CY Obits.csv]\(https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/newspaper-sub-obituaries-dataset-1/v1/files/CY Obits.csv/download) *(43909097 bytes, Uploaded: 2026-10-08)*
+
+### Data Dictionary (Interactive Tables)
+
+**Source File:** `CY Obits.csv`
+**Queryable Catalog Table:** `extracted_data.newspaper-sub-obituaries-dataset-1_cy_obits`
+
+| Column Name              | Data Type                   |
+| ------------------------ | --------------------------- |
+| date                     | `timestamp[us, tz=Etc/UTC]` |
+| ancestor\_titles         | `string`                    |
+| mods                     | `string`                    |
+| date\_year               | `int64`                     |
+| useguidelines\_cy        | `string`                    |
+| date\_decade             | `int64`                     |
+| ancestor\_UIDs           | `string`                    |
+| subject                  | `string`                    |
+| article\_word\_count     | `int64`                     |
+| illustration\_type       | `string`                    |
+| phasecode                | `string`                    |
+| doc\_type                | `string`                    |
+| type                     | `string`                    |
+| frequency                | `string`                    |
+| edition\_statement       | `string`                    |
+| publisher\_info\_cy      | `string`                    |
+| date\_weekday            | `int64`                     |
+| provider                 | `string`                    |
+| full\_text               | `string`                    |
+| rights                   | `string`                    |
+| id                       | `string`                    |
+| lang                     | `string`                    |
+| title\_en\_az            | `string`                    |
+| timestamp                | `timestamp[us, tz=Etc/UTC]` |
+| order                    | `int64`                     |
+| publisher\_info\_en      | `string`                    |
+| publication\_date\_range | `string`                    |
+| indexer\_version         | `string`                    |
+| date\_month              | `int64`                     |
+| abstract\_en             | `string`                    |
+| ingest\_code             | `string`                    |
+| date\_day                | `int64`                     |
+| collection\_title        | `string`                    |
+| abstract\_cy             | `string`                    |
+| parent\_UID              | `string`                    |
+| *version*                | `int64`                     |
+| useguidelines\_en        | `string`                    |
+| subtitle                 | `string`                    |
+| publisher                | `string`                    |
+| title\_en                | `string`                    |
+| illustration             | `string`                    |
+| region                   | `string`                    |
+| category                 | `string`                    |
+
+## Previous versions (Archived)
+
+No archived versions available.
+
+## Relevant links
+
+* **Site/Page/Project on NLW:** None\*
+* **Library volunteers page:** \*
+* **Project Website:** \*
+* **Partner website:** \*
+* **Exhibition:** \*
+* **Existing Documentation:** Description of the structure of download file
