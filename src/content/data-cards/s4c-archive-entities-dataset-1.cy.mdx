@@ -1,0 +1,192 @@
+---
+title: Endidau Archif Darlledu S4C
+tags:
+  - Endidau
+  - Sgrin a Sain
+dataset_id: s4c-archive-entities-dataset-1
+target_version: 1
+action: CREATE
+description: Entities extracted from S4C archive programme summeries with SNARC and Wikidata ID's for each entity.
+license: https://creativecommons.org/publicdomain/zero/1.0/
+ingested_at: '2026-10-08T13:50:32.212901'
+files:
+  active:
+    '1':
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/s4c-archive-entities-dataset-1/v1/S4C Data Entities - All unique entities (1).csv
+        file_name: S4C Data Entities - All unique entities (1).csv
+        content_type: text/csv
+        file_size_bytes: 242994
+        sha256: 652893f020c31d79ab714b76e0921b287460fc8d559a48a78cbfd119cdb871af
+        ingested_at: '2026-10-08T13:50:32.212901'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.s4c-archive-entities-dataset-1_s4c_data_entities___all_unique_entities__1_
+        extracted_schema:
+          Wikidata ID: string
+          SNARC ID: string
+          Label: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/s4c-archive-entities-dataset-1/v1/files/S4C Data Entities - All unique entities (1).csv/download
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/s4c-archive-entities-dataset-1/v1/S4C Data Entities - All production companies (1).csv
+        file_name: S4C Data Entities - All production companies (1).csv
+        content_type: text/csv
+        file_size_bytes: 3411179
+        sha256: 3dd7bc2043d31300123233c8fd64119eae5752dedc51fa2f652ba10a08445ca0
+        ingested_at: '2026-10-08T13:50:32.459212'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.s4c-archive-entities-dataset-1_s4c_data_entities___all_production_companies__1_
+        extracted_schema:
+          SNARC ID: string
+          column1: string
+          WIKIDATA ID: string
+          SNARC ID_1: string
+          Clip ID: int64
+          NLW id: int64
+          Title: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/s4c-archive-entities-dataset-1/v1/files/S4C Data Entities - All production companies (1).csv/download
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/s4c-archive-entities-dataset-1/v1/S4C Data Entities - All aligned places (1).csv
+        file_name: S4C Data Entities - All aligned places (1).csv
+        content_type: text/csv
+        file_size_bytes: 5010722
+        sha256: d1207ee00d2a672d70e7bd5ca2aa8bb2a1f845d00af1a68aaadaa81a12edd351
+        ingested_at: '2026-10-08T13:50:32.633438'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.s4c-archive-entities-dataset-1_s4c_data_entities___all_aligned_places__1_
+        extracted_schema:
+          WIKIDATA ID: string
+          SNARC ID: string
+          Has role: string
+          NLW Catalogue ID: int64
+          CLIP URL: string
+          Work Title: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/s4c-archive-entities-dataset-1/v1/files/S4C Data Entities - All aligned places (1).csv/download
+      - version_id: 1
+        file_url: s3://data-foundry-dev-warehouse/datasets/s4c-archive-entities-dataset-1/v1/S4C Data Entities - All aligned people and groups.csv
+        file_name: S4C Data Entities - All aligned people and groups.csv
+        content_type: text/csv
+        file_size_bytes: 14687481
+        sha256: b3d6957382a95342312f3eb02050b8ed2cb5018e0e765f664d7e8f456e3b882c
+        ingested_at: '2026-10-08T13:50:33.027096'
+        has_extracted_data: true
+        data_table_identifier: extracted_data.s4c-archive-entities-dataset-1_s4c_data_entities___all_aligned_people_and_groups
+        extracted_schema:
+          WIKIDATA ID: string
+          SNARC ID: string
+          SNARC Role ID: string
+          NLW Catalogue ID: int64
+          CLIP URL: int64
+          Work Title: string
+          Name String code: string
+        api_link: https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/s4c-archive-entities-dataset-1/v1/files/S4C Data Entities - All aligned people and groups.csv/download
+  archived: {}
+total_size_bytes: 23352376
+total_file_count: 4
+file_formats:
+  - text/csv
+---
+
+# Endidau Archif Darlledu S4C
+
+## Am y data
+
+* **Beth?** - Mae'r set ddata hon yn ganlyniad prosiect ymchwil sy'n defnyddio technegau dysgu peirianyddol i adnabod endidau mewn disgrifiadau catalog yr Archif Ddarlledu a'u cysylltu ag endidau Wikidata. Mae'r data'n cynnwys rhestrau o bob enghraifft o endid mewn cofnod penodol, wedi'u trefnu yn ôl pobl, lleoedd a chwmnïau cynhyrchu, yn ogystal â rhestr ar wahân o'r holl endidau unigryw a nodwyd. Mae'r data'n cynnwys dolenni i [SNARC](https://snarc-llgc.wikibase.cloud/wiki/Main_Page), Wikidata a'r cofnodion catalog cyhoeddus ar [Gwylio a Gwrando](gwylio-gwrando). Ar gyfer y set ddata "Pobl a Grwpiau", nodir rôl yr unigolyn hefyd (e.e. Actor, Cyfarwyddwr, Cyflwynydd) ar ffurf ID endid SNARC.
+* **Pwy?** - Crëwyd gan ddefnyddio modelau Entity Recognition a thechnegau cysoni cyfrifiannol gan Lyfrgell Genedlaethol Cymru. Gall cywirdeb y data amrywio.
+* **Dyddiad creu:** 2026&#x20;
+* **Nifer y ffeiliau:** 4 ffeil
+* **Maint:** 23352376 beit
+* **Fformat(iau):** text/csv
+* **Ieithoedd:** Cymraeg a Saesneg
+* **Crëwr:** Llyfrgell Genedlaethol Cymru
+* **Cyhoeddwr:** Llyfrgell Genedlaethol Cymru
+* **Blwyddyn cyhoeddi:** 2026-10-08T13:50:32.212901
+* **Tagiau/Categorïau:**&#x20;
+
+## Am y ffynhonnell data
+
+### Disgrifiad
+
+Endidau wedi'u tynnu o grynodebau rhaglenni archif S4C, gyda dynodwyr SNARC a Wikidata ar gyfer pob endid.
+
+### Gwybodaeth bellach
+
+* Gwefan [Gwylio a Gwrando](gwylio-gwrando)
+* Gwefan [SNARC](https://snarc-llgc.wikibase.cloud/wiki/Main_Page)
+
+## Hanes fersiwn
+
+| Fersiwn         | Ffeiliau | Fformatau | Maint (Beit) | Dyddiad Rhyddhau |
+| --------------- | -------- | --------- | ------------ | ---------------- |
+| [1](#fersiwn-1) | 4        | text/csv  | 23352376     | 2026-10-08       |
+
+## Hawliau a defnydd
+
+* **Trwydded:** [https://creativecommons.org/publicdomain/zero/1.0/](https://creativecommons.org/publicdomain/zero/1.0/)
+* **Canllawiau ail-ddefnydd:** Dilynwch delerau’r drwydded a rowch gydnabyddiaeth i *Llyfrgell Genedlaethol Cymru*.
+* **Ymholiadau Cyswllt:** Cysylltwch â’r Gwasanaeth Ymholiadau am ragor o wybodaeth
+
+## Mynediad Cyfredol
+
+* **Cyfanswm Ffeiliau:** 4
+* **Cyfanswm Maint:** 23352376 beit
+* **Fformatau Ffeil:** text/csv
+
+### <a id="fersiwn-1" />Fersiwn 1 (Cyfredol)
+
+* \[S4C Data Entities - All unique entities (1).csv]\(https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/s4c-archive-entities-dataset-1/v1/files/S4C Data Entities - All unique entities (1).csv/download) *(242994 beit, Wedi'i lwytho: 2026-10-08)*
+* \[S4C Data Entities - All production companies (1).csv]\(https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/s4c-archive-entities-dataset-1/v1/files/S4C Data Entities - All production companies (1).csv/download) *(3411179 beit, Wedi'i lwytho: 2026-10-08)*
+* \[S4C Data Entities - All aligned places (1).csv]\(https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/s4c-archive-entities-dataset-1/v1/files/S4C Data Entities - All aligned places (1).csv/download) *(5010722 beit, Wedi'i lwytho: 2026-10-08)*
+* \[S4C Data Entities - All aligned people and groups.csv]\(https://data-foundry-dev.nlw.digirati.io/api/foundry/public/datasets/s4c-archive-entities-dataset-1/v1/files/S4C Data Entities - All aligned people and groups.csv/download) *(14687481 beit, Wedi'i lwytho: 2026-10-08)*
+
+### Geiriadur Data (Tablau Rhyngweithiol)
+
+**Ffeil Ffynhonnell:** `S4C Data Entities - All unique entities (1).csv`
+**Tabl y gellir ei holi:** `extracted_data.s4c-archive-entities-dataset-1_s4c_data_entities___all_unique_entities__1_`
+
+| Enw Colofn  | Math o Ddata |
+| ----------- | ------------ |
+| Wikidata ID | `string`     |
+| SNARC ID    | `string`     |
+| Label       | `string`     |
+
+**Ffeil Ffynhonnell:** `S4C Data Entities - All production companies (1).csv`
+**Tabl y gellir ei holi:** `extracted_data.s4c-archive-entities-dataset-1_s4c_data_entities___all_production_companies__1_`
+
+| Enw Colofn  | Math o Ddata |
+| ----------- | ------------ |
+| SNARC ID    | `string`     |
+| column1     | `string`     |
+| WIKIDATA ID | `string`     |
+| SNARC ID\_1 | `string`     |
+| Clip ID     | `int64`      |
+| NLW id      | `int64`      |
+| Title       | `string`     |
+
+**Ffeil Ffynhonnell:** `S4C Data Entities - All aligned places (1).csv`
+**Tabl y gellir ei holi:** `extracted_data.s4c-archive-entities-dataset-1_s4c_data_entities___all_aligned_places__1_`
+
+| Enw Colofn       | Math o Ddata |
+| ---------------- | ------------ |
+| WIKIDATA ID      | `string`     |
+| SNARC ID         | `string`     |
+| Has role         | `string`     |
+| NLW Catalogue ID | `int64`      |
+| CLIP URL         | `string`     |
+| Work Title       | `string`     |
+
+**Ffeil Ffynhonnell:** `S4C Data Entities - All aligned people and groups.csv`
+**Tabl y gellir ei holi:** `extracted_data.s4c-archive-entities-dataset-1_s4c_data_entities___all_aligned_people_and_groups`
+
+| Enw Colofn       | Math o Ddata |
+| ---------------- | ------------ |
+| WIKIDATA ID      | `string`     |
+| SNARC ID         | `string`     |
+| SNARC Role ID    | `string`     |
+| NLW Catalogue ID | `int64`      |
+| CLIP URL         | `int64`      |
+| Work Title       | `string`     |
+| Name String code | `string`     |
+
+## Fersiynau blaenorol (Wedi'u harchifo)
+
+Nid oes unrhyw fersiynau wedi'u harchifo ar gael.
