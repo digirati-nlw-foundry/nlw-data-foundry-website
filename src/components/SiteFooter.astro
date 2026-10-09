@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import type { Locale } from "../lib/i18n";
 import { buildLocalizedPath, getLocalizedString } from "../lib/i18n";
-import { footerColumns, legalLinks, siteTagline, siteTitle } from "../lib/site";
+import { footerColumns, legalLinks } from "../lib/site";
 
 interface Props {
   locale: Locale;
@@ -19,72 +19,63 @@ function localizeInternalHref(href: string) {
 }
 ---
 
-<footer class="bg-slate-100 py-12" data-pagefind-ignore>
-  <div class="site-width grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="border-r border-gray-300">
-      <h3 class="font-semibold text-gray-700 mb-3">
-        {locale === "en" ? "Address" : "Cyfeiriad"}
-      </h3>
-      <p class="text-gray-600 mb-3">
+<footer class="mt-16 border-t border-slate-200 bg-slate-100 text-slate-700" data-pagefind-ignore>
+  <div class="site-width grid grid-cols-1 gap-x-10 gap-y-10 py-12 sm:grid-cols-2 lg:grid-cols-5">
+    <div>
+      <h2 class="eyebrow mb-4">{locale === "en" ? "Address" : "Cyfeiriad"}</h2>
+      <address class="mb-3 text-sm leading-relaxed not-italic">
         The National Library of Wales<br />
         Aberystwyth<br />
         Ceredigion<br />
         SY23 3BU
-      </p>
-      <a href="https://maps.app.goo.gl/2CqpeBq1UDLb7xEz6" target="_blank" class="text-blue-600 hover:underline inline-flex gap-2 items-center">
-        {locale === "en" ? "View on map" : "Chwilio ar gwaith"}<Icon name="mdi:map"/>
+      </address>
+      <a href="https://maps.app.goo.gl/2CqpeBq1UDLb7xEz6" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm font-medium text-brand underline-offset-4 hover:underline">
+        {locale === "en" ? "View on map" : "Gweld ar y map"}<Icon name="mdi:map-marker-outline" class="size-4" aria-hidden="true" />
       </a>
-
-      <h3 class="font-semibold text-gray-700 mt-6 mb-3">{getLocalizedString(footerColumns[0].title, locale)}</h3>
-      <ul>
-        {footerColumns[0].links.map((link) => (
-          <li class="mb-1">
-            <a class="hover:underline" href={localizeInternalHref(link.href)}>{getLocalizedString(link.label, locale)}</a>
-          </li>
-        ))}
-      </ul>
     </div>
 
     {
-      footerColumns.slice(1).map((column, n) => (
-        <div class={n === footerColumns.slice(1).length - 1 ? "" : "border-r border-gray-300"}>
-          <h3 class="font-semibold text-gray-700 mb-3">{getLocalizedString(column.title, locale)}</h3>
-          <ul>
+      footerColumns.map((column) => (
+        <nav aria-label={getLocalizedString(column.title, locale)}>
+          <h2 class="eyebrow mb-4">{getLocalizedString(column.title, locale)}</h2>
+          <ul class="flex flex-col gap-2 text-sm">
             {column.links.map((link) => (
-              <li class="mb-1">
-                <a class="hover:underline" href={localizeInternalHref(link.href)}>{getLocalizedString(link.label, locale)}</a>
+              <li>
+                <a class="underline decoration-slate-300 underline-offset-4 hover:text-brand hover:decoration-current" href={localizeInternalHref(link.href)}>{getLocalizedString(link.label, locale)}</a>
               </li>
             ))}
           </ul>
-        </div>
+        </nav>
       ))
     }
 
-    <div class="">
-      <h3 class="font-semibold text-gray-700 mb-3">{locale === "en" ? "Stay connected" : "Cadw mewn cysylltiad"}</h3>
-      <p class="mb-4">
+    <div class="sm:col-span-2 lg:col-span-1">
+      <h2 class="eyebrow mb-4">{locale === "en" ? "Stay connected" : "Cadw mewn cysylltiad"}</h2>
+      <p class="mb-4 text-sm leading-relaxed">
         {locale === "en"
           ? "Use the support pages, dataset citations, and enquiry links to stay aligned with future releases."
           : "Defnyddiwch y tudalennau cymorth, dyfyniadau setiau data, a dolenni ymholiadau i gadw mewn cysylltiad â chyhoeddiadau'r dyfodol."}
       </p>
-      <a class="text-white bg-blue-800 py-2 px-4 hover:bg-blue-900 focus:ring-2 focus:ring-blue-600 focus:outline-none ring-offset-1 rounded-sm inline-block" href="mailto:enquiry@library.wales">
+      <a class="btn-primary" href="mailto:enquiry@library.wales">
+        <Icon name="mdi:email-outline" class="size-4" aria-hidden="true" />
         {locale === "en" ? "Email the team" : "Ebostio'r tîm"}
       </a>
     </div>
   </div>
 
-  <div class="site-width my-6 py-6 border-t border-b border-gray-300">
-    <img class="h-16" src="/logo-wg.svg" alt="Logo - Welsh Government" title="Logo - Welsh Government" />
-  </div>
-
-  <div class="site-width flex gap-8">
-    <p>&copy; {new Date().getFullYear()} National Library of Wales</p>
-    <div class="flex gap-4">
-      {
-        legalLinks.map((link) => (
-          <a class="underline" href={link.href}>{getLocalizedString(link.label, locale)}</a>
-        ))
-      }
+  <div class="border-t border-slate-300">
+    <div class="site-width flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+      <img class="h-12 w-auto self-start" src="/logo-wg.svg" alt="Welsh Government" />
+      <div class="flex flex-col gap-3 text-sm sm:items-end">
+        <ul class="flex flex-wrap gap-x-6 gap-y-2">
+          {
+            legalLinks.map((link) => (
+              <li><a class="underline decoration-slate-300 underline-offset-4 hover:text-brand hover:decoration-current" href={link.href}>{getLocalizedString(link.label, locale)}</a></li>
+            ))
+          }
+        </ul>
+        <p class="text-slate-600">&copy; {new Date().getFullYear()} {locale === "en" ? "National Library of Wales" : "Llyfrgell Genedlaethol Cymru"}</p>
+      </div>
     </div>
   </div>
 </footer>

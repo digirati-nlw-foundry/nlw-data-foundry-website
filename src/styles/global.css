@@ -5,12 +5,460 @@
 
 @theme {
   --default-font-family: "Lato", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Brand: one blue for every primary action, link and active state. */
+  --color-brand: #1e40af;
+  --color-brand-hover: #1e3a8a;
+  --color-ink: #0f172a;
+  --color-muted: #475569;
+  --color-line: #e2e8f0;
+  --color-surface: #f8fafc;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
   --default-accent: #2b4db8;
+  color: var(--color-ink);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
 }
 
+::selection {
+  background: color-mix(in srgb, var(--color-brand) 18%, transparent);
+}
+
+/* One focus treatment for every interactive element. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent, var(--color-brand));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Horizontal rhythm: header, main content and footer all share this edge. */
 .site-width {
-  @apply max-w-[102.5rem] mx-auto;
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-sm focus:bg-brand focus:px-4 focus:py-2 focus:text-white;
+}
+
+/* Section eyebrow used above headings throughout the site. */
+@utility eyebrow {
+  @apply text-xs font-bold uppercase tracking-[0.12em] text-muted;
+}
+
+/* Buttons */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-sm border px-4 py-2 text-sm font-semibold transition-colors;
+}
+
+@utility btn-primary {
+  @apply btn border-brand bg-brand text-white hover:border-brand-hover hover:bg-brand-hover;
+}
+
+@utility btn-secondary {
+  @apply btn border-slate-300 bg-white text-slate-800 hover:border-slate-400 hover:bg-slate-50;
+}
+
+/*
+ * Long-form content (static pages, dataset cards). Layered on top of
+ * Tailwind Typography so both page types read identically.
+ */
+.prose-nlw {
+  --tw-prose-body: #1e293b;
+  --tw-prose-headings: var(--color-ink);
+  --tw-prose-links: var(--accent, var(--color-brand));
+  --tw-prose-bold: var(--color-ink);
+  --tw-prose-counters: #64748b;
+  --tw-prose-bullets: #94a3b8;
+  --tw-prose-hr: var(--color-line);
+  --tw-prose-quotes: #334155;
+  --tw-prose-quote-borders: var(--accent, var(--color-brand));
+  --tw-prose-captions: #64748b;
+  --tw-prose-code: #0f172a;
+  --tw-prose-th-borders: #94a3b8;
+  --tw-prose-td-borders: var(--color-line);
+
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+}
+
+.prose-nlw > :first-child {
+  margin-top: 0;
+}
+
+.prose-nlw > :last-child {
+  margin-bottom: 0;
+}
+
+.prose-nlw :where(h1, h2, h3, h4, h5, h6) {
+  font-weight: 700;
+  line-height: 1.25;
+  text-wrap: balance;
+  scroll-margin-top: 1.5rem;
+}
+
+.prose-nlw :where(h1) {
+  font-size: 2.25rem;
+  margin: 0 0 1.25rem;
+}
+
+.prose-nlw :where(h2) {
+  font-size: 1.625rem;
+  margin: 3rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.prose-nlw > h2:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.prose-nlw :where(h3) {
+  font-size: 1.25rem;
+  margin: 2.25rem 0 0.75rem;
+}
+
+.prose-nlw :where(h4) {
+  font-size: 1.0625rem;
+  margin: 1.75rem 0 0.5rem;
+}
+
+/* A heading straight after another heading needs less air above it. */
+.prose-nlw :where(h2 + h3, h3 + h4, h4 + h5, h2 + h4) {
+  margin-top: 1.25rem;
+}
+
+.prose-nlw :where(h5, h6) {
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.prose-nlw :where(p, ul, ol) {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+}
+
+.prose-nlw :where(li) {
+  margin: 0.375rem 0;
+  padding-left: 0.25rem;
+}
+
+.prose-nlw :where(li > ul, li > ol) {
+  margin: 0.375rem 0;
+}
+
+.prose-nlw :where(li > p) {
+  margin: 0.5rem 0;
+}
+
+.prose-nlw :where(a) {
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  transition: text-decoration-color 0.15s;
+}
+
+.prose-nlw :where(a:hover) {
+  text-decoration-color: currentColor;
+}
+
+.prose-nlw :where(strong) {
+  font-weight: 700;
+}
+
+/* Inline code: no backticks, soft chip. */
+.prose-nlw :where(code):not(:where(pre *))::before,
+.prose-nlw :where(code):not(:where(pre *))::after {
+  content: none;
+}
+
+.prose-nlw :where(code):not(:where(pre *)) {
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.25rem;
+  background: var(--color-surface);
+  font-size: 0.875em;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.prose-nlw :where(pre) {
+  margin: 1.75rem 0;
+  padding: 1.125rem 1.25rem;
+  border-radius: 0.375rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  tab-size: 2;
+}
+
+.prose-nlw :where(pre code) {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: 400;
+}
+
+.prose-nlw :where(blockquote) {
+  margin: 2rem 0;
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  border-left-width: 3px;
+  font-style: normal;
+  font-weight: 400;
+  color: #334155;
+}
+
+.prose-nlw :where(blockquote p:first-of-type)::before,
+.prose-nlw :where(blockquote p:last-of-type)::after {
+  content: none;
+}
+
+.prose-nlw :where(blockquote > p) {
+  margin-bottom: 0.75rem;
+}
+
+.prose-nlw :where(blockquote > :last-child) {
+  margin-bottom: 0;
+}
+
+.prose-nlw :where(blockquote blockquote) {
+  margin: 1rem 0 0;
+  border-left-color: var(--color-line);
+  font-size: 0.9375em;
+}
+
+.prose-nlw :where(hr) {
+  margin: 3rem 0;
+}
+
+/* The rule above a section heading is already the divider; don't draw two. */
+.prose-nlw hr + :is(h2, .dsb) {
+  margin-top: 0;
+}
+
+.prose-nlw hr + h2,
+.prose-nlw hr + .dsb > .dsb-title {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Tables: hairlines only; wide ones scroll inside .table-wrap. */
+.prose-nlw .table-wrap {
+  margin: 2rem 0;
+  overflow-x: auto;
+}
+
+.prose-nlw :where(table) {
+  width: 100%;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  border-collapse: collapse;
+}
+
+.prose-nlw :where(thead) {
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.prose-nlw :where(thead th) {
+  padding: 0.5rem 1rem 0.5rem 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.prose-nlw :where(tbody td) {
+  padding: 0.75rem 1rem 0.75rem 0;
+  vertical-align: baseline;
+}
+
+.prose-nlw :where(tbody tr) {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.prose-nlw :where(th, td):last-child {
+  padding-right: 0;
+}
+
+.prose-nlw :where(img) {
+  margin: 2rem 0;
+  border-radius: 0.375rem;
+}
+
+.prose-nlw :where(figure) {
+  margin: 2rem 0;
+}
+
+.prose-nlw :where(figure img) {
+  margin: 0;
+}
+
+.prose-nlw :where(figcaption) {
+  margin-top: 0.625rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.prose-nlw :where(mark) {
+  padding: 0.0625rem 0.25rem;
+  border-radius: 0.125rem;
+  background: #fef3c7;
+  color: inherit;
+}
+
+.prose-nlw :where(kbd) {
+  padding: 0.0625rem 0.375rem;
+  border: 1px solid #cbd5e1;
+  border-bottom-width: 2px;
+  border-radius: 0.25rem;
+  background: #fff;
+  box-shadow: none;
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.8125em;
+  font-weight: 500;
+}
+
+.prose-nlw :where(sub, sup) {
+  line-height: 0;
+}
+
+.prose-nlw :where(del) {
+  color: var(--color-muted);
+}
+
+/* Disclosure widgets */
+.prose-nlw :where(details) {
+  margin: 1rem 0;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.prose-nlw :where(details + details) {
+  margin-top: -1rem;
+  border-top: 0;
+}
+
+.prose-nlw :where(summary) {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 0;
+  list-style: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.prose-nlw :where(summary)::-webkit-details-marker {
+  display: none;
+}
+
+.prose-nlw :where(summary)::before {
+  content: "";
+  flex: none;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 2px solid var(--color-muted);
+  border-bottom: 2px solid var(--color-muted);
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.prose-nlw :where(details[open] > summary)::before {
+  transform: rotate(45deg);
+}
+
+.prose-nlw :where(details > :not(summary)) {
+  margin-left: 1.15rem;
+}
+
+.prose-nlw :where(details > :last-child) {
+  margin-bottom: 1rem;
+}
+
+/* GFM task lists */
+.prose-nlw :where(ul.contains-task-list) {
+  padding-left: 0;
+  list-style: none;
+}
+
+.prose-nlw :where(li.task-list-item) {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  padding-left: 0;
+}
+
+.prose-nlw :where(li.task-list-item > input) {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--accent, var(--color-brand));
+  transform: translateY(0.1875rem);
+}
+
+/* GFM footnotes */
+.prose-nlw :where(section[data-footnotes]) {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-line);
+  font-size: 0.9375rem;
+}
+
+.prose-nlw :where(section[data-footnotes] h2) {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.prose-nlw :where(sup > a[data-footnote-ref]) {
+  padding: 0 0.125rem;
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+@media (min-width: 40rem) {
+  .prose-nlw {
+    font-size: 1.125rem;
+  }
+
+  .prose-nlw :where(h1) {
+    font-size: 2.5rem;
+  }
+
+  .prose-nlw :where(h2) {
+    font-size: 1.75rem;
+  }
 }

@@ -7,24 +7,14 @@ interface Props {
   level?: 1 | 2;
 }
 
-const {
-  eyebrow,
-  eyebrowColor = "text-blue-700",
-  heading,
-  subtext,
-  level = 2,
-} = Astro.props;
+const { eyebrow, eyebrowColor, heading, subtext, level = 2 } = Astro.props;
 ---
 
 <div>
-  {eyebrow && (
-    <p class={`text-xs font-semibold uppercase tracking-widest ${eyebrowColor} mb-2`}>{eyebrow}</p>
-  )}
+  {eyebrow && <p class:list={["eyebrow mb-2", eyebrowColor]}>{eyebrow}</p>}
   {level === 1
-    ? <h1 class="text-4xl font-bold text-gray-900 mb-3">{heading}</h1>
-    : <h2 class="text-2xl font-bold text-gray-900 mb-3">{heading}</h2>
+    ? <h1 class="mb-3 text-3xl font-bold text-balance sm:text-4xl">{heading}</h1>
+    : <h2 class="mb-3 text-2xl font-bold text-balance">{heading}</h2>
   }
-  {subtext && (
-    <p class="text-lg text-gray-600 max-w-2xl">{subtext}</p>
-  )}
+  {subtext && <p class="max-w-2xl text-lg text-slate-600">{subtext}</p>}
 </div>

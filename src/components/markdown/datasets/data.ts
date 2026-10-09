@@ -20,6 +20,7 @@ export type DatasetBlockArchivedVersion = {
 export type DatasetBlockVersionSummary = {
   fileCount: number;
   fileFormats: string[];
+  isCurrent: boolean;
   releaseDate: string | null;
   totalSizeBytes: number;
   versionId: number;
@@ -199,25 +200,6 @@ function getAllActiveFiles(frontmatter: DatasetBlockFrontmatter) {
   );
 }
 
-export function formatBytes(bytes: number | null) {
-  return typeof bytes === "number"
-    ? `${bytes.toLocaleString("en-GB")} bytes`
-    : "—";
-}
-
-export function formatDate(value: string | null) {
-  if (!value) {
-    return "—";
-  }
-
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-
-  return parsed.toISOString().slice(0, 10);
-}
-
 export function getDatasetFacts(
   frontmatter: DatasetBlockFrontmatter,
 ): DatasetBlockFacts {
@@ -242,7 +224,8 @@ export function getDatasetFacts(
     license: asString(frontmatter.license),
     targetVersion: getTargetVersion(frontmatter),
     title: asString(frontmatter.title),
-    totalFileCount: asNumber(frontmatter.total_file_count) ?? activeFiles.length,
+    totalFileCount:
+      asNumber(frontmatter.total_file_count) ?? activeFiles.length,
     totalSizeBytes:
       asNumber(frontmatter.total_size_bytes) ??
       activeFiles.reduce((total, file) => total + (file.fileSizeBytes ?? 0), 0),
@@ -305,6 +288,7 @@ export function getVersionHistory(
       return {
         fileCount: files.length,
         fileFormats,
+        isCurrent: versionId === current.versionId,
         releaseDate,
         totalSizeBytes,
         versionId,

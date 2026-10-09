@@ -1,0 +1,23 @@
+---
+import type { Locale } from "../../lib/i18n";
+import { iiifLabel, iiifResourcePath, type IiifSnippet } from "../../lib/iiif-navigation";
+const { resource, locale } = Astro.props as {resource:IiifSnippet;locale:Locale};
+const label=iiifLabel(resource.label,locale,resource.id);
+const thumbnail=Array.isArray(resource.thumbnail)?resource.thumbnail[0]?.id:(resource.thumbnail as any)?.id;
+---
+<a href={iiifResourcePath(resource,locale)} class="resource-card">
+  <div class="resource-card__thumb">
+    {thumbnail ? <img src={thumbnail} alt="" loading="lazy" decoding="async"/> : <span>{locale==="cy"?"Dim llun bach":"No thumbnail"}</span>}
+  </div>
+  <div class="p-3">
+    <h3 class="font-semibold">{label}</h3>
+    <p class="mt-1 text-xs text-gray-500">{resource.type}</p>
+    <p class="mt-1 break-all text-xs text-gray-500">{resource["hss:slug"]}</p>
+  </div>
+</a>
+<style>
+  .resource-card {display:block;overflow:hidden;border:1px solid #e2e8f0;border-radius:.5rem;text-decoration:none;color:inherit;}
+  .resource-card:hover {border-color:#94a3b8;}
+  .resource-card__thumb {aspect-ratio:1;display:grid;place-items:center;overflow:hidden;background:#f1f5f9;color:#64748b;font-size:.8rem;}
+  .resource-card__thumb img {width:100%;height:100%;object-fit:contain;}
+</style>

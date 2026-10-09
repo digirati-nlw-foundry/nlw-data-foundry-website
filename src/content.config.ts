@@ -42,6 +42,10 @@ const datasetFile = z.object({
   sha256: z.string().min(1).optional(),
   ingested_at: z.string().min(1).optional(),
   api_link: z.string().min(1).optional(),
+  version_id: z.number().int().positive().optional(),
+  has_extracted_data: z.boolean().optional(),
+  data_table_identifier: z.string().nullable().optional(),
+  extracted_schema: z.record(z.string(), z.string()).nullable().optional(),
 });
 
 const datasetFileVersions = z.record(z.string(), z.array(datasetFile));
@@ -76,6 +80,10 @@ const dataCards = defineCollection({
     rights: z.string().optional(),
     team: z.string().optional(),
     updated: z.string().optional(),
+    reuse_guidance: z.string().optional(),
+    citation: z.string().optional(),
+    contact: z.string().optional(),
+    sensitivity_notice: z.string().optional(),
   }),
 });
 

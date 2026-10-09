@@ -1,5 +1,6 @@
 ---
 import ListingCard from "../../../components/ListingCard.astro";
+import PageHero from "../../../components/PageHero.astro";
 import SearchForm from "../../../components/SearchForm.astro";
 import Layout from "../../../layouts/Layout.astro";
 import { getDataCards } from "../../../lib/data-cards";
@@ -33,46 +34,51 @@ const allTags = Array.from(
   pageType="page"
   section="data"
   tags={allTags}
+  bleed
 >
-  <section class="py-12 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600 mb-2">{locale === "en" ? "Data collections" : "Casgliadau data"}</p>
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">{locale === "en" ? "Browse all data" : "Pori'r holl ddata"}</h1>
-      <p class="text-lg text-gray-600 max-w-3xl mb-8">
-        {locale === "en"
-          ? "Each data card combines lightweight metadata with a fuller editorial markdown record in English and Welsh."
-          : "Mae pob cerdyn data yn cyfuno metadata ysgafn â chofnod golygyddol markdown llawnach yn Saesneg ac yn Gymraeg."}
-      </p>
-      <div class="bg-white rounded-xl shadow-sm p-6">
-        <SearchForm locale={locale} />
+  <PageHero
+    eyebrow={locale === "en" ? "Data collections" : "Casgliadau data"}
+    heading={locale === "en" ? "Browse all data" : "Pori'r holl ddata"}
+    summary={locale === "en"
+      ? "Each data card combines lightweight metadata with a fuller editorial markdown record in English and Welsh."
+      : "Mae pob cerdyn data yn cyfuno metadata ysgafn â chofnod golygyddol markdown llawnach yn Saesneg ac yn Gymraeg."}
+  >
+    <div class="mt-8 max-w-2xl">
+      <SearchForm locale={locale} />
+    </div>
+  </PageHero>
+
+  <div class="site-width py-12">
+    <section class="mb-10" aria-labelledby="browse-by-tag">
+      <h2 class="eyebrow mb-3" id="browse-by-tag">{locale === "en" ? "Browse by tag" : "Pori yn ôl tag"}</h2>
+      <ul class="flex flex-wrap gap-2">
+        {allTags.map((tag) => (
+          <li>
+            <a
+              class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1 text-sm font-medium text-slate-700 transition-colors hover:border-brand hover:text-brand"
+              href={`/${locale}/search?tag=${encodeURIComponent(tag)}`}
+            >{tag}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section aria-label={locale === "en" ? "Datasets" : "Setiau data"}>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          entries.map((entry) => (
+            <ListingCard
+              locale={locale}
+              href={`/${locale}/data/${entry.slug}`}
+              title={entry.title}
+              summary={entry.description ?? entry.title}
+              eyebrow={{ en: "Dataset", cy: "Set ddata" }}
+              accent={entry.accent}
+              tags={entry.tags}
+            />
+          ))
+        }
       </div>
-    </div>
-  </section>
-
-  <section class="px-4 py-12 flex flex-col gap-2">
-    <div class="flex items-center justify-between">
-      <h2 class="text-lg font-bold text-gray-900">{locale === "en" ? "Browse by tag" : "Pori yn ôl tag"}</h2>
-    </div>
-    <ul class="flex flex-wrap gap-2">
-      {allTags.map((tag) => <li class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium">{tag}</li>)}
-    </ul>
-  </section>
-
-  <section class="mb-8">
-    <div class="grid grid-cols-3 gap-4">
-      {
-        entries.map((entry) => (
-          <ListingCard
-            locale={locale}
-            href={`/${locale}/data/${entry.slug}`}
-            title={entry.title}
-            summary={entry.description ?? entry.title}
-            eyebrow={{ en: "Dataset", cy: "Set ddata" }}
-            accent={entry.accent}
-            tags={entry.tags}
-          />
-        ))
-      }
-    </div>
-  </section>
+    </section>
+  </div>
 </Layout>

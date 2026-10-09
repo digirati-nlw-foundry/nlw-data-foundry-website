@@ -1,7 +1,8 @@
 ---
 import type { Locale } from "../lib/i18n";
-import { getLocalizedString } from "../lib/i18n";
-import type { SitePage } from "../lib/pages";
+import { buildLocalizedPath, getLocalizedString } from "../lib/i18n";
+import { getPages, type SitePage } from "../lib/pages";
+import { proseComponents } from "./markdown/mdx";
 import PageHero from "./PageHero.astro";
 
 interface Props {
@@ -12,6 +13,16 @@ interface Props {
 }
 
 const { locale, page, Content, hasBody } = Astro.props as Props;
+
+// Siblings in the same section, with the section's own overview page first.
+const siblings = (await getPages())
+  .filter((candidate) => candidate.section === page.section)
+  .sort(
+    (a, b) =>
+      Number(b.slug === page.section) - Number(a.slug === page.section) ||
+      a.slug.localeCompare(b.slug),
+  );
+const hasSectionNav = siblings.length > 1;
 ---
 
 <PageHero
@@ -21,13 +32,39 @@ const { locale, page, Content, hasBody } = Astro.props as Props;
 />
 
 {
-  hasBody && (
-    <section class="py-12 px-4 sm:px-0">
-      <div class="max-w-4xl mx-auto">
-        <div class="prose prose-lg prose-slate max-w-none">
-          <Content />
+  (hasBody || hasSectionNav) && (
+    <div class:list={["site-width py-10 sm:py-14", hasSectionNav && "grid gap-x-12 gap-y-8 lg:grid-cols-[15rem_minmax(0,1fr)]"]}>
+      {hasSectionNav && (
+        <nav aria-label={locale === "en" ? "In this section" : "Yn yr adran hon"} data-pagefind-ignore>
+          <p class="eyebrow mb-3">{locale === "en" ? "In this section" : "Yn yr adran hon"}</p>
+          <ul class="flex flex-col border-l border-slate-200">
+            {siblings.map((sibling) => {
+              const current = sibling.slug === page.slug;
+              return (
+                <li>
+                  <a
+                    href={buildLocalizedPath(locale, sibling.slug)}
+                    aria-current={current ? "page" : undefined}
+                    class:list={[
+                      "-ml-px block border-l-2 py-1.5 pl-4 text-sm transition-colors",
+                      current
+                        ? "border-brand font-bold text-brand"
+                        : "border-transparent font-medium text-slate-700 hover:border-slate-300 hover:text-brand",
+                    ]}
+                  >
+                    {getLocalizedString(sibling.title, locale)}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      )}
+      {hasBody && (
+        <div class="prose prose-nlw min-w-0 max-w-3xl">
+          <Content components={proseComponents} />
         </div>
-      </div>
-    </section>
+      )}
+    </div>
   )
 }

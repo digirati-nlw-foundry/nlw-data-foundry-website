@@ -1,84 +1,67 @@
-import type { DatasetBlockFrontmatter } from "./_helpers";
-import { formatBytes, formatDate, getDatasetFacts } from "./_helpers";
+import type { ReactNode } from "react";
+import { getDatasetFacts } from "./data";
+import { formatBytes, formatDate } from "./format";
+import { useDatasetBlockLanguage, useDatasetBlockText } from "./i18n";
+import { Section } from "./parts/Section";
+import type { DatasetBlockProps } from "./types";
 
 export function DatasetFacts({
   frontmatter,
-}: {
-  frontmatter: DatasetBlockFrontmatter;
-}) {
+  language: languageProp,
+}: DatasetBlockProps) {
+  const language = useDatasetBlockLanguage(languageProp);
+  const text = useDatasetBlockText(language);
   const facts = getDatasetFacts(frontmatter);
+  const size = formatBytes(facts.totalSizeBytes, text("bytes"));
+  const ingested = formatDate(facts.ingestedAt, language);
+
+  const rows: { label: string; value: ReactNode }[] = [
+    {
+      label: text("datasetId"),
+      value: <span className="dsb-mono">{facts.datasetId ?? "—"}</span>,
+    },
+    {
+      label: text("version"),
+      value:
+        facts.targetVersion !== null ? (
+          <span className="dsb-badge dsb-badge--accent">
+            v{facts.targetVersion}
+          </span>
+        ) : (
+          "—"
+        ),
+    },
+    { label: text("title"), value: facts.title ?? "—" },
+    { label: text("license"), value: facts.license ?? "—" },
+    { label: text("fileCount"), value: facts.totalFileCount },
+    {
+      label: text("totalSize"),
+      value: <span title={size.exact ?? undefined}>{size.label}</span>,
+    },
+    { label: text("formats"), value: facts.fileFormats.join(", ") || "—" },
+    {
+      label: text("ingested"),
+      value: ingested.iso ? (
+        <time dateTime={ingested.iso}>{ingested.label}</time>
+      ) : (
+        ingested.label
+      ),
+    },
+  ];
 
   return (
-    <section className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold text-slate-900">Dataset Facts</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Snapshot of the managed dataset metadata for this card.
-        </p>
-      </div>
-
-      <dl className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm md:grid-cols-2">
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Dataset ID
-          </dt>
-          <dd className="mt-1 font-mono text-slate-900">
-            {facts.datasetId ?? "—"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Version
-          </dt>
-          <dd className="mt-1 text-slate-900">
-            {facts.targetVersion !== null ? `v${facts.targetVersion}` : "—"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Title
-          </dt>
-          <dd className="mt-1 text-slate-900">{facts.title ?? "—"}</dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            License
-          </dt>
-          <dd className="mt-1 text-slate-900">{facts.license ?? "—"}</dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            File Count
-          </dt>
-          <dd className="mt-1 text-slate-900">{facts.totalFileCount}</dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Total Size
-          </dt>
-          <dd className="mt-1 text-slate-900">
-            {formatBytes(facts.totalSizeBytes)}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Formats
-          </dt>
-          <dd className="mt-1 text-slate-900">
-            {facts.fileFormats.join(", ") || "—"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Ingested
-          </dt>
-          <dd className="mt-1 text-slate-900">{formatDate(facts.ingestedAt)}</dd>
-        </div>
-      </dl>
-
+    <Section title={text("datasetFacts")}>
       {facts.description ? (
-        <p className="text-sm leading-6 text-slate-700">{facts.description}</p>
+        <p className="dsb-lead">{facts.description}</p>
       ) : null}
-    </section>
+      <dl className="dsb-facts">
+        {rows.map((row) => (
+          <div className="dsb-fact" key={row.label}>
+            <dt>{row.label}</dt>
+            <dd>{row.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </Section>
   );
 }

@@ -13,6 +13,8 @@ interface Props {
   pageType: "dataset" | "exhibition" | "page" | "homepage";
   section?: string;
   tags?: string[];
+  /** Full-bleed pages own their containers; others get the standard site width. */
+  bleed?: boolean;
 }
 
 const {
@@ -22,6 +24,7 @@ const {
   pageType,
   section = "general",
   tags = [],
+  bleed = false,
 } = Astro.props;
 const currentPath = Astro.url.pathname;
 const fullTitle = `${title} | ${getLocalizedString(siteTitle, locale)}`;
@@ -52,9 +55,10 @@ const fullTitle = `${title} | ${getLocalizedString(siteTitle, locale)}`;
       })();
     </script>
   </head>
-  <body>
+  <body class="flex min-h-screen flex-col">
+    <a class="skip-link" href="#main">{locale === "en" ? "Skip to content" : "Neidio i'r cynnwys"}</a>
     <SiteHeader locale={locale} currentPath={currentPath} />
-    <main class={pageType === "homepage" ? "" : "site-width px-6"} data-pagefind-body>
+    <main id="main" class:list={["flex-1", !bleed && "site-width"]} data-pagefind-body>
       <slot />
     </main>
     <SiteFooter locale={locale} />

@@ -1,0 +1,28 @@
+---
+import ResourceCard from "../../../../components/iiif/ResourceCard.astro";
+import Layout from "../../../../layouts/Layout.astro";
+import { LOCALES, type Locale } from "../../../../lib/i18n";
+import { getIiifResource, iiifLabel } from "../../../../lib/iiif-navigation";
+import { iiif } from "../../../../lib/iiif.server";
+export async function getStaticPaths() {
+  const sitemap=await iiif.getSitemap();
+  return LOCALES.flatMap(locale=>Object.keys(sitemap).map(slug=>({params:{locale,slug},props:{locale,slug}})));
+}
+const {locale,slug}=Astro.props as {locale:Locale;slug:string};
+const loaded=await getIiifResource(slug);
+if(!loaded) throw new Error(`Missing extracted IIIF resource: ${slug}`);
+const {resource,meta,children,source}=loaded;
+const title=iiifLabel(resource.label,locale,meta?.label||resource.id);
+const thumbnail=Array.isArray(resource.thumbnail)?resource.thumbnail[0]?.id:(resource.thumbnail as any)?.id;
+---
+<Layout locale={locale} title={title} description="" pageType="dataset" section="data">
+  <main class="site-width space-y-6 py-12">
+    <a href={`/${locale}/iiif/`} class="underline">{locale==="cy"?"Adnoddau IIIF":"IIIF resources"}</a>
+    <h1 class="text-3xl font-semibold">{title}</h1>
+    {thumbnail?<img class="max-h-96 w-full object-contain" src={thumbnail} alt=""/>:null}
+    <p><a href={source} target="_blank" rel="noreferrer" class="underline">{locale==="cy"?"Agor adnodd IIIF":"Open IIIF resource"}</a>{resource.type==="Manifest"?<> · <a class="underline" href={`https://theseusviewer.org/?iiif-content=${encodeURIComponent(source)}`} target="_blank" rel="noreferrer">{locale==="cy"?"Agor yn y syllwr":"Open in viewer"}</a></>:null}</p>
+    <p class="break-all text-xs text-gray-500">{slug}</p>
+    {children.length?<section><h2 class="mb-4 text-xl font-semibold">{locale==="cy"?"Adnoddau":"Resources"}</h2><div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">{children.map(child=><ResourceCard resource={child} locale={locale}/>)}</div></section>:null}
+    <p><a class="underline" href={`/iiif/${slug.split("/").map(encodeURIComponent).join("/")}/meta.json`}>{locale==="cy"?"Metadata wedi'i dynnu":"Extracted metadata"}</a></p>
+  </main>
+</Layout>

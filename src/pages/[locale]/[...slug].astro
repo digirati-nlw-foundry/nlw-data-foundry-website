@@ -32,6 +32,7 @@ const hasBody = (entry.body || "").trim().length > 0;
   description={getLocalizedString(page.description, locale)}
   pageType="page"
   section={page.section}
+  bleed
 >
   <PageShell locale={locale} page={page} Content={Content} hasBody={hasBody} />
 </Layout>

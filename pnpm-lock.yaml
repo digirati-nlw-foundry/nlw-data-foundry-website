@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  iiif-hss@1.0.6-next.2: e702953532929d95e770e99e8001eed39aec521b5466e77ddb272ced3527bdbb
+
 importers:
 
   .:
@@ -45,8 +48,8 @@ importers:
         specifier: ^1.1.5
         version: 1.2.0
       iiif-hss:
-        specifier: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4c
-        version: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4c(@babel/runtime@7.29.7)(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0)
+        specifier: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77
+        version: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77(patch_hash=e702953532929d95e770e99e8001eed39aec521b5466e77ddb272ced3527bdbb)(@babel/runtime@7.29.7)(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0)
       react:
         specifier: ^19.2.4
         version: 19.3.0
@@ -3031,8 +3034,8 @@ packages:
     resolution: {integrity: sha512-HpbUakT7xp5miBUywCHf36ZEuAJNklBJDDsGpUIjMzOSmM8ELSfA9Sa/QDPeNeqeoN31u+UTCkL4klCOVvRm4Q==}
     engines: {node: '>= 4'}
 
-  iiif-hss@https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4c:
-    resolution: {integrity: sha512-uSqZV5UPfahYH5BhChRI58t39wPPNUf5WfGE+I5LGOyGi1CETWdPz3JHwAM/MNHh+B18jBYTOlSCJhOx+XF7Ww==, tarball: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4c}
+  iiif-hss@https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77:
+    resolution: {integrity: sha512-uSqZV5UPfahYH5BhChRI58t39wPPNUf5WfGE+I5LGOyGi1CETWdPz3JHwAM/MNHh+B18jBYTOlSCJhOx+XF7Ww==, tarball: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77}
     version: 1.0.6-next.2
     engines: {node: '>=20'}
     hasBin: true
@@ -8512,7 +8515,7 @@ snapshots:
 
   ignore@7.0.10: {}
 
-  iiif-hss@https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4c(@babel/runtime@7.29.7)(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0):
+  iiif-hss@https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77(patch_hash=e702953532929d95e770e99e8001eed39aec521b5466e77ddb272ced3527bdbb)(@babel/runtime@7.29.7)(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0):
     dependencies:
       '@atlas-viewer/atlas': 3.0.3(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0)
       '@hono/node-server': 1.19.17(hono@4.13.11)

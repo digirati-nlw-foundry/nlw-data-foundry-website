@@ -28,7 +28,7 @@
     "@types/react-dom": "^19.2.3",
     "astro": "^5.17.1",
     "astro-icon": "^1.1.5",
-    "iiif-hss": "https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4c",
+    "iiif-hss": "https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-iiif-vault": "^2.0.9",

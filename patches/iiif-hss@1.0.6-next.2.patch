@@ -1,0 +1,2319 @@
+diff --git a/build/astro/server.js b/build/astro/server.js
+index 30eb7e91cecd80c27559bf750fca3843ef98c93d..4498f54500827e4d4363bc0ff36c0021b1025aa4 100644
+--- a/build/astro/server.js
++++ b/build/astro/server.js
+@@ -1,10 +1,12 @@
+ import {
+-  defaultBuiltIns
+-} from "../chunk-7Z3FAVBR.js";
+-import "../chunk-YOC6T6G7.js";
++  defaultBuiltIns,
++  fetchPublicResource
++} from "../chunk-6FARIE7W.js";
+ import {
+   resolveFromSlug
+-} from "../chunk-AMC726AR.js";
++} from "../chunk-442UETUP.js";
++import "../chunk-DKDBFJST.js";
++import "../chunk-DEZSI2VQ.js";
+ import {
+   asAstroParam,
+   extractItemSlugs,
+@@ -65,7 +67,7 @@ function createIiifAstroServer(options = {}) {
+   const baseUrl = asNormalizedBasePath(options.baseUrl);
+   const routes = resolveAstroIiifRoutes(options.routes);
+   const preferDevBuild = options.preferDevBuild ?? true;
+-  const fetchFn = options.fetchFn || fetch;
++  const fetchFn = options.fetchFn || fetchPublicResource;
+   let resolvedBuildDir = null;
+   const cache = {
+     sitemap: null,
+diff --git a/build/astro-integration.d.ts b/build/astro-integration.d.ts
+index 34840732aef2fc173f7c5af821873dc80f0d80d2..766a5b2e44f3e74500292f9b55a7b606945578a1 100644
+--- a/build/astro-integration.d.ts
++++ b/build/astro-integration.d.ts
+@@ -1,5 +1,5 @@
+-import { a as IIIFHSSSPluginOptions } from './shared-iiif-runtime-BASHAdiY.js';
+-import './iiif-memory-BSi9qHqO.js';
++import { a as IIIFHSSSPluginOptions } from './shared-iiif-runtime-BQNG5mh-.js';
++import './iiif-memory-ByXboWm7.js';
+ import '@iiif/helpers';
+ import '@iiif/presentation-3';
+ import '@atlas-viewer/iiif-image-api';
+diff --git a/build/astro-integration.js b/build/astro-integration.js
+index 0ac8f9879d78654ca4df5cc7bb0a477e63ac8d4e..a39b5d63226a8339fa554d3e5b305e45ca7d0e6b 100644
+--- a/build/astro-integration.js
++++ b/build/astro-integration.js
+@@ -1,11 +1,12 @@
+ import {
+   createIiifRuntime
+-} from "./chunk-BO2M7NLQ.js";
++} from "./chunk-2KQIO4HQ.js";
+ import {
+   source_default
+-} from "./chunk-7Z3FAVBR.js";
+-import "./chunk-YOC6T6G7.js";
+-import "./chunk-AMC726AR.js";
++} from "./chunk-6FARIE7W.js";
++import "./chunk-442UETUP.js";
++import "./chunk-DKDBFJST.js";
++import "./chunk-DEZSI2VQ.js";
+ 
+ // src/astro-integration.ts
+ import { existsSync, readFileSync } from "node:fs";
+diff --git a/build/chunk-BO2M7NLQ.js b/build/chunk-2KQIO4HQ.js
+similarity index 99%
+rename from build/chunk-BO2M7NLQ.js
+rename to build/chunk-2KQIO4HQ.js
+index edf4979ae8cacf809978efec009d6295f8187900..8a8265afbd3e891779c003ce538466947b5a4a61 100644
+--- a/build/chunk-BO2M7NLQ.js
++++ b/build/chunk-2KQIO4HQ.js
+@@ -15,15 +15,17 @@ import {
+   rewritePath,
+   source_default,
+   version
+-} from "./chunk-7Z3FAVBR.js";
++} from "./chunk-6FARIE7W.js";
++import {
++  resolveFromSlug
++} from "./chunk-442UETUP.js";
+ import {
+   makeGetSlugHelper
+-} from "./chunk-YOC6T6G7.js";
++} from "./chunk-DKDBFJST.js";
+ import {
+   compileReverseSlugConfig,
+-  compileSlugConfig,
+-  resolveFromSlug
+-} from "./chunk-AMC726AR.js";
++  compileSlugConfig
++} from "./chunk-DEZSI2VQ.js";
+ 
+ // src/integrations/shared-iiif-runtime.ts
+ import { existsSync as existsSync4 } from "node:fs";
+@@ -2605,6 +2607,9 @@ function createIiifRuntime(options = {}, lifecycle = {}) {
+       await setConfigServerUrl(buildServerUrl);
+     }
+     if (!hasBuildableStores(configSource.config)) {
++      await rm2(toAbsolutePath(".iiif/build"), { recursive: true, force: true });
++      if (iiifBuildDir) await rm2(toAbsolutePath(iiifBuildDir), { recursive: true, force: true });
++      lastIiifBuildDir = null;
+       logger?.warn?.(`${source_default.green`✓`}  Skipping iiif build (no buildable stores found)`);
+       await lifecycle.onBuild?.({
+         type: "skipped",
+diff --git a/build/chunk-442UETUP.js b/build/chunk-442UETUP.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..df7bed4ebf24a9464d12ca7256b2e09000c53cb8
+--- /dev/null
++++ b/build/chunk-442UETUP.js
+@@ -0,0 +1,47 @@
++import {
++  compileReverseSlugConfig
++} from "./chunk-DEZSI2VQ.js";
++
++// src/util/resolve-from-slug.ts
++function resolveFromSlug(slug_, type, config, quiet = true) {
++  let slug = slug_;
++  const candidates = [];
++  const keys = Object.keys(config);
++  for (const key of keys) {
++    const configItem = config[key];
++    if (configItem.type !== type) {
++      continue;
++    }
++    const addedPrefix = configItem.addedPrefix ? configItem.addedPrefix.startsWith("/") ? configItem.addedPrefix : `/${configItem.addedPrefix}` : "/";
++    const matchingPrefix = `${type.toLowerCase()}s${addedPrefix}`;
++    if (matchingPrefix.startsWith("/") && !slug.startsWith("/")) {
++      slug = `/${slug}`;
++    }
++    if (!matchingPrefix.startsWith("/") && slug.startsWith("/")) {
++      slug = slug.slice(1);
++    }
++    if (!slug.startsWith(matchingPrefix)) {
++      continue;
++    }
++    const matcher = compileReverseSlugConfig(configItem);
++    const [match, vars] = matcher(slug);
++    if (match) {
++      candidates.push({
++        match,
++        vars,
++        key
++      });
++    }
++  }
++  if (candidates.length === 0) {
++    return null;
++  }
++  if (candidates.length > 1 && !quiet) {
++    throw new Error(`Multiple matches for slug ${slug} and type ${type}`);
++  }
++  return candidates[0];
++}
++
++export {
++  resolveFromSlug
++};
+diff --git a/build/chunk-7Z3FAVBR.js b/build/chunk-6FARIE7W.js
+similarity index 97%
+rename from build/chunk-7Z3FAVBR.js
+rename to build/chunk-6FARIE7W.js
+index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387aef432d9 100644
+--- a/build/chunk-7Z3FAVBR.js
++++ b/build/chunk-6FARIE7W.js
+@@ -1,11 +1,14 @@
+ import {
++  resolveFromSlug
++} from "./chunk-442UETUP.js";
++import {
++  assertSafeSlug,
+   makeGetSlugHelper
+-} from "./chunk-YOC6T6G7.js";
++} from "./chunk-DKDBFJST.js";
+ import {
+   compileReverseSlugConfig,
+-  compileSlugConfig,
+-  resolveFromSlug
+-} from "./chunk-AMC726AR.js";
++  compileSlugConfig
++} from "./chunk-DEZSI2VQ.js";
+ 
+ // src/output-contract.ts
+ var OUTPUT_FORMAT_VERSION = 1;
+@@ -319,6 +322,142 @@ async function validateBuildOutput(directory, options = {}) {
+   };
+ }
+ 
++// src/stores/iiif-remote-discovery.ts
++function getType(input) {
++  if (!input) {
++    return void 0;
++  }
++  const raw = input.type || input["@type"];
++  if (Array.isArray(raw)) {
++    return raw[0];
++  }
++  if (typeof raw === "string") {
++    return raw;
++  }
++  return void 0;
++}
++function getId(input) {
++  if (!input) {
++    return void 0;
++  }
++  if (typeof input === "string") {
++    return input;
++  }
++  const id = input.id || input["@id"];
++  return typeof id === "string" ? id : void 0;
++}
++function normalizeType(type) {
++  if (!type) {
++    return void 0;
++  }
++  if (type.endsWith("CollectionPage")) {
++    return "CollectionPage";
++  }
++  if (type.endsWith("Collection")) {
++    return "Collection";
++  }
++  if (type.endsWith("Manifest")) {
++    return "Manifest";
++  }
++  return type;
++}
++function toReference(input, fallbackType) {
++  const id = getId(input);
++  if (!id) {
++    return null;
++  }
++  const type = normalizeType(getType(input) || fallbackType);
++  return { id, type };
++}
++function asArray(value) {
++  if (!value) {
++    return [];
++  }
++  return Array.isArray(value) ? value : [value];
++}
++function isCollectionLike(resource) {
++  const type = normalizeType(getType(resource));
++  return type === "Collection" || type === "CollectionPage";
++}
++function getDirectChildren(resource) {
++  const children = [];
++  for (const item of asArray(resource?.items)) {
++    const ref = toReference(item);
++    if (ref) children.push(ref);
++  }
++  for (const item of asArray(resource?.manifests)) {
++    const ref = toReference(item, "Manifest");
++    if (ref) children.push(ref);
++  }
++  for (const item of asArray(resource?.collections)) {
++    const ref = toReference(item, "Collection");
++    if (ref) children.push(ref);
++  }
++  return children;
++}
++function getPaginationLinks(resource) {
++  const links = [];
++  for (const candidate of [...asArray(resource?.first), ...asArray(resource?.next)]) {
++    const ref = toReference(candidate, "CollectionPage");
++    if (ref?.id) {
++      links.push(ref.id);
++    }
++  }
++  return links;
++}
++async function discoverCollectionChildren(startUrl, startResource, fetchJson, onError) {
++  const discovered = /* @__PURE__ */ new Map();
++  const visitedPages = /* @__PURE__ */ new Set();
++  const queuedPages = /* @__PURE__ */ new Set([startUrl]);
++  const pendingPages = [{ url: startUrl, resource: startResource }];
++  while (pendingPages.length > 0) {
++    const current = pendingPages.shift();
++    if (!current) {
++      continue;
++    }
++    if (visitedPages.has(current.url)) {
++      continue;
++    }
++    if (visitedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++    visitedPages.add(current.url);
++    if (!isCollectionLike(current.resource) || !getId(current.resource))
++      throw new Error(`Invalid IIIF Collection or CollectionPage at ${current.url}`);
++    for (const child of getDirectChildren(current.resource)) {
++      if (child.type === "CollectionPage") {
++        if (!queuedPages.has(child.id)) {
++          if (queuedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++          queuedPages.add(child.id);
++          try {
++            const page = await fetchJson(child.id);
++            pendingPages.push({ url: child.id, resource: page });
++          } catch (error) {
++            onError?.(child.id, error);
++          }
++        }
++        continue;
++      }
++      if (!discovered.has(child.id) && discovered.size >= 1e4) throw new Error("IIIF discovery exceeds 10,000 children.");
++      if (!discovered.has(child.id)) {
++        discovered.set(child.id, child);
++      }
++    }
++    for (const pageUrl of getPaginationLinks(current.resource)) {
++      if (queuedPages.has(pageUrl)) {
++        continue;
++      }
++      if (queuedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++      queuedPages.add(pageUrl);
++      try {
++        const page = await fetchJson(pageUrl);
++        pendingPages.push({ url: pageUrl, resource: page });
++      } catch (error) {
++        onError?.(pageUrl, error);
++      }
++    }
++  }
++  return Array.from(discovered.values());
++}
++
+ // src/stores/iiif-memory.ts
+ import { Vault } from "@iiif/helpers";
+ import objectHash from "object-hash";
+@@ -1643,6 +1782,84 @@ function getCustomConfigSource(config) {
+   };
+ }
+ 
++// src/util/public-fetch.ts
++import { lookup } from "node:dns";
++import { get as httpGet } from "node:http";
++import { get as httpsGet } from "node:https";
++import { BlockList, isIP } from "node:net";
++var blocked = new BlockList();
++for (const [address, prefix] of [["0.0.0.0", 8], ["10.0.0.0", 8], ["100.64.0.0", 10], ["127.0.0.0", 8], ["169.254.0.0", 16], ["172.16.0.0", 12], ["192.0.0.0", 24], ["192.0.2.0", 24], ["192.168.0.0", 16], ["198.18.0.0", 15], ["198.51.100.0", 24], ["203.0.113.0", 24], ["224.0.0.0", 4], ["240.0.0.0", 4]]) blocked.addSubnet(address, prefix, "ipv4");
++for (const [address, prefix] of [["::", 128], ["::1", 128], ["fc00::", 7], ["fe80::", 10], ["fec0::", 10], ["::", 96], ["2001::", 32], ["ff00::", 8], ["2001:db8::", 32], ["2002::", 16], ["64:ff9b::", 96]]) blocked.addSubnet(address, prefix, "ipv6");
++function assertPublicAddress(address) {
++  const family = isIP(address);
++  if (!family || blocked.check(address, family === 4 ? "ipv4" : "ipv6")) throw new Error("IIIF URLs must resolve to a public internet address.");
++}
++function validatePublicUrl(value) {
++  const url = new URL(value);
++  if (!["https:", "http:"].includes(url.protocol) || url.username || url.password) throw new Error("IIIF URLs must use HTTP(S) without credentials.");
++  if (url.port && url.port !== "80" && url.port !== "443") throw new Error("IIIF URLs must use a standard HTTP(S) port.");
++  const hostname = url.hostname.replace(/^\[|\]$/g, "");
++  if (isIP(hostname)) assertPublicAddress(hostname);
++  return url;
++}
++var publicLookup = (hostname, options, callback) => lookup(hostname, options, (error, address, family) => {
++  if (error) return callback(error, address, family);
++  try {
++    if (Array.isArray(address)) for (const entry of address) assertPublicAddress(entry.address);
++    else assertPublicAddress(address);
++    callback(null, address, family);
++  } catch (error2) {
++    callback(error2, address, family);
++  }
++});
++var fetchPublicResource = async (input, init = {}) => {
++  const requestInput = input instanceof Request ? input : null;
++  if ((init.method || requestInput?.method || "GET").toUpperCase() !== "GET") throw new Error("IIIF fetching only supports GET.");
++  let url = validatePublicUrl(typeof input === "string" ? input : input instanceof URL ? input.href : input.url);
++  const deadline = AbortSignal.timeout(3e4);
++  const external = init.signal || requestInput?.signal;
++  const signal = external ? AbortSignal.any([deadline, external]) : deadline;
++  const headers = {};
++  new Headers(init.headers || requestInput?.headers || { Accept: "application/ld+json, application/json" }).forEach((value, key) => {
++    headers[key] = value;
++  });
++  for (let redirects = 0; redirects <= 3; redirects++) {
++    const response = await new Promise((resolve5, reject) => {
++      const request = (url.protocol === "https:" ? httpsGet : httpGet)(url, { headers, lookup: publicLookup, signal }, (response2) => {
++        const status = response2.statusCode || 0;
++        const responseHeaders = new Headers();
++        for (const [key, value] of Object.entries(response2.headers)) if (value !== void 0) responseHeaders.set(key, Array.isArray(value) ? value.join(", ") : value);
++        if ([301, 302, 303, 307, 308].includes(status) && response2.headers.location) {
++          resolve5({ status, headers: responseHeaders, location: response2.headers.location });
++          response2.destroy();
++          return;
++        }
++        const chunks = [];
++        let bytes = 0;
++        response2.on("data", (chunk) => {
++          bytes += chunk.length;
++          if (bytes > 16 * 1024 * 1024) response2.destroy(new Error("IIIF response exceeds 16 MiB."));
++          else chunks.push(chunk);
++        });
++        response2.on("error", reject);
++        response2.on("end", () => resolve5({ status, headers: responseHeaders, body: Buffer.concat(chunks) }));
++      });
++      request.on("error", reject);
++    });
++    if (response.location) {
++      const next = validatePublicUrl(new URL(response.location, url).href);
++      if (next.origin !== url.origin) {
++        delete headers.authorization;
++        delete headers.cookie;
++      }
++      url = next;
++      continue;
++    }
++    return new Response([204, 205, 304].includes(response.status) ? null : response.body, { status: response.status, headers: response.headers });
++  }
++  throw new Error("Too many IIIF redirects.");
++};
++
+ // src/commands/generate.ts
+ import fs2 from "node:fs";
+ import { join as join5 } from "node:path";
+@@ -2662,14 +2879,14 @@ var collectionThumbnail = {
+       if (resolved.has(root.id)) continue;
+       const active = /* @__PURE__ */ new Set();
+       const stack = [{ collection: root, index: 0, blocked: false }];
+-      const finish = (image, blocked) => {
++      const finish = (image, blocked2) => {
+         const { collection } = stack.pop();
+         active.delete(collection.id);
+-        if (image || !blocked) resolved.set(collection.id, image);
++        if (image || !blocked2) resolved.set(collection.id, image);
+         if (stack.length) {
+           if (image) {
+             stack[stack.length - 1].index--;
+-          } else stack[stack.length - 1].blocked ||= blocked;
++          } else stack[stack.length - 1].blocked ||= blocked2;
+         }
+       };
+       while (stack.length) {
+@@ -3169,6 +3386,12 @@ var package_default = {
+         types: "./build/astro/client.d.ts",
+         default: "./build/astro/client.js"
+       }
++    },
++    "./slugs": {
++      import: {
++        types: "./build/slugs.d.ts",
++        default: "./build/slugs.js"
++      }
+     }
+   },
+   typesVersions: {
+@@ -4448,6 +4671,7 @@ function toRuntimeHints(resource) {
+   const portableSource = source.type === "remote" && typeof source.url === "string" ? { type: "remote", url: source.url } : source.type === "disk" ? { type: "disk" } : void 0;
+   return {
+     type,
++    ...resource.remoteChildren ? { children: resource.remoteChildren } : {},
+     ...portableSource ? { source: portableSource } : {},
+     saveToDisk: source.type === "disk" || Boolean(resource.saveToDisk)
+   };
+@@ -5033,140 +5257,12 @@ import fs8 from "node:fs";
+ import { join as join20 } from "node:path";
+ import { Vault as Vault3 } from "@iiif/helpers";
+ import { copy as copy3, pathExists as pathExists2 } from "fs-extra/esm";
+-
+-// src/stores/iiif-remote-discovery.ts
+-function getType(input) {
+-  if (!input) {
+-    return void 0;
+-  }
+-  const raw = input.type || input["@type"];
+-  if (Array.isArray(raw)) {
+-    return raw[0];
+-  }
+-  if (typeof raw === "string") {
+-    return raw;
+-  }
+-  return void 0;
+-}
+-function getId(input) {
+-  if (!input) {
+-    return void 0;
+-  }
+-  if (typeof input === "string") {
+-    return input;
+-  }
+-  const id = input.id || input["@id"];
+-  return typeof id === "string" ? id : void 0;
+-}
+-function normalizeType(type) {
+-  if (!type) {
+-    return void 0;
+-  }
+-  if (type.endsWith("CollectionPage")) {
+-    return "CollectionPage";
+-  }
+-  if (type.endsWith("Collection")) {
+-    return "Collection";
+-  }
+-  if (type.endsWith("Manifest")) {
+-    return "Manifest";
+-  }
+-  return type;
+-}
+-function toReference(input, fallbackType) {
+-  const id = getId(input);
+-  if (!id) {
+-    return null;
+-  }
+-  const type = normalizeType(getType(input) || fallbackType);
+-  return { id, type };
+-}
+-function asArray(value) {
+-  if (!value) {
+-    return [];
+-  }
+-  return Array.isArray(value) ? value : [value];
+-}
+-function isCollectionLike(resource) {
+-  const type = normalizeType(getType(resource));
+-  return type === "Collection" || type === "CollectionPage";
+-}
+-function getDirectChildren(resource) {
+-  const children = [];
+-  for (const item of asArray(resource?.items)) {
+-    const ref = toReference(item);
+-    if (ref) children.push(ref);
+-  }
+-  for (const item of asArray(resource?.manifests)) {
+-    const ref = toReference(item, "Manifest");
+-    if (ref) children.push(ref);
+-  }
+-  for (const item of asArray(resource?.collections)) {
+-    const ref = toReference(item, "Collection");
+-    if (ref) children.push(ref);
+-  }
+-  return children;
+-}
+-function getPaginationLinks(resource) {
+-  const links = [];
+-  for (const candidate of [...asArray(resource?.first), ...asArray(resource?.next)]) {
+-    const ref = toReference(candidate, "CollectionPage");
+-    if (ref?.id) {
+-      links.push(ref.id);
+-    }
+-  }
+-  return links;
+-}
+-async function discoverCollectionChildren(startUrl, startResource, fetchJson, onError) {
+-  const discovered = /* @__PURE__ */ new Map();
+-  const visitedPages = /* @__PURE__ */ new Set();
+-  const pendingPages = [{ url: startUrl, resource: startResource }];
+-  while (pendingPages.length > 0) {
+-    const current = pendingPages.shift();
+-    if (!current) {
+-      continue;
+-    }
+-    if (visitedPages.has(current.url)) {
+-      continue;
+-    }
+-    visitedPages.add(current.url);
+-    for (const child of getDirectChildren(current.resource)) {
+-      if (child.type === "CollectionPage") {
+-        if (!visitedPages.has(child.id)) {
+-          try {
+-            const page = await fetchJson(child.id);
+-            pendingPages.push({ url: child.id, resource: page });
+-          } catch (error) {
+-            onError?.(child.id, error);
+-          }
+-        }
+-        continue;
+-      }
+-      if (!discovered.has(child.id)) {
+-        discovered.set(child.id, child);
+-      }
+-    }
+-    for (const pageUrl of getPaginationLinks(current.resource)) {
+-      if (visitedPages.has(pageUrl)) {
+-        continue;
+-      }
+-      try {
+-        const page = await fetchJson(pageUrl);
+-        pendingPages.push({ url: pageUrl, resource: page });
+-      } catch (error) {
+-        onError?.(pageUrl, error);
+-      }
+-    }
+-  }
+-  return Array.from(discovered.values());
+-}
+-
+-// src/stores/iiif-remote.ts
+ var IIIFRemoteStore = {
+   async parse(store, api) {
+-    if (store.urls) {
++    const traversal = api.__remoteTraversal ??= { urls: /* @__PURE__ */ new Set(), ids: /* @__PURE__ */ new Set(), canonical: /* @__PURE__ */ new Map() };
++    if (store.urls?.length) {
+       const toReturn = [];
+-      for (const url of store.urls) {
++      for (const url of /* @__PURE__ */ new Set([...store.urls, ...store.url ? [store.url] : []])) {
+         toReturn.push(...await IIIFRemoteStore.parse({ ...store, url, urls: void 0 }, api));
+       }
+       return toReturn;
+@@ -5174,18 +5270,25 @@ var IIIFRemoteStore = {
+     if (!store.url) {
+       return [];
+     }
++    if (traversal.urls.has(store.url)) return [];
++    if (traversal.urls.size >= 1e4) throw new Error("IIIF discovery exceeds 10,000 resources.");
++    traversal.urls.add(store.url);
+     const collection = await api.requestCache.fetch(store.url);
+     const identifier = collection["@id"] || collection.id || "";
+     const isCollection = collection["@type"] === "sc:Collection" || collection.type === "Collection";
+     const isManifest = collection["@type"] === "sc:Manifest" || collection.type === "Manifest";
+     if (!isCollection && !isManifest || !identifier) {
+-      console.log("ERROR: Could not parse collection", store.url);
+-      return [];
++      throw new Error(`Invalid IIIF Manifest or Collection at ${store.url}`);
+     }
++    traversal.canonical.set(store.url, identifier);
++    if (traversal.ids.has(identifier)) return [];
++    traversal.ids.add(identifier);
+     const [slug3, slugSource] = api.getSlug({
+       id: collection["@id"] || collection.id || "",
+       type: isManifest ? "Manifest" : "Collection"
+     });
++    if (store.config?.foundry?.strictSlugs && slugSource.startsWith("default:"))
++      throw new Error(`No configured slug rule matches ${identifier}. Refresh the dataset IIIF configuration before publishing.`);
+     const override = store.overrides ? `${store.overrides}/${slug3.startsWith(isManifest ? "manifests/" : "collections/") ? slug3.slice((isManifest ? "manifests/" : "collections/").length) : slug3}.json` : void 0;
+     if (isManifest) {
+       let source = {
+@@ -5205,6 +5308,7 @@ var IIIFRemoteStore = {
+       return [
+         {
+           type: "Manifest",
++          id: identifier,
+           slug: slug3,
+           slugSource,
+           path: store.url,
+@@ -5218,6 +5322,8 @@ var IIIFRemoteStore = {
+     const allResources = [
+       {
+         type: "Collection",
++        id: identifier,
++        remoteChildren: [],
+         slug: slug3,
+         slugSource,
+         path: store.url,
+@@ -5232,12 +5338,14 @@ var IIIFRemoteStore = {
+       collection,
+       (url) => api.requestCache.fetch(url),
+       (url, error) => {
+-        api.build.log(`Warning: failed to load collection page ${url}`, error);
++        throw new Error(`Failed to load IIIF collection page ${url}`, { cause: error });
+       }
+     );
+     await api.reportEstimatedResources?.(children.length);
+     for (const child of children) {
+       const parsed = await IIIFRemoteStore.parse({ ...store, url: child.id }, api);
++      const canonical = traversal.canonical.get(child.id);
++      if (canonical && canonical !== identifier) allResources[0].remoteChildren.push(canonical);
+       allResources.push(...parsed);
+     }
+     return allResources;
+@@ -5295,6 +5403,7 @@ var IIIFRemoteStore = {
+         subResources: (res?.items || []).length,
+         saveToDisk: resource.source.type === "disk" || store.saveManifests || false,
+         inputKey: resource.inputKey,
++        remoteChildren: resource.remoteChildren,
+         source: resource.source
+       },
+       vault,
+@@ -6145,7 +6254,7 @@ async function getBuildConfig(options, builtIns) {
+     write: normalizeConcurrency(concurrencyConfig.write, ioConcurrency)
+   };
+   const useNetworkCache = options.networkCache ?? true;
+-  const request = builtIns.fetch ?? globalThis.fetch;
++  const request = builtIns.fetch ?? fetchPublicResource;
+   const network = resolveNetworkConfig(config.network, { prefetch: options.prefetch });
+   const files = builtIns.fileHandler || new FileHandler(fs10, cwd7);
+   const useBuiltInScripts = config.builtInScripts !== false;
+@@ -6550,7 +6659,7 @@ function getRemoteStoreRootUrls(storeConfig) {
+     return [];
+   }
+   if (Array.isArray(storeConfig.urls) && storeConfig.urls.length) {
+-    return storeConfig.urls.filter(Boolean);
++    return [.../* @__PURE__ */ new Set([...storeConfig.urls, ...storeConfig.url ? [storeConfig.url] : []])].filter(Boolean);
+   }
+   if (typeof storeConfig.url === "string" && storeConfig.url) {
+     return [storeConfig.url];
+@@ -6680,6 +6789,7 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
+           }
+         }
+       }
++      if (storeConfig.type === "iiif-remote") assertSafeSlug(resource.slug);
+       const previous = parsedSlugs.get(resource.slug);
+       if (previous && (previous.virtual || resource.virtual)) {
+         const folder = resource.source.type === "disk" ? resource.source.filePath : null;
+@@ -6694,6 +6804,9 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
+         }
+         throw new Error(`Conflicting collection slug "${resource.slug}": ${previous.path} and ${resource.path}`);
+       }
++      if (previous && previous.path !== resource.path && (resource.source.type === "remote" || previous.source.type === "remote")) {
++        throw new Error(`Conflicting resource slug "${resource.slug}": ${previous.path} and ${resource.path}`);
++      }
+       parsedSlugs.set(resource.slug, resource);
+       if (resource.source?.type === "disk") {
+         filesToWatch.push(resource.source.filePath);
+@@ -7475,6 +7588,7 @@ async function loadStores({
+           } else {
+             validCount++;
+             const data = await files.loadJson(join28(resourceDir, "resource.json"));
++            data.remoteChildren = resource.remoteChildren;
+             data.inputKey = resource.inputKey;
+             data.saveToDisk = resource.saveToDisk;
+             await files.saveJson(join28(resourceDir, "resource.json"), data);
+@@ -8552,16 +8666,16 @@ async function emit({
+                 }
+                 let hasSnippet = snippets[item.id];
+                 if (!hasSnippet) {
+-                  const lookup = item.id ? idToSlugMap[item.id] : null;
+-                  if (lookup) {
+-                    const fileName2 = lookup.type === "Manifest" ? "manifest.json" : "collection.json";
+-                    const resolvedId = configUrl ? `${configUrl}/${lookup.slug}/${fileName2}` : item.id;
+-                    hasSnippet = snippets[resolvedId] || indexCollection[lookup.slug];
++                  const lookup2 = item.id ? idToSlugMap[item.id] : null;
++                  if (lookup2) {
++                    const fileName2 = lookup2.type === "Manifest" ? "manifest.json" : "collection.json";
++                    const resolvedId = configUrl ? `${configUrl}/${lookup2.slug}/${fileName2}` : item.id;
++                    hasSnippet = snippets[resolvedId] || indexCollection[lookup2.slug];
+                     if (!hasSnippet) {
+-                      const fallbackThumbnail = await getMetaThumbnailForSlug(lookup.slug);
++                      const fallbackThumbnail = await getMetaThumbnailForSlug(lookup2.slug);
+                       hasSnippet = {
+                         label: item.label,
+-                        "hss:slug": lookup.slug,
++                        "hss:slug": lookup2.slug,
+                         thumbnail: fallbackThumbnail || void 0
+                       };
+                     }
+@@ -9971,6 +10085,7 @@ export {
+   readAllFiles,
+   readFilteredFiles,
+   rewritePath,
++  discoverCollectionChildren,
+   IIIFMemoryStore,
+   BUILD_STEP_ORDER,
+   createEmptyBuildProgress,
+@@ -9983,6 +10098,8 @@ export {
+   getConfig,
+   getCustomConfigSource,
+   resolveHostUrl,
++  validatePublicUrl,
++  fetchPublicResource,
+   Tracer,
+   defaultCacheDir,
+   generateCommand,
+diff --git a/build/chunk-AMC726AR.js b/build/chunk-DEZSI2VQ.js
+similarity index 61%
+rename from build/chunk-AMC726AR.js
+rename to build/chunk-DEZSI2VQ.js
+index 85171234e9457f7cdabdbf8fa1ba805aae95af1d..dc6f5d4b6207122da62b748bab54de74b1c22c20 100644
+--- a/build/chunk-AMC726AR.js
++++ b/build/chunk-DEZSI2VQ.js
+@@ -37,7 +37,7 @@ function removeTrailingSlash(str) {
+   return str;
+ }
+ function compileReverseSlugConfig(config) {
+-  const pathSeparator = config.pathSeparator ? new RegExp(config.pathSeparator, "g") : null;
++  const pathSeparator = config.pathSeparator || null;
+   return (targetPath) => {
+     const domain = removeTrailingSlash(config.domain);
+     let path = removeTrailingSlash(targetPath);
+@@ -63,7 +63,7 @@ function compileReverseSlugConfig(config) {
+       parts.push(prefix);
+     }
+     if (pathSeparator) {
+-      parts.push(path.replace(pathSeparator, "/"));
++      parts.push(path.replaceAll(pathSeparator, "/"));
+     } else {
+       parts.push(path);
+     }
+@@ -74,48 +74,7 @@ function compileReverseSlugConfig(config) {
+   };
+ }
+ 
+-// src/util/resolve-from-slug.ts
+-function resolveFromSlug(slug_, type, config, quiet = true) {
+-  let slug = slug_;
+-  const candidates = [];
+-  const keys = Object.keys(config);
+-  for (const key of keys) {
+-    const configItem = config[key];
+-    if (configItem.type !== type) {
+-      continue;
+-    }
+-    const addedPrefix = configItem.addedPrefix ? configItem.addedPrefix.startsWith("/") ? configItem.addedPrefix : `/${configItem.addedPrefix}` : "/";
+-    const matchingPrefix = `${type.toLowerCase()}s${addedPrefix}`;
+-    if (matchingPrefix.startsWith("/") && !slug.startsWith("/")) {
+-      slug = `/${slug}`;
+-    }
+-    if (!matchingPrefix.startsWith("/") && slug.startsWith("/")) {
+-      slug = slug.slice(1);
+-    }
+-    if (!slug.startsWith(matchingPrefix)) {
+-      continue;
+-    }
+-    const matcher = compileReverseSlugConfig(configItem);
+-    const [match, vars] = matcher(slug);
+-    if (match) {
+-      candidates.push({
+-        match,
+-        vars,
+-        key
+-      });
+-    }
+-  }
+-  if (candidates.length === 0) {
+-    return null;
+-  }
+-  if (candidates.length > 1 && !quiet) {
+-    throw new Error(`Multiple matches for slug ${slug} and type ${type}`);
+-  }
+-  return candidates[0];
+-}
+-
+ export {
+   compileSlugConfig,
+-  compileReverseSlugConfig,
+-  resolveFromSlug
++  compileReverseSlugConfig
+ };
+diff --git a/build/chunk-YOC6T6G7.js b/build/chunk-DKDBFJST.js
+similarity index 79%
+rename from build/chunk-YOC6T6G7.js
+rename to build/chunk-DKDBFJST.js
+index 1390f77dd6592d186c7579202ad144ded823f954..0ae520e78fb391d38abe58d3404fdb87c7b919b3 100644
+--- a/build/chunk-YOC6T6G7.js
++++ b/build/chunk-DKDBFJST.js
+@@ -1,6 +1,6 @@
+ import {
+   compileSlugConfig
+-} from "./chunk-AMC726AR.js";
++} from "./chunk-DEZSI2VQ.js";
+ 
+ // src/util/make-slug-helper.ts
+ function getDefaultSlug(slug) {
+@@ -51,7 +51,7 @@ function getInlineTemplates(store) {
+   }
+   return Array.isArray(inlineTemplate) ? inlineTemplate : [inlineTemplate];
+ }
+-function makeGetSlugHelper(store, slugs) {
++function makeUncheckedGetSlugHelper(store, slugs) {
+   const referencedTemplates = (store.slugTemplates || []).flatMap((slugTemplate) => {
+     const compiled = slugs[slugTemplate];
+     if (!compiled) {
+@@ -87,7 +87,24 @@ function makeGetSlugHelper(store, slugs) {
+     return getDefaultSlug(resource.id);
+   };
+ }
++function assertSafeSlug(slug) {
++  if (!slug || slug.startsWith("/") || slug.includes("\\")) throw new Error(`Unsafe IIIF slug: ${slug}`);
++  for (const segment of slug.split("/")) {
++    const decoded = decodeURIComponent(segment);
++    if (!decoded || decoded === "." || decoded === ".." || /[\/\\\x00-\x1f\x7f?#:]/.test(decoded)) throw new Error(`Unsafe IIIF slug: ${slug}`);
++  }
++  return slug;
++}
++function makeGetSlugHelper(store, slugs) {
++  const resolve = makeUncheckedGetSlugHelper(store, slugs);
++  return (resource) => {
++    const result = resolve(resource);
++    assertSafeSlug(result[0]);
++    return result;
++  };
++}
+ 
+ export {
++  assertSafeSlug,
+   makeGetSlugHelper
+ };
+diff --git a/build/client.d.ts b/build/client.d.ts
+index 8db1d6d5204c3dc8f2f1aa050701616b969a5ce3..d2ff24701b8c3201a01e83357b2450307fcca616 100644
+--- a/build/client.d.ts
++++ b/build/client.d.ts
+@@ -1,4 +1,4 @@
+-import { S as SlugConfig, I as IIIFRemoteStore, a as IIIFJSONStore, b as IIIFMemoryStore } from './iiif-memory-BSi9qHqO.js';
++import { S as SlugConfig, I as IIIFRemoteStore, a as IIIFJSONStore, b as IIIFMemoryStore } from './iiif-memory-ByXboWm7.js';
+ import '@iiif/helpers';
+ import '@iiif/presentation-3';
+ import '@atlas-viewer/iiif-image-api';
+diff --git a/build/client.js b/build/client.js
+index 7440563630fe32449f121fbf86b121bc21667e59..e33d7c46409f49d0d300d230fa80da21309119bb 100644
+--- a/build/client.js
++++ b/build/client.js
+@@ -1,6 +1,7 @@
+ import {
+   resolveFromSlug
+-} from "./chunk-AMC726AR.js";
++} from "./chunk-442UETUP.js";
++import "./chunk-DEZSI2VQ.js";
+ 
+ // src/dev/client.ts
+ function normalizeSlug(input) {
+diff --git a/build/dev-ui/assets/index-OcnSA7Xy.js b/build/dev-ui/assets/index-OcnSA7Xy.js
+deleted file mode 100644
+index bb75057a4231685283d924d02515c6704eb39cd6..0000000000000000000000000000000000000000
+diff --git a/build/dev-ui/assets/index-i3EtIqkx.css b/build/dev-ui/assets/index-i3EtIqkx.css
+deleted file mode 100644
+index 90110a4917a104c24bf0bd17d151a17779cc50a9..0000000000000000000000000000000000000000
+diff --git a/build/dev-ui/index.html b/build/dev-ui/index.html
+deleted file mode 100644
+index a49e9fc805ada9f6e896b6b2bd5bf3ab07b32094..0000000000000000000000000000000000000000
+diff --git a/build/iiif-memory-BSi9qHqO.d.ts b/build/iiif-memory-ByXboWm7.d.ts
+similarity index 97%
+rename from build/iiif-memory-BSi9qHqO.d.ts
+rename to build/iiif-memory-ByXboWm7.d.ts
+index 6200236afbb475ff80ad08a234264df227b4464c..784c0a42966739e0f495085b208a405ee1411310 100644
+--- a/build/iiif-memory-BSi9qHqO.d.ts
++++ b/build/iiif-memory-ByXboWm7.d.ts
+@@ -56,6 +56,8 @@ interface SlugConfig {
+     addedPrefix?: string;
+ }
+ type CompiledSlugConfig = (url: string) => readonly [string, Record<string, string>] | readonly [null, null];
++declare function compileSlugConfig(config: SlugConfig): CompiledSlugConfig;
++declare function compileReverseSlugConfig(config: SlugConfig): CompiledSlugConfig;
+ 
+ interface IIIFRemoteStore {
+     run?: string[];
+@@ -1401,6 +1403,8 @@ interface ProtoResourceDirectory {
+          * Number of sub-resources (only used for estimation)
+          */
+         subResources?: number;
++        /** Canonical direct membership of a remote collection, including pages. */
++        remoteChildren?: string[];
+         virtual?: boolean;
+         /**
+          * Where this resource originated from.
+@@ -1468,4 +1472,4 @@ interface IIIFMemoryStore {
+ }
+ declare const IIIFMemoryStore: Store<IIIFMemoryStore>;
+ 
+-export { BUILD_STEP_ORDER as A, type BuildManifest as B, type ConfigMode as C, DEFAULT_CONFIG as D, type BuildStepId as E, FileHandler as F, type GenericStore as G, type HssBuildResult as H, IIIFRemoteStore as I, type BuildProgressPhase as J, type BuildFetchProgressEvent as K, type HssBuildEvent as L, type BuildProgressCallbacks as M, type BuildProgressSnapshot as N, OUTPUT_FORMAT_VERSION as O, type BuildStatus as P, createEmptyBuildProgress as Q, type ResolvedConfigSource as R, type SlugConfig as S, type HssProgrammaticInput as T, type CollectionOrder as U, type FinalCollection as V, type CollectionFinalizerApi as W, type CollectionFinalizer as X, IIIFJSONStore as a, IIIFMemoryStore as b, type BuildOptions as c, defaultBuiltIns as d, buildCommand as e, type BuildContext as f, build as g, type BuildConfig as h, type SavedFile as i, type BuildConcurrencyConfig as j, type IIIFRC as k, type ConfigWatchPath as l, mergeIiifConfig as m, getConfig as n, getCustomConfigSource as o, OUTPUT_CONTRACT_VERSION as p, BUILD_RESULT_VERSION as q, resolveConfigSource as r, supportedConfigFiles as s, type OutputFile as t, type BuildEntrypoints as u, type ResourceOutputFiles as v, type ResourceOutputDescriptor as w, type ResourceSnippet as x, type CanvasDiscoveryItem as y, type SearchDescriptor as z };
++export { BUILD_STEP_ORDER as A, type BuildManifest as B, type ConfigMode as C, DEFAULT_CONFIG as D, type BuildStepId as E, FileHandler as F, type GenericStore as G, type HssBuildResult as H, IIIFRemoteStore as I, type BuildProgressPhase as J, type BuildFetchProgressEvent as K, type HssBuildEvent as L, type BuildProgressCallbacks as M, type BuildProgressSnapshot as N, OUTPUT_FORMAT_VERSION as O, type BuildStatus as P, createEmptyBuildProgress as Q, type ResolvedConfigSource as R, type SlugConfig as S, type HssProgrammaticInput as T, type CollectionOrder as U, type FinalCollection as V, type CollectionFinalizerApi as W, type CollectionFinalizer as X, compileSlugConfig as Y, compileReverseSlugConfig as Z, IIIFJSONStore as a, IIIFMemoryStore as b, type BuildOptions as c, defaultBuiltIns as d, buildCommand as e, type BuildContext as f, build as g, type BuildConfig as h, type SavedFile as i, type BuildConcurrencyConfig as j, type IIIFRC as k, type ConfigWatchPath as l, mergeIiifConfig as m, getConfig as n, getCustomConfigSource as o, OUTPUT_CONTRACT_VERSION as p, BUILD_RESULT_VERSION as q, resolveConfigSource as r, supportedConfigFiles as s, type OutputFile as t, type BuildEntrypoints as u, type ResourceOutputFiles as v, type ResourceOutputDescriptor as w, type ResourceSnippet as x, type CanvasDiscoveryItem as y, type SearchDescriptor as z };
+diff --git a/build/index.js b/build/index.js
+index 4542054234135249eb222d7c116b46b8afc0d804..d95d69ae9010025659391deb1715fdd6836d69e3 100755
+--- a/build/index.js
++++ b/build/index.js
+@@ -151,14 +151,14 @@ var collectionThumbnail = {
+       if (resolved.has(root.id)) continue;
+       const active = /* @__PURE__ */ new Set();
+       const stack = [{ collection: root, index: 0, blocked: false }];
+-      const finish = (image, blocked) => {
++      const finish = (image, blocked2) => {
+         const { collection } = stack.pop();
+         active.delete(collection.id);
+-        if (image || !blocked) resolved.set(collection.id, image);
++        if (image || !blocked2) resolved.set(collection.id, image);
+         if (stack.length) {
+           if (image) {
+             stack[stack.length - 1].index--;
+-          } else stack[stack.length - 1].blocked ||= blocked;
++          } else stack[stack.length - 1].blocked ||= blocked2;
+         }
+       };
+       while (stack.length) {
+@@ -670,6 +670,12 @@ var package_default = {
+         types: "./build/astro/client.d.ts",
+         default: "./build/astro/client.js"
+       }
++    },
++    "./slugs": {
++      import: {
++        types: "./build/slugs.d.ts",
++        default: "./build/slugs.js"
++      }
+     }
+   },
+   typesVersions: {
+@@ -1949,6 +1955,7 @@ function toRuntimeHints(resource) {
+   const portableSource = source.type === "remote" && typeof source.url === "string" ? { type: "remote", url: source.url } : source.type === "disk" ? { type: "disk" } : void 0;
+   return {
+     type,
++    ...resource.remoteChildren ? { children: resource.remoteChildren } : {},
+     ...portableSource ? { source: portableSource } : {},
+     saveToDisk: source.type === "disk" || Boolean(resource.saveToDisk)
+   };
+@@ -2654,6 +2661,7 @@ function getPaginationLinks(resource) {
+ async function discoverCollectionChildren(startUrl, startResource, fetchJson, onError) {
+   const discovered = /* @__PURE__ */ new Map();
+   const visitedPages = /* @__PURE__ */ new Set();
++  const queuedPages = /* @__PURE__ */ new Set([startUrl]);
+   const pendingPages = [{ url: startUrl, resource: startResource }];
+   while (pendingPages.length > 0) {
+     const current = pendingPages.shift();
+@@ -2663,10 +2671,15 @@ async function discoverCollectionChildren(startUrl, startResource, fetchJson, on
+     if (visitedPages.has(current.url)) {
+       continue;
+     }
++    if (visitedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
+     visitedPages.add(current.url);
++    if (!isCollectionLike(current.resource) || !getId(current.resource))
++      throw new Error(`Invalid IIIF Collection or CollectionPage at ${current.url}`);
+     for (const child of getDirectChildren(current.resource)) {
+       if (child.type === "CollectionPage") {
+-        if (!visitedPages.has(child.id)) {
++        if (!queuedPages.has(child.id)) {
++          if (queuedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++          queuedPages.add(child.id);
+           try {
+             const page = await fetchJson(child.id);
+             pendingPages.push({ url: child.id, resource: page });
+@@ -2676,14 +2689,17 @@ async function discoverCollectionChildren(startUrl, startResource, fetchJson, on
+         }
+         continue;
+       }
++      if (!discovered.has(child.id) && discovered.size >= 1e4) throw new Error("IIIF discovery exceeds 10,000 children.");
+       if (!discovered.has(child.id)) {
+         discovered.set(child.id, child);
+       }
+     }
+     for (const pageUrl of getPaginationLinks(current.resource)) {
+-      if (visitedPages.has(pageUrl)) {
++      if (queuedPages.has(pageUrl)) {
+         continue;
+       }
++      if (queuedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++      queuedPages.add(pageUrl);
+       try {
+         const page = await fetchJson(pageUrl);
+         pendingPages.push({ url: pageUrl, resource: page });
+@@ -2698,9 +2714,10 @@ async function discoverCollectionChildren(startUrl, startResource, fetchJson, on
+ // src/stores/iiif-remote.ts
+ var IIIFRemoteStore = {
+   async parse(store, api) {
+-    if (store.urls) {
++    const traversal = api.__remoteTraversal ??= { urls: /* @__PURE__ */ new Set(), ids: /* @__PURE__ */ new Set(), canonical: /* @__PURE__ */ new Map() };
++    if (store.urls?.length) {
+       const toReturn = [];
+-      for (const url of store.urls) {
++      for (const url of /* @__PURE__ */ new Set([...store.urls, ...store.url ? [store.url] : []])) {
+         toReturn.push(...await IIIFRemoteStore.parse({ ...store, url, urls: void 0 }, api));
+       }
+       return toReturn;
+@@ -2708,18 +2725,25 @@ var IIIFRemoteStore = {
+     if (!store.url) {
+       return [];
+     }
++    if (traversal.urls.has(store.url)) return [];
++    if (traversal.urls.size >= 1e4) throw new Error("IIIF discovery exceeds 10,000 resources.");
++    traversal.urls.add(store.url);
+     const collection = await api.requestCache.fetch(store.url);
+     const identifier = collection["@id"] || collection.id || "";
+     const isCollection = collection["@type"] === "sc:Collection" || collection.type === "Collection";
+     const isManifest = collection["@type"] === "sc:Manifest" || collection.type === "Manifest";
+     if (!isCollection && !isManifest || !identifier) {
+-      console.log("ERROR: Could not parse collection", store.url);
+-      return [];
++      throw new Error(`Invalid IIIF Manifest or Collection at ${store.url}`);
+     }
++    traversal.canonical.set(store.url, identifier);
++    if (traversal.ids.has(identifier)) return [];
++    traversal.ids.add(identifier);
+     const [slug4, slugSource] = api.getSlug({
+       id: collection["@id"] || collection.id || "",
+       type: isManifest ? "Manifest" : "Collection"
+     });
++    if (store.config?.foundry?.strictSlugs && slugSource.startsWith("default:"))
++      throw new Error(`No configured slug rule matches ${identifier}. Refresh the dataset IIIF configuration before publishing.`);
+     const override = store.overrides ? `${store.overrides}/${slug4.startsWith(isManifest ? "manifests/" : "collections/") ? slug4.slice((isManifest ? "manifests/" : "collections/").length) : slug4}.json` : void 0;
+     if (isManifest) {
+       let source = {
+@@ -2739,6 +2763,7 @@ var IIIFRemoteStore = {
+       return [
+         {
+           type: "Manifest",
++          id: identifier,
+           slug: slug4,
+           slugSource,
+           path: store.url,
+@@ -2752,6 +2777,8 @@ var IIIFRemoteStore = {
+     const allResources = [
+       {
+         type: "Collection",
++        id: identifier,
++        remoteChildren: [],
+         slug: slug4,
+         slugSource,
+         path: store.url,
+@@ -2766,12 +2793,14 @@ var IIIFRemoteStore = {
+       collection,
+       (url) => api.requestCache.fetch(url),
+       (url, error) => {
+-        api.build.log(`Warning: failed to load collection page ${url}`, error);
++        throw new Error(`Failed to load IIIF collection page ${url}`, { cause: error });
+       }
+     );
+     await api.reportEstimatedResources?.(children.length);
+     for (const child of children) {
+       const parsed = await IIIFRemoteStore.parse({ ...store, url: child.id }, api);
++      const canonical = traversal.canonical.get(child.id);
++      if (canonical && canonical !== identifier) allResources[0].remoteChildren.push(canonical);
+       allResources.push(...parsed);
+     }
+     return allResources;
+@@ -2829,6 +2858,7 @@ var IIIFRemoteStore = {
+         subResources: (res?.items || []).length,
+         saveToDisk: resource.source.type === "disk" || store.saveManifests || false,
+         inputKey: resource.inputKey,
++        remoteChildren: resource.remoteChildren,
+         source: resource.source
+       },
+       vault,
+@@ -4996,7 +5026,7 @@ function removeTrailingSlash(str) {
+   return str;
+ }
+ function compileReverseSlugConfig(config2) {
+-  const pathSeparator2 = config2.pathSeparator ? new RegExp(config2.pathSeparator, "g") : null;
++  const pathSeparator2 = config2.pathSeparator || null;
+   return (targetPath) => {
+     const domain = removeTrailingSlash(config2.domain);
+     let path = removeTrailingSlash(targetPath);
+@@ -5022,7 +5052,7 @@ function compileReverseSlugConfig(config2) {
+       parts.push(prefix);
+     }
+     if (pathSeparator2) {
+-      parts.push(path.replace(pathSeparator2, "/"));
++      parts.push(path.replaceAll(pathSeparator2, "/"));
+     } else {
+       parts.push(path);
+     }
+@@ -5033,6 +5063,84 @@ function compileReverseSlugConfig(config2) {
+   };
+ }
+ 
++// src/util/public-fetch.ts
++import { lookup } from "node:dns";
++import { get as httpGet } from "node:http";
++import { get as httpsGet } from "node:https";
++import { BlockList, isIP } from "node:net";
++var blocked = new BlockList();
++for (const [address, prefix] of [["0.0.0.0", 8], ["10.0.0.0", 8], ["100.64.0.0", 10], ["127.0.0.0", 8], ["169.254.0.0", 16], ["172.16.0.0", 12], ["192.0.0.0", 24], ["192.0.2.0", 24], ["192.168.0.0", 16], ["198.18.0.0", 15], ["198.51.100.0", 24], ["203.0.113.0", 24], ["224.0.0.0", 4], ["240.0.0.0", 4]]) blocked.addSubnet(address, prefix, "ipv4");
++for (const [address, prefix] of [["::", 128], ["::1", 128], ["fc00::", 7], ["fe80::", 10], ["fec0::", 10], ["::", 96], ["2001::", 32], ["ff00::", 8], ["2001:db8::", 32], ["2002::", 16], ["64:ff9b::", 96]]) blocked.addSubnet(address, prefix, "ipv6");
++function assertPublicAddress(address) {
++  const family = isIP(address);
++  if (!family || blocked.check(address, family === 4 ? "ipv4" : "ipv6")) throw new Error("IIIF URLs must resolve to a public internet address.");
++}
++function validatePublicUrl(value) {
++  const url = new URL(value);
++  if (!["https:", "http:"].includes(url.protocol) || url.username || url.password) throw new Error("IIIF URLs must use HTTP(S) without credentials.");
++  if (url.port && url.port !== "80" && url.port !== "443") throw new Error("IIIF URLs must use a standard HTTP(S) port.");
++  const hostname = url.hostname.replace(/^\[|\]$/g, "");
++  if (isIP(hostname)) assertPublicAddress(hostname);
++  return url;
++}
++var publicLookup = (hostname, options, callback) => lookup(hostname, options, (error, address, family) => {
++  if (error) return callback(error, address, family);
++  try {
++    if (Array.isArray(address)) for (const entry of address) assertPublicAddress(entry.address);
++    else assertPublicAddress(address);
++    callback(null, address, family);
++  } catch (error2) {
++    callback(error2, address, family);
++  }
++});
++var fetchPublicResource = async (input, init = {}) => {
++  const requestInput = input instanceof Request ? input : null;
++  if ((init.method || requestInput?.method || "GET").toUpperCase() !== "GET") throw new Error("IIIF fetching only supports GET.");
++  let url = validatePublicUrl(typeof input === "string" ? input : input instanceof URL ? input.href : input.url);
++  const deadline = AbortSignal.timeout(3e4);
++  const external = init.signal || requestInput?.signal;
++  const signal = external ? AbortSignal.any([deadline, external]) : deadline;
++  const headers = {};
++  new Headers(init.headers || requestInput?.headers || { Accept: "application/ld+json, application/json" }).forEach((value, key) => {
++    headers[key] = value;
++  });
++  for (let redirects = 0; redirects <= 3; redirects++) {
++    const response = await new Promise((resolve8, reject) => {
++      const request = (url.protocol === "https:" ? httpsGet : httpGet)(url, { headers, lookup: publicLookup, signal }, (response2) => {
++        const status = response2.statusCode || 0;
++        const responseHeaders = new Headers();
++        for (const [key, value] of Object.entries(response2.headers)) if (value !== void 0) responseHeaders.set(key, Array.isArray(value) ? value.join(", ") : value);
++        if ([301, 302, 303, 307, 308].includes(status) && response2.headers.location) {
++          resolve8({ status, headers: responseHeaders, location: response2.headers.location });
++          response2.destroy();
++          return;
++        }
++        const chunks = [];
++        let bytes = 0;
++        response2.on("data", (chunk) => {
++          bytes += chunk.length;
++          if (bytes > 16 * 1024 * 1024) response2.destroy(new Error("IIIF response exceeds 16 MiB."));
++          else chunks.push(chunk);
++        });
++        response2.on("error", reject);
++        response2.on("end", () => resolve8({ status, headers: responseHeaders, body: Buffer.concat(chunks) }));
++      });
++      request.on("error", reject);
++    });
++    if (response.location) {
++      const next = validatePublicUrl(new URL(response.location, url).href);
++      if (next.origin !== url.origin) {
++        delete headers.authorization;
++        delete headers.cookie;
++      }
++      url = next;
++      continue;
++    }
++    return new Response([204, 205, 304].includes(response.status) ? null : response.body, { status: response.status, headers: response.headers });
++  }
++  throw new Error("Too many IIIF redirects.");
++};
++
+ // src/util/store-request-cache.ts
+ import { createHash as createHash4 } from "node:crypto";
+ import nfs2 from "node:fs";
+@@ -5539,7 +5647,7 @@ async function getBuildConfig(options, builtIns) {
+     write: normalizeConcurrency(concurrencyConfig.write, ioConcurrency)
+   };
+   const useNetworkCache = options.networkCache ?? true;
+-  const request = builtIns.fetch ?? globalThis.fetch;
++  const request = builtIns.fetch ?? fetchPublicResource;
+   const network = resolveNetworkConfig(config2.network, { prefetch: options.prefetch });
+   const files = builtIns.fileHandler || new FileHandler(fs9, cwd10);
+   const useBuiltInScripts = config2.builtInScripts !== false;
+@@ -5986,7 +6094,7 @@ function getInlineTemplates(store) {
+   }
+   return Array.isArray(inlineTemplate) ? inlineTemplate : [inlineTemplate];
+ }
+-function makeGetSlugHelper(store, slugs) {
++function makeUncheckedGetSlugHelper(store, slugs) {
+   const referencedTemplates = (store.slugTemplates || []).flatMap((slugTemplate) => {
+     const compiled = slugs[slugTemplate];
+     if (!compiled) {
+@@ -6022,6 +6130,22 @@ function makeGetSlugHelper(store, slugs) {
+     return getDefaultSlug(resource.id);
+   };
+ }
++function assertSafeSlug(slug4) {
++  if (!slug4 || slug4.startsWith("/") || slug4.includes("\\")) throw new Error(`Unsafe IIIF slug: ${slug4}`);
++  for (const segment of slug4.split("/")) {
++    const decoded = decodeURIComponent(segment);
++    if (!decoded || decoded === "." || decoded === ".." || /[\/\\\x00-\x1f\x7f?#:]/.test(decoded)) throw new Error(`Unsafe IIIF slug: ${slug4}`);
++  }
++  return slug4;
++}
++function makeGetSlugHelper(store, slugs) {
++  const resolve8 = makeUncheckedGetSlugHelper(store, slugs);
++  return (resource) => {
++    const result = resolve8(resource);
++    assertSafeSlug(result[0]);
++    return result;
++  };
++}
+ 
+ // src/commands/generate.ts
+ import fs10 from "node:fs";
+@@ -6368,7 +6492,7 @@ function getRemoteStoreRootUrls(storeConfig) {
+     return [];
+   }
+   if (Array.isArray(storeConfig.urls) && storeConfig.urls.length) {
+-    return storeConfig.urls.filter(Boolean);
++    return [.../* @__PURE__ */ new Set([...storeConfig.urls, ...storeConfig.url ? [storeConfig.url] : []])].filter(Boolean);
+   }
+   if (typeof storeConfig.url === "string" && storeConfig.url) {
+     return [storeConfig.url];
+@@ -6498,6 +6622,7 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
+           }
+         }
+       }
++      if (storeConfig.type === "iiif-remote") assertSafeSlug(resource.slug);
+       const previous = parsedSlugs.get(resource.slug);
+       if (previous && (previous.virtual || resource.virtual)) {
+         const folder = resource.source.type === "disk" ? resource.source.filePath : null;
+@@ -6512,6 +6637,9 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
+         }
+         throw new Error(`Conflicting collection slug "${resource.slug}": ${previous.path} and ${resource.path}`);
+       }
++      if (previous && previous.path !== resource.path && (resource.source.type === "remote" || previous.source.type === "remote")) {
++        throw new Error(`Conflicting resource slug "${resource.slug}": ${previous.path} and ${resource.path}`);
++      }
+       parsedSlugs.set(resource.slug, resource);
+       if (resource.source?.type === "disk") {
+         filesToWatch.push(resource.source.filePath);
+@@ -7293,6 +7421,7 @@ async function loadStores({
+           } else {
+             validCount++;
+             const data = await files.loadJson(join28(resourceDir, "resource.json"));
++            data.remoteChildren = resource.remoteChildren;
+             data.inputKey = resource.inputKey;
+             data.saveToDisk = resource.saveToDisk;
+             await files.saveJson(join28(resourceDir, "resource.json"), data);
+@@ -8370,16 +8499,16 @@ async function emit({
+                 }
+                 let hasSnippet = snippets[item.id];
+                 if (!hasSnippet) {
+-                  const lookup = item.id ? idToSlugMap[item.id] : null;
+-                  if (lookup) {
+-                    const fileName2 = lookup.type === "Manifest" ? "manifest.json" : "collection.json";
+-                    const resolvedId = configUrl ? `${configUrl}/${lookup.slug}/${fileName2}` : item.id;
+-                    hasSnippet = snippets[resolvedId] || indexCollection[lookup.slug];
++                  const lookup2 = item.id ? idToSlugMap[item.id] : null;
++                  if (lookup2) {
++                    const fileName2 = lookup2.type === "Manifest" ? "manifest.json" : "collection.json";
++                    const resolvedId = configUrl ? `${configUrl}/${lookup2.slug}/${fileName2}` : item.id;
++                    hasSnippet = snippets[resolvedId] || indexCollection[lookup2.slug];
+                     if (!hasSnippet) {
+-                      const fallbackThumbnail = await getMetaThumbnailForSlug(lookup.slug);
++                      const fallbackThumbnail = await getMetaThumbnailForSlug(lookup2.slug);
+                       hasSnippet = {
+                         label: item.label,
+-                        "hss:slug": lookup.slug,
++                        "hss:slug": lookup2.slug,
+                         thumbnail: fallbackThumbnail || void 0
+                       };
+                     }
+diff --git a/build/library.d.ts b/build/library.d.ts
+index 577ead70b65612151ec53dd7357c44f72b722fae..19a300065134e9be881dc255686a57515da92066 100644
+--- a/build/library.d.ts
++++ b/build/library.d.ts
+@@ -1,5 +1,5 @@
+-import { B as BuildManifest, H as HssBuildResult } from './iiif-memory-BSi9qHqO.js';
+-export { q as BUILD_RESULT_VERSION, A as BUILD_STEP_ORDER, j as BuildConcurrencyConfig, h as BuildConfig, f as BuildContext, u as BuildEntrypoints, K as BuildFetchProgressEvent, c as BuildOptions, M as BuildProgressCallbacks, J as BuildProgressPhase, N as BuildProgressSnapshot, P as BuildStatus, E as BuildStepId, y as CanvasDiscoveryItem, X as CollectionFinalizer, W as CollectionFinalizerApi, U as CollectionOrder, C as ConfigMode, l as ConfigWatchPath, D as DEFAULT_CONFIG, F as FileHandler, V as FinalCollection, G as GenericStore, L as HssBuildEvent, T as HssProgrammaticInput, b as IIIFMemoryStore, k as IIIFRC, p as OUTPUT_CONTRACT_VERSION, O as OUTPUT_FORMAT_VERSION, t as OutputFile, R as ResolvedConfigSource, w as ResourceOutputDescriptor, v as ResourceOutputFiles, x as ResourceSnippet, i as SavedFile, z as SearchDescriptor, g as build, e as buildCommand, Q as createEmptyBuildProgress, d as defaultBuiltIns, n as getConfig, o as getCustomConfigSource, m as mergeIiifConfig, r as resolveConfigSource, s as supportedConfigFiles } from './iiif-memory-BSi9qHqO.js';
++import { B as BuildManifest, H as HssBuildResult } from './iiif-memory-ByXboWm7.js';
++export { q as BUILD_RESULT_VERSION, A as BUILD_STEP_ORDER, j as BuildConcurrencyConfig, h as BuildConfig, f as BuildContext, u as BuildEntrypoints, K as BuildFetchProgressEvent, c as BuildOptions, M as BuildProgressCallbacks, J as BuildProgressPhase, N as BuildProgressSnapshot, P as BuildStatus, E as BuildStepId, y as CanvasDiscoveryItem, X as CollectionFinalizer, W as CollectionFinalizerApi, U as CollectionOrder, C as ConfigMode, l as ConfigWatchPath, D as DEFAULT_CONFIG, F as FileHandler, V as FinalCollection, G as GenericStore, L as HssBuildEvent, T as HssProgrammaticInput, b as IIIFMemoryStore, k as IIIFRC, p as OUTPUT_CONTRACT_VERSION, O as OUTPUT_FORMAT_VERSION, t as OutputFile, R as ResolvedConfigSource, w as ResourceOutputDescriptor, v as ResourceOutputFiles, x as ResourceSnippet, i as SavedFile, z as SearchDescriptor, g as build, e as buildCommand, Q as createEmptyBuildProgress, d as defaultBuiltIns, n as getConfig, o as getCustomConfigSource, m as mergeIiifConfig, r as resolveConfigSource, s as supportedConfigFiles } from './iiif-memory-ByXboWm7.js';
+ import { Command } from 'commander';
+ import { Vault } from '@iiif/helpers';
+ import '@iiif/presentation-3';
+@@ -43,4 +43,14 @@ declare function getManifestImageServices(vault: Pick<Vault, "getStore">, manife
+     canvasId: string;
+ }[];
+ 
+-export { BuildManifest, HssBuildResult, HssOutputValidationError, type ValidateBuildOutputOptions, defaultCacheDir, generateCommand, getManifestImageServices, isSafeOutputPath, readBuildManifest, readBuildResult, validateBuildManifest, validateBuildOutput };
++declare function validatePublicUrl(value: string): URL;
++/** Public IIIF fetches check the socket address and every redirect, with finite bytes and time. */
++declare const fetchPublicResource: typeof fetch;
++
++interface RemoteChildReference {
++    id: string;
++    type?: string;
++}
++declare function discoverCollectionChildren(startUrl: string, startResource: any, fetchJson: (url: string) => Promise<any>, onError?: (url: string, error: unknown) => void): Promise<RemoteChildReference[]>;
++
++export { BuildManifest, HssBuildResult, HssOutputValidationError, type ValidateBuildOutputOptions, defaultCacheDir, discoverCollectionChildren, fetchPublicResource, generateCommand, getManifestImageServices, isSafeOutputPath, readBuildManifest, readBuildResult, validateBuildManifest, validateBuildOutput, validatePublicUrl };
+diff --git a/build/library.js b/build/library.js
+index 37095a79ab21041adaea2c531b7b205cda553452..9466975755ad1de5d166b776b1ee618e36370737 100644
+--- a/build/library.js
++++ b/build/library.js
+@@ -12,6 +12,8 @@ import {
+   createEmptyBuildProgress,
+   defaultBuiltIns,
+   defaultCacheDir,
++  discoverCollectionChildren,
++  fetchPublicResource,
+   generateCommand,
+   getConfig,
+   getCustomConfigSource,
+@@ -22,10 +24,12 @@ import {
+   resolveConfigSource,
+   supportedConfigFiles,
+   validateBuildManifest,
+-  validateBuildOutput
+-} from "./chunk-7Z3FAVBR.js";
+-import "./chunk-YOC6T6G7.js";
+-import "./chunk-AMC726AR.js";
++  validateBuildOutput,
++  validatePublicUrl
++} from "./chunk-6FARIE7W.js";
++import "./chunk-442UETUP.js";
++import "./chunk-DKDBFJST.js";
++import "./chunk-DEZSI2VQ.js";
+ 
+ // src/util/manifest-image-services.ts
+ import { frameResource, HAS_PART, PART_OF } from "@iiif/parser";
+@@ -87,6 +91,8 @@ export {
+   createEmptyBuildProgress,
+   defaultBuiltIns,
+   defaultCacheDir,
++  discoverCollectionChildren,
++  fetchPublicResource,
+   generateCommand,
+   getConfig,
+   getCustomConfigSource,
+@@ -98,5 +104,6 @@ export {
+   resolveConfigSource,
+   supportedConfigFiles,
+   validateBuildManifest,
+-  validateBuildOutput
++  validateBuildOutput,
++  validatePublicUrl
+ };
+diff --git a/build/node-client.d.ts b/build/node-client.d.ts
+index 02f1105439879bffe705ec009428e354bb213a54..9bb2e9827d835a38e876c1bca380af182ea1d3c1 100644
+--- a/build/node-client.d.ts
++++ b/build/node-client.d.ts
+@@ -1,4 +1,4 @@
+-import { S as SlugConfig, I as IIIFRemoteStore, a as IIIFJSONStore, b as IIIFMemoryStore } from './iiif-memory-BSi9qHqO.js';
++import { S as SlugConfig, I as IIIFRemoteStore, a as IIIFJSONStore, b as IIIFMemoryStore } from './iiif-memory-ByXboWm7.js';
+ import '@iiif/helpers';
+ import '@iiif/presentation-3';
+ import '@atlas-viewer/iiif-image-api';
+diff --git a/build/node-client.js b/build/node-client.js
+index be30a921e3fbd303eff8f7f8ac733e0aa93726d2..490a1d929870f9d1d7cb02dcd6011530d678ef67 100644
+--- a/build/node-client.js
++++ b/build/node-client.js
+@@ -1,10 +1,12 @@
++import {
++  resolveFromSlug
++} from "./chunk-442UETUP.js";
+ import {
+   makeGetSlugHelper
+-} from "./chunk-YOC6T6G7.js";
++} from "./chunk-DKDBFJST.js";
+ import {
+-  compileSlugConfig,
+-  resolveFromSlug
+-} from "./chunk-AMC726AR.js";
++  compileSlugConfig
++} from "./chunk-DEZSI2VQ.js";
+ 
+ // src/dev/node-client.ts
+ import { readFile } from "node:fs/promises";
+diff --git a/build/server/entrypoint.js b/build/server/entrypoint.js
+index e3e0e1ac49685ea87e58cc39d34a32f4ffdb879d..b027b73450ae55451327d87dd330494640af9c51 100755
+--- a/build/server/entrypoint.js
++++ b/build/server/entrypoint.js
+@@ -165,14 +165,14 @@ var collectionThumbnail = {
+       if (resolved.has(root.id)) continue;
+       const active = /* @__PURE__ */ new Set();
+       const stack = [{ collection: root, index: 0, blocked: false }];
+-      const finish = (image, blocked) => {
++      const finish = (image, blocked2) => {
+         const { collection } = stack.pop();
+         active.delete(collection.id);
+-        if (image || !blocked) resolved.set(collection.id, image);
++        if (image || !blocked2) resolved.set(collection.id, image);
+         if (stack.length) {
+           if (image) {
+             stack[stack.length - 1].index--;
+-          } else stack[stack.length - 1].blocked ||= blocked;
++          } else stack[stack.length - 1].blocked ||= blocked2;
+         }
+       };
+       while (stack.length) {
+@@ -683,6 +683,12 @@ var package_default = {
+         types: "./build/astro/client.d.ts",
+         default: "./build/astro/client.js"
+       }
++    },
++    "./slugs": {
++      import: {
++        types: "./build/slugs.d.ts",
++        default: "./build/slugs.js"
++      }
+     }
+   },
+   typesVersions: {
+@@ -1962,6 +1968,7 @@ function toRuntimeHints(resource) {
+   const portableSource = source.type === "remote" && typeof source.url === "string" ? { type: "remote", url: source.url } : source.type === "disk" ? { type: "disk" } : void 0;
+   return {
+     type,
++    ...resource.remoteChildren ? { children: resource.remoteChildren } : {},
+     ...portableSource ? { source: portableSource } : {},
+     saveToDisk: source.type === "disk" || Boolean(resource.saveToDisk)
+   };
+@@ -2667,6 +2674,7 @@ function getPaginationLinks(resource) {
+ async function discoverCollectionChildren(startUrl, startResource, fetchJson, onError) {
+   const discovered = /* @__PURE__ */ new Map();
+   const visitedPages = /* @__PURE__ */ new Set();
++  const queuedPages = /* @__PURE__ */ new Set([startUrl]);
+   const pendingPages = [{ url: startUrl, resource: startResource }];
+   while (pendingPages.length > 0) {
+     const current = pendingPages.shift();
+@@ -2676,10 +2684,15 @@ async function discoverCollectionChildren(startUrl, startResource, fetchJson, on
+     if (visitedPages.has(current.url)) {
+       continue;
+     }
++    if (visitedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
+     visitedPages.add(current.url);
++    if (!isCollectionLike(current.resource) || !getId(current.resource))
++      throw new Error(`Invalid IIIF Collection or CollectionPage at ${current.url}`);
+     for (const child of getDirectChildren(current.resource)) {
+       if (child.type === "CollectionPage") {
+-        if (!visitedPages.has(child.id)) {
++        if (!queuedPages.has(child.id)) {
++          if (queuedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++          queuedPages.add(child.id);
+           try {
+             const page = await fetchJson(child.id);
+             pendingPages.push({ url: child.id, resource: page });
+@@ -2689,14 +2702,17 @@ async function discoverCollectionChildren(startUrl, startResource, fetchJson, on
+         }
+         continue;
+       }
++      if (!discovered.has(child.id) && discovered.size >= 1e4) throw new Error("IIIF discovery exceeds 10,000 children.");
+       if (!discovered.has(child.id)) {
+         discovered.set(child.id, child);
+       }
+     }
+     for (const pageUrl of getPaginationLinks(current.resource)) {
+-      if (visitedPages.has(pageUrl)) {
++      if (queuedPages.has(pageUrl)) {
+         continue;
+       }
++      if (queuedPages.size >= 1e3) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++      queuedPages.add(pageUrl);
+       try {
+         const page = await fetchJson(pageUrl);
+         pendingPages.push({ url: pageUrl, resource: page });
+@@ -2711,9 +2727,10 @@ async function discoverCollectionChildren(startUrl, startResource, fetchJson, on
+ // src/stores/iiif-remote.ts
+ var IIIFRemoteStore = {
+   async parse(store, api) {
+-    if (store.urls) {
++    const traversal = api.__remoteTraversal ??= { urls: /* @__PURE__ */ new Set(), ids: /* @__PURE__ */ new Set(), canonical: /* @__PURE__ */ new Map() };
++    if (store.urls?.length) {
+       const toReturn = [];
+-      for (const url of store.urls) {
++      for (const url of /* @__PURE__ */ new Set([...store.urls, ...store.url ? [store.url] : []])) {
+         toReturn.push(...await IIIFRemoteStore.parse({ ...store, url, urls: void 0 }, api));
+       }
+       return toReturn;
+@@ -2721,18 +2738,25 @@ var IIIFRemoteStore = {
+     if (!store.url) {
+       return [];
+     }
++    if (traversal.urls.has(store.url)) return [];
++    if (traversal.urls.size >= 1e4) throw new Error("IIIF discovery exceeds 10,000 resources.");
++    traversal.urls.add(store.url);
+     const collection = await api.requestCache.fetch(store.url);
+     const identifier = collection["@id"] || collection.id || "";
+     const isCollection = collection["@type"] === "sc:Collection" || collection.type === "Collection";
+     const isManifest = collection["@type"] === "sc:Manifest" || collection.type === "Manifest";
+     if (!isCollection && !isManifest || !identifier) {
+-      console.log("ERROR: Could not parse collection", store.url);
+-      return [];
++      throw new Error(`Invalid IIIF Manifest or Collection at ${store.url}`);
+     }
++    traversal.canonical.set(store.url, identifier);
++    if (traversal.ids.has(identifier)) return [];
++    traversal.ids.add(identifier);
+     const [slug4, slugSource] = api.getSlug({
+       id: collection["@id"] || collection.id || "",
+       type: isManifest ? "Manifest" : "Collection"
+     });
++    if (store.config?.foundry?.strictSlugs && slugSource.startsWith("default:"))
++      throw new Error(`No configured slug rule matches ${identifier}. Refresh the dataset IIIF configuration before publishing.`);
+     const override = store.overrides ? `${store.overrides}/${slug4.startsWith(isManifest ? "manifests/" : "collections/") ? slug4.slice((isManifest ? "manifests/" : "collections/").length) : slug4}.json` : void 0;
+     if (isManifest) {
+       let source = {
+@@ -2752,6 +2776,7 @@ var IIIFRemoteStore = {
+       return [
+         {
+           type: "Manifest",
++          id: identifier,
+           slug: slug4,
+           slugSource,
+           path: store.url,
+@@ -2765,6 +2790,8 @@ var IIIFRemoteStore = {
+     const allResources = [
+       {
+         type: "Collection",
++        id: identifier,
++        remoteChildren: [],
+         slug: slug4,
+         slugSource,
+         path: store.url,
+@@ -2779,12 +2806,14 @@ var IIIFRemoteStore = {
+       collection,
+       (url) => api.requestCache.fetch(url),
+       (url, error) => {
+-        api.build.log(`Warning: failed to load collection page ${url}`, error);
++        throw new Error(`Failed to load IIIF collection page ${url}`, { cause: error });
+       }
+     );
+     await api.reportEstimatedResources?.(children.length);
+     for (const child of children) {
+       const parsed = await IIIFRemoteStore.parse({ ...store, url: child.id }, api);
++      const canonical = traversal.canonical.get(child.id);
++      if (canonical && canonical !== identifier) allResources[0].remoteChildren.push(canonical);
+       allResources.push(...parsed);
+     }
+     return allResources;
+@@ -2842,6 +2871,7 @@ var IIIFRemoteStore = {
+         subResources: (res?.items || []).length,
+         saveToDisk: resource.source.type === "disk" || store.saveManifests || false,
+         inputKey: resource.inputKey,
++        remoteChildren: resource.remoteChildren,
+         source: resource.source
+       },
+       vault,
+@@ -5009,7 +5039,7 @@ function removeTrailingSlash(str) {
+   return str;
+ }
+ function compileReverseSlugConfig(config2) {
+-  const pathSeparator2 = config2.pathSeparator ? new RegExp(config2.pathSeparator, "g") : null;
++  const pathSeparator2 = config2.pathSeparator || null;
+   return (targetPath) => {
+     const domain = removeTrailingSlash(config2.domain);
+     let path = removeTrailingSlash(targetPath);
+@@ -5035,7 +5065,7 @@ function compileReverseSlugConfig(config2) {
+       parts.push(prefix);
+     }
+     if (pathSeparator2) {
+-      parts.push(path.replace(pathSeparator2, "/"));
++      parts.push(path.replaceAll(pathSeparator2, "/"));
+     } else {
+       parts.push(path);
+     }
+@@ -5046,6 +5076,84 @@ function compileReverseSlugConfig(config2) {
+   };
+ }
+ 
++// src/util/public-fetch.ts
++import { lookup } from "node:dns";
++import { get as httpGet } from "node:http";
++import { get as httpsGet } from "node:https";
++import { BlockList, isIP } from "node:net";
++var blocked = new BlockList();
++for (const [address, prefix] of [["0.0.0.0", 8], ["10.0.0.0", 8], ["100.64.0.0", 10], ["127.0.0.0", 8], ["169.254.0.0", 16], ["172.16.0.0", 12], ["192.0.0.0", 24], ["192.0.2.0", 24], ["192.168.0.0", 16], ["198.18.0.0", 15], ["198.51.100.0", 24], ["203.0.113.0", 24], ["224.0.0.0", 4], ["240.0.0.0", 4]]) blocked.addSubnet(address, prefix, "ipv4");
++for (const [address, prefix] of [["::", 128], ["::1", 128], ["fc00::", 7], ["fe80::", 10], ["fec0::", 10], ["::", 96], ["2001::", 32], ["ff00::", 8], ["2001:db8::", 32], ["2002::", 16], ["64:ff9b::", 96]]) blocked.addSubnet(address, prefix, "ipv6");
++function assertPublicAddress(address) {
++  const family = isIP(address);
++  if (!family || blocked.check(address, family === 4 ? "ipv4" : "ipv6")) throw new Error("IIIF URLs must resolve to a public internet address.");
++}
++function validatePublicUrl(value) {
++  const url = new URL(value);
++  if (!["https:", "http:"].includes(url.protocol) || url.username || url.password) throw new Error("IIIF URLs must use HTTP(S) without credentials.");
++  if (url.port && url.port !== "80" && url.port !== "443") throw new Error("IIIF URLs must use a standard HTTP(S) port.");
++  const hostname = url.hostname.replace(/^\[|\]$/g, "");
++  if (isIP(hostname)) assertPublicAddress(hostname);
++  return url;
++}
++var publicLookup = (hostname, options2, callback) => lookup(hostname, options2, (error, address, family) => {
++  if (error) return callback(error, address, family);
++  try {
++    if (Array.isArray(address)) for (const entry of address) assertPublicAddress(entry.address);
++    else assertPublicAddress(address);
++    callback(null, address, family);
++  } catch (error2) {
++    callback(error2, address, family);
++  }
++});
++var fetchPublicResource = async (input, init = {}) => {
++  const requestInput = input instanceof Request ? input : null;
++  if ((init.method || requestInput?.method || "GET").toUpperCase() !== "GET") throw new Error("IIIF fetching only supports GET.");
++  let url = validatePublicUrl(typeof input === "string" ? input : input instanceof URL ? input.href : input.url);
++  const deadline = AbortSignal.timeout(3e4);
++  const external = init.signal || requestInput?.signal;
++  const signal = external ? AbortSignal.any([deadline, external]) : deadline;
++  const headers = {};
++  new Headers(init.headers || requestInput?.headers || { Accept: "application/ld+json, application/json" }).forEach((value, key) => {
++    headers[key] = value;
++  });
++  for (let redirects = 0; redirects <= 3; redirects++) {
++    const response = await new Promise((resolve8, reject) => {
++      const request = (url.protocol === "https:" ? httpsGet : httpGet)(url, { headers, lookup: publicLookup, signal }, (response2) => {
++        const status = response2.statusCode || 0;
++        const responseHeaders = new Headers();
++        for (const [key, value] of Object.entries(response2.headers)) if (value !== void 0) responseHeaders.set(key, Array.isArray(value) ? value.join(", ") : value);
++        if ([301, 302, 303, 307, 308].includes(status) && response2.headers.location) {
++          resolve8({ status, headers: responseHeaders, location: response2.headers.location });
++          response2.destroy();
++          return;
++        }
++        const chunks = [];
++        let bytes = 0;
++        response2.on("data", (chunk) => {
++          bytes += chunk.length;
++          if (bytes > 16 * 1024 * 1024) response2.destroy(new Error("IIIF response exceeds 16 MiB."));
++          else chunks.push(chunk);
++        });
++        response2.on("error", reject);
++        response2.on("end", () => resolve8({ status, headers: responseHeaders, body: Buffer.concat(chunks) }));
++      });
++      request.on("error", reject);
++    });
++    if (response.location) {
++      const next = validatePublicUrl(new URL(response.location, url).href);
++      if (next.origin !== url.origin) {
++        delete headers.authorization;
++        delete headers.cookie;
++      }
++      url = next;
++      continue;
++    }
++    return new Response([204, 205, 304].includes(response.status) ? null : response.body, { status: response.status, headers: response.headers });
++  }
++  throw new Error("Too many IIIF redirects.");
++};
++
+ // src/util/store-request-cache.ts
+ import { createHash as createHash4 } from "node:crypto";
+ import nfs2 from "node:fs";
+@@ -5552,7 +5660,7 @@ async function getBuildConfig(options2, builtIns) {
+     write: normalizeConcurrency(concurrencyConfig.write, ioConcurrency)
+   };
+   const useNetworkCache = options2.networkCache ?? true;
+-  const request = builtIns.fetch ?? globalThis.fetch;
++  const request = builtIns.fetch ?? fetchPublicResource;
+   const network = resolveNetworkConfig(config2.network, { prefetch: options2.prefetch });
+   const files = builtIns.fileHandler || new FileHandler(fs9, cwd6);
+   const useBuiltInScripts = config2.builtInScripts !== false;
+@@ -5999,7 +6107,7 @@ function getInlineTemplates(store) {
+   }
+   return Array.isArray(inlineTemplate) ? inlineTemplate : [inlineTemplate];
+ }
+-function makeGetSlugHelper(store, slugs) {
++function makeUncheckedGetSlugHelper(store, slugs) {
+   const referencedTemplates = (store.slugTemplates || []).flatMap((slugTemplate) => {
+     const compiled = slugs[slugTemplate];
+     if (!compiled) {
+@@ -6035,6 +6143,22 @@ function makeGetSlugHelper(store, slugs) {
+     return getDefaultSlug(resource.id);
+   };
+ }
++function assertSafeSlug(slug4) {
++  if (!slug4 || slug4.startsWith("/") || slug4.includes("\\")) throw new Error(`Unsafe IIIF slug: ${slug4}`);
++  for (const segment of slug4.split("/")) {
++    const decoded = decodeURIComponent(segment);
++    if (!decoded || decoded === "." || decoded === ".." || /[\/\\\x00-\x1f\x7f?#:]/.test(decoded)) throw new Error(`Unsafe IIIF slug: ${slug4}`);
++  }
++  return slug4;
++}
++function makeGetSlugHelper(store, slugs) {
++  const resolve8 = makeUncheckedGetSlugHelper(store, slugs);
++  return (resource) => {
++    const result = resolve8(resource);
++    assertSafeSlug(result[0]);
++    return result;
++  };
++}
+ 
+ // src/commands/generate.ts
+ import fs10 from "node:fs";
+@@ -6381,7 +6505,7 @@ function getRemoteStoreRootUrls(storeConfig) {
+     return [];
+   }
+   if (Array.isArray(storeConfig.urls) && storeConfig.urls.length) {
+-    return storeConfig.urls.filter(Boolean);
++    return [.../* @__PURE__ */ new Set([...storeConfig.urls, ...storeConfig.url ? [storeConfig.url] : []])].filter(Boolean);
+   }
+   if (typeof storeConfig.url === "string" && storeConfig.url) {
+     return [storeConfig.url];
+@@ -6511,6 +6635,7 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
+           }
+         }
+       }
++      if (storeConfig.type === "iiif-remote") assertSafeSlug(resource.slug);
+       const previous = parsedSlugs.get(resource.slug);
+       if (previous && (previous.virtual || resource.virtual)) {
+         const folder = resource.source.type === "disk" ? resource.source.filePath : null;
+@@ -6525,6 +6650,9 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
+         }
+         throw new Error(`Conflicting collection slug "${resource.slug}": ${previous.path} and ${resource.path}`);
+       }
++      if (previous && previous.path !== resource.path && (resource.source.type === "remote" || previous.source.type === "remote")) {
++        throw new Error(`Conflicting resource slug "${resource.slug}": ${previous.path} and ${resource.path}`);
++      }
+       parsedSlugs.set(resource.slug, resource);
+       if (resource.source?.type === "disk") {
+         filesToWatch.push(resource.source.filePath);
+@@ -7306,6 +7434,7 @@ async function loadStores({
+           } else {
+             validCount++;
+             const data = await files.loadJson(join28(resourceDir, "resource.json"));
++            data.remoteChildren = resource.remoteChildren;
+             data.inputKey = resource.inputKey;
+             data.saveToDisk = resource.saveToDisk;
+             await files.saveJson(join28(resourceDir, "resource.json"), data);
+@@ -8383,16 +8512,16 @@ async function emit({
+                 }
+                 let hasSnippet = snippets[item.id];
+                 if (!hasSnippet) {
+-                  const lookup = item.id ? idToSlugMap[item.id] : null;
+-                  if (lookup) {
+-                    const fileName2 = lookup.type === "Manifest" ? "manifest.json" : "collection.json";
+-                    const resolvedId = configUrl ? `${configUrl}/${lookup.slug}/${fileName2}` : item.id;
+-                    hasSnippet = snippets[resolvedId] || indexCollection[lookup.slug];
++                  const lookup2 = item.id ? idToSlugMap[item.id] : null;
++                  if (lookup2) {
++                    const fileName2 = lookup2.type === "Manifest" ? "manifest.json" : "collection.json";
++                    const resolvedId = configUrl ? `${configUrl}/${lookup2.slug}/${fileName2}` : item.id;
++                    hasSnippet = snippets[resolvedId] || indexCollection[lookup2.slug];
+                     if (!hasSnippet) {
+-                      const fallbackThumbnail = await getMetaThumbnailForSlug(lookup.slug);
++                      const fallbackThumbnail = await getMetaThumbnailForSlug(lookup2.slug);
+                       hasSnippet = {
+                         label: item.label,
+-                        "hss:slug": lookup.slug,
++                        "hss:slug": lookup2.slug,
+                         thumbnail: fallbackThumbnail || void 0
+                       };
+                     }
+diff --git a/build/shared-iiif-runtime-BASHAdiY.d.ts b/build/shared-iiif-runtime-BQNG5mh-.d.ts
+similarity index 97%
+rename from build/shared-iiif-runtime-BASHAdiY.d.ts
+rename to build/shared-iiif-runtime-BQNG5mh-.d.ts
+index 498ff8c1da339be9c3a8c8026fd142a0a2b6e41e..0f453897630c31c530970fc3816ebd7ffc62947b 100644
+--- a/build/shared-iiif-runtime-BASHAdiY.d.ts
++++ b/build/shared-iiif-runtime-BQNG5mh-.d.ts
+@@ -1,4 +1,4 @@
+-import { k as IIIFRC } from './iiif-memory-BSi9qHqO.js';
++import { k as IIIFRC } from './iiif-memory-ByXboWm7.js';
+ 
+ type IiifServerBuildEvent = {
+     type: "start";
+diff --git a/build/slugs.d.ts b/build/slugs.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..161b7c81f0055b4dd19ad80e23c5832717730c83
+--- /dev/null
++++ b/build/slugs.d.ts
+@@ -0,0 +1,17 @@
++import { G as GenericStore, h as BuildConfig } from './iiif-memory-ByXboWm7.js';
++export { S as SlugConfig, Z as compileReverseSlugConfig, Y as compileSlugConfig } from './iiif-memory-ByXboWm7.js';
++import '@iiif/helpers';
++import '@iiif/presentation-3';
++import '@atlas-viewer/iiif-image-api';
++import 'unionfs';
++import '@iiif/builder';
++import 'commander';
++
++/** Slugs become directory paths; encoded traversal and separators are unsafe too. */
++declare function assertSafeSlug(slug: string): string;
++declare function makeGetSlugHelper(store: GenericStore, slugs: BuildConfig["slugs"]): (resource: {
++    id: string;
++    type: string;
++}) => readonly [string, string];
++
++export { assertSafeSlug, makeGetSlugHelper };
+diff --git a/build/slugs.js b/build/slugs.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..ddd4e08c0018ff0f406c5f0a8a2f9b5bd0a901ac
+--- /dev/null
++++ b/build/slugs.js
+@@ -0,0 +1,14 @@
++import {
++  assertSafeSlug,
++  makeGetSlugHelper
++} from "./chunk-DKDBFJST.js";
++import {
++  compileReverseSlugConfig,
++  compileSlugConfig
++} from "./chunk-DEZSI2VQ.js";
++export {
++  assertSafeSlug,
++  compileReverseSlugConfig,
++  compileSlugConfig,
++  makeGetSlugHelper
++};
+diff --git a/build/vite-plugin.d.ts b/build/vite-plugin.d.ts
+index ca565de41031353a37a10b54fa6f7b1845bcc2ba..428baaae0e758801a9b9a34228a44ec56834ed53 100644
+--- a/build/vite-plugin.d.ts
++++ b/build/vite-plugin.d.ts
+@@ -1,6 +1,6 @@
+ import { Plugin } from 'vite';
+-import { I as IiifBuildEvent, a as IIIFHSSSPluginOptions } from './shared-iiif-runtime-BASHAdiY.js';
+-import './iiif-memory-BSi9qHqO.js';
++import { I as IiifBuildEvent, a as IIIFHSSSPluginOptions } from './shared-iiif-runtime-BQNG5mh-.js';
++import './iiif-memory-ByXboWm7.js';
+ import '@iiif/helpers';
+ import '@iiif/presentation-3';
+ import '@atlas-viewer/iiif-image-api';
+diff --git a/build/vite-plugin.js b/build/vite-plugin.js
+index db4da06fd0cd891dd4c23e49ac9c22c70c4f56b4..2e45e84ce503e0c61c09467692d3794416f71c6d 100644
+--- a/build/vite-plugin.js
++++ b/build/vite-plugin.js
+@@ -1,11 +1,12 @@
+ import {
+   createIiifRuntime
+-} from "./chunk-BO2M7NLQ.js";
++} from "./chunk-2KQIO4HQ.js";
+ import {
+   source_default
+-} from "./chunk-7Z3FAVBR.js";
+-import "./chunk-YOC6T6G7.js";
+-import "./chunk-AMC726AR.js";
++} from "./chunk-6FARIE7W.js";
++import "./chunk-442UETUP.js";
++import "./chunk-DKDBFJST.js";
++import "./chunk-DEZSI2VQ.js";
+ 
+ // src/vite-plugin.ts
+ import { relative } from "node:path";
+diff --git a/package.json b/package.json
+index 6b4599dcd1e269cef1ebfc0b883466c67bb2e089..cb7ea73f7bcee1e411fdc8d58c61d9497dea7587 100644
+--- a/package.json
++++ b/package.json
+@@ -105,6 +105,12 @@
+         "types": "./build/astro/client.d.ts",
+         "default": "./build/astro/client.js"
+       }
++    },
++    "./slugs": {
++      "import": {
++        "types": "./build/slugs.d.ts",
++        "default": "./build/slugs.js"
++      }
+     }
+   },
+   "typesVersions": {
+diff --git a/src/astro/server.ts b/src/astro/server.ts
+index c8102bef92c4cbdeacff8fa32594fe2bfa79e112..ac68c58756d5ec3d8c89c81daafca48d6dd87be5 100644
+--- a/src/astro/server.ts
++++ b/src/astro/server.ts
+@@ -1,3 +1,4 @@
++import { fetchPublicResource } from "../util/public-fetch.ts";
+ import { existsSync } from "node:fs";
+ import { readFile } from "node:fs/promises";
+ import { join, resolve } from "node:path";
+@@ -103,7 +104,7 @@ export function createIiifAstroServer(options: AstroIiifServerOptions = {}) {
+   const baseUrl = asNormalizedBasePath(options.baseUrl);
+   const routes = resolveAstroIiifRoutes(options.routes);
+   const preferDevBuild = options.preferDevBuild ?? true;
+-  const fetchFn = options.fetchFn || fetch;
++  const fetchFn = options.fetchFn || fetchPublicResource;
+   let resolvedBuildDir: string | null = null;
+ 
+   const cache = {
+diff --git a/src/commands/build-steps/0-parse-stores.ts b/src/commands/build-steps/0-parse-stores.ts
+index eeb78ff0d2d791aacd682097c32a8dd6a44352f3..f18ac5762ac524cc0e58bfa9673683b6c35ea3d4 100644
+--- a/src/commands/build-steps/0-parse-stores.ts
++++ b/src/commands/build-steps/0-parse-stores.ts
+@@ -1,7 +1,7 @@
+ import { dirname, join } from "node:path";
+ import type { IFS } from "unionfs";
+ import type { BuildProgressCallbacks } from "../../util/build-progress.ts";
+-import { makeGetSlugHelper } from "../../util/make-slug-helper.ts";
++import { assertSafeSlug, makeGetSlugHelper } from "../../util/make-slug-helper.ts";
+ import { resolveNetworkConfig } from "../../util/network.ts";
+ import { createStoreRequestCache } from "../../util/store-request-cache.ts";
+ import type { ParsedResource, Store } from "../../util/store.ts";
+@@ -21,7 +21,7 @@ function getRemoteStoreRootUrls(storeConfig: any): string[] {
+     return [];
+   }
+   if (Array.isArray(storeConfig.urls) && storeConfig.urls.length) {
+-    return storeConfig.urls.filter(Boolean);
++    return [...new Set([...storeConfig.urls,...storeConfig.url?[storeConfig.url]:[]])].filter(Boolean);
+   }
+   if (typeof storeConfig.url === "string" && storeConfig.url) {
+     return [storeConfig.url];
+@@ -178,6 +178,7 @@ export async function parseStores(
+         }
+       }
+ 
++      if (storeConfig.type === "iiif-remote") assertSafeSlug(resource.slug);
+       const previous = parsedSlugs.get(resource.slug);
+       if (previous && (previous.virtual || resource.virtual)) {
+         const folder = resource.source.type === "disk" ? resource.source.filePath : null;
+@@ -203,6 +204,9 @@ export async function parseStores(
+         }
+         throw new Error(`Conflicting collection slug "${resource.slug}": ${previous.path} and ${resource.path}`);
+       }
++      if (previous && previous.path !== resource.path && (resource.source.type === "remote" || previous.source.type === "remote")) {
++        throw new Error(`Conflicting resource slug "${resource.slug}": ${previous.path} and ${resource.path}`);
++      }
+       parsedSlugs.set(resource.slug, resource);
+ 
+       if (resource.source?.type === "disk") {
+diff --git a/src/commands/build-steps/1-load-stores.ts b/src/commands/build-steps/1-load-stores.ts
+index ba1ff64f61ecaf1aa550b9829852ab97b3ca2273..69a56800b8f565a53f18dcb1264dc84e907b2d03 100644
+--- a/src/commands/build-steps/1-load-stores.ts
++++ b/src/commands/build-steps/1-load-stores.ts
+@@ -154,6 +154,7 @@ export async function loadStores(
+           } else {
+             validCount++;
+             const data = await files.loadJson(join(resourceDir, "resource.json"));
++            data.remoteChildren = resource.remoteChildren;
+             data.inputKey = resource.inputKey;
+             data.saveToDisk = resource.saveToDisk;
+             await files.saveJson(join(resourceDir, "resource.json"), data);
+diff --git a/src/extract/extract-runtime-hints.ts b/src/extract/extract-runtime-hints.ts
+index a91a3719f53a48dbecbc47aa80afdf8e5c4205fc..34f44413065d58c7a06c83791a0ed541a93125b8 100644
+--- a/src/extract/extract-runtime-hints.ts
++++ b/src/extract/extract-runtime-hints.ts
+@@ -9,9 +9,10 @@ type RuntimeHints = {
+   type: "Manifest" | "Collection";
+   source?: RuntimeSource;
+   saveToDisk: boolean;
++  children?: string[];
+ };
+ 
+-function toRuntimeHints(resource: { type: string; source: any; saveToDisk?: boolean }): RuntimeHints | null {
++function toRuntimeHints(resource: { type: string; source: any; saveToDisk?: boolean; remoteChildren?: string[] }): RuntimeHints | null {
+   const type = resource.type === "Manifest" || resource.type === "Collection" ? resource.type : null;
+   if (!type) {
+     return null;
+@@ -31,6 +32,7 @@ function toRuntimeHints(resource: { type: string; source: any; saveToDisk?: bool
+ 
+   return {
+     type,
++    ...(resource.remoteChildren ? { children: resource.remoteChildren } : {}),
+     ...(portableSource ? { source: portableSource } : {}),
+     saveToDisk: source.type === "disk" || Boolean(resource.saveToDisk),
+   };
+diff --git a/src/integrations/shared-iiif-runtime.ts b/src/integrations/shared-iiif-runtime.ts
+index a3f5a672b3bf013cf90b80856fac1670aa29b8c4..8665449b0c319980f5df4450fbb40716805c8e57 100644
+--- a/src/integrations/shared-iiif-runtime.ts
++++ b/src/integrations/shared-iiif-runtime.ts
+@@ -617,6 +617,10 @@ export function createIiifRuntime(
+       await setConfigServerUrl(buildServerUrl);
+     }
+     if (!hasBuildableStores(configSource.config)) {
++      // Restored network caches may remain, but previously emitted public content must not.
++      await rm(toAbsolutePath(".iiif/build"), { recursive: true, force: true });
++      if (iiifBuildDir) await rm(toAbsolutePath(iiifBuildDir), { recursive: true, force: true });
++      lastIiifBuildDir = null;
+       logger?.warn?.(`${chalk.green`✓`}  Skipping iiif build (no buildable stores found)`);
+       await lifecycle.onBuild?.({
+         type: "skipped",
+diff --git a/src/library.ts b/src/library.ts
+index 65c62b9277d6165c5a07dc64e7dab409622301bc..a1c30d50cf1a751d751a2e0db836b04084464212 100644
+--- a/src/library.ts
++++ b/src/library.ts
+@@ -9,3 +9,7 @@ export * from "./stores/iiif-memory";
+ export { getManifestImageServices } from "./util/manifest-image-services.ts";
+ 
+ export * from "./util/finalize-collection.ts";
++
++export { fetchPublicResource, validatePublicUrl } from "./util/public-fetch.ts";
++
++export { discoverCollectionChildren } from "./stores/iiif-remote-discovery.ts";
+diff --git a/src/slugs.ts b/src/slugs.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..fee8462e3ce67e3a4405d9fe5c8475713483529c
+--- /dev/null
++++ b/src/slugs.ts
+@@ -0,0 +1,2 @@
++export { makeGetSlugHelper, assertSafeSlug } from "./util/make-slug-helper.ts";
++export { compileSlugConfig, compileReverseSlugConfig, type SlugConfig } from "./util/slug-engine.ts";
+diff --git a/src/stores/iiif-remote-discovery.ts b/src/stores/iiif-remote-discovery.ts
+index 3fbd390a34b810c707ebd9ce91360f64373e918b..0ab430f1c5b1769914e914874889b2642554c390 100644
+--- a/src/stores/iiif-remote-discovery.ts
++++ b/src/stores/iiif-remote-discovery.ts
+@@ -103,6 +103,7 @@ export async function discoverCollectionChildren(
+ ): Promise<RemoteChildReference[]> {
+   const discovered = new Map<string, RemoteChildReference>();
+   const visitedPages = new Set<string>();
++  const queuedPages = new Set<string>([startUrl]);
+   const pendingPages: Array<{ url: string; resource: any }> = [{ url: startUrl, resource: startResource }];
+ 
+   while (pendingPages.length > 0) {
+@@ -113,11 +114,16 @@ export async function discoverCollectionChildren(
+     if (visitedPages.has(current.url)) {
+       continue;
+     }
++    if (visitedPages.size >= 1000) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
+     visitedPages.add(current.url);
++    if (!isCollectionLike(current.resource) || !getId(current.resource))
++      throw new Error(`Invalid IIIF Collection or CollectionPage at ${current.url}`);
+ 
+     for (const child of getDirectChildren(current.resource)) {
+       if (child.type === "CollectionPage") {
+-        if (!visitedPages.has(child.id)) {
++        if (!queuedPages.has(child.id)) {
++          if (queuedPages.size >= 1000) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++          queuedPages.add(child.id);
+           try {
+             const page = await fetchJson(child.id);
+             pendingPages.push({ url: child.id, resource: page });
+@@ -127,15 +133,18 @@ export async function discoverCollectionChildren(
+         }
+         continue;
+       }
++      if (!discovered.has(child.id) && discovered.size >= 10000) throw new Error("IIIF discovery exceeds 10,000 children.");
+       if (!discovered.has(child.id)) {
+         discovered.set(child.id, child);
+       }
+     }
+ 
+     for (const pageUrl of getPaginationLinks(current.resource)) {
+-      if (visitedPages.has(pageUrl)) {
++      if (queuedPages.has(pageUrl)) {
+         continue;
+       }
++      if (queuedPages.size >= 1000) throw new Error("IIIF discovery exceeds 1,000 collection pages.");
++      queuedPages.add(pageUrl);
+       try {
+         const page = await fetchJson(pageUrl);
+         pendingPages.push({ url: pageUrl, resource: page });
+diff --git a/src/stores/iiif-remote.ts b/src/stores/iiif-remote.ts
+index 1e950cf761dc8277928aeae2e74ca2eec9de9b6d..7f42c106d13c7e5315ebf45fe5290af4930b00ff 100644
+--- a/src/stores/iiif-remote.ts
++++ b/src/stores/iiif-remote.ts
+@@ -27,9 +27,12 @@ export interface IIIFRemoteStore {
+ 
+ export const IIIFRemoteStore: Store<IIIFRemoteStore> = {
+   async parse(store, api) {
+-    if (store.urls) {
++    // The traversal API is shared across roots and recursive children, not across builds.
++    const traversal = (api as any).__remoteTraversal ??= { urls: new Set<string>(), ids: new Set<string>(), canonical: new Map<string,string>() };
++
++    if (store.urls?.length) {
+       const toReturn = [];
+-      for (const url of store.urls) {
++      for (const url of new Set([...store.urls,...store.url?[store.url]:[]])) {
+         toReturn.push(...(await IIIFRemoteStore.parse({ ...store, url, urls: undefined }, api)));
+       }
+       return toReturn;
+@@ -38,6 +41,9 @@ export const IIIFRemoteStore: Store<IIIFRemoteStore> = {
+       return [];
+     }
+ 
++    if (traversal.urls.has(store.url)) return [];
++    if (traversal.urls.size >= 10000) throw new Error("IIIF discovery exceeds 10,000 resources.");
++    traversal.urls.add(store.url);
+     const collection = await api.requestCache.fetch(store.url);
+     // We support v2 and v3 collections.
+     const identifier = collection["@id"] || collection.id || "";
+@@ -45,15 +51,20 @@ export const IIIFRemoteStore: Store<IIIFRemoteStore> = {
+     const isManifest = collection["@type"] === "sc:Manifest" || collection.type === "Manifest";
+ 
+     if ((!isCollection && !isManifest) || !identifier) {
+-      console.log("ERROR: Could not parse collection", store.url);
+-      return [];
++      throw new Error(`Invalid IIIF Manifest or Collection at ${store.url}`);
+     }
+ 
++    traversal.canonical.set(store.url, identifier);
++    if (traversal.ids.has(identifier)) return [];
++    traversal.ids.add(identifier);
+     const [slug, slugSource] = api.getSlug({
+       id: collection["@id"] || collection.id || "",
+       type: isManifest ? "Manifest" : "Collection",
+     });
+ 
++    if (store.config?.foundry?.strictSlugs && slugSource.startsWith("default:"))
++      throw new Error(`No configured slug rule matches ${identifier}. Refresh the dataset IIIF configuration before publishing.`);
++
+     const override = store.overrides
+       ? `${store.overrides}/${
+           slug.startsWith(isManifest ? "manifests/" : "collections/")
+@@ -82,6 +93,7 @@ export const IIIFRemoteStore: Store<IIIFRemoteStore> = {
+       return [
+         {
+           type: "Manifest",
++          id: identifier,
+           slug,
+           slugSource,
+           path: store.url,
+@@ -96,6 +108,8 @@ export const IIIFRemoteStore: Store<IIIFRemoteStore> = {
+     const allResources: ParsedResource[] = [
+       {
+         type: "Collection",
++        id: identifier,
++        remoteChildren: [],
+         slug,
+         slugSource,
+         path: store.url,
+@@ -110,12 +124,14 @@ export const IIIFRemoteStore: Store<IIIFRemoteStore> = {
+       collection,
+       (url) => api.requestCache.fetch(url),
+       (url, error) => {
+-        api.build.log(`Warning: failed to load collection page ${url}`, error);
++        throw new Error(`Failed to load IIIF collection page ${url}`, { cause: error });
+       }
+     );
+     await api.reportEstimatedResources?.(children.length);
+     for (const child of children) {
+       const parsed = await IIIFRemoteStore.parse({ ...store, url: child.id }, api);
++      const canonical = traversal.canonical.get(child.id);
++      if (canonical && canonical !== identifier) allResources[0].remoteChildren!.push(canonical);
+       allResources.push(...parsed);
+     }
+ 
+@@ -187,6 +203,7 @@ export const IIIFRemoteStore: Store<IIIFRemoteStore> = {
+         subResources: (res?.items || []).length,
+         saveToDisk: resource.source.type === "disk" || store.saveManifests || false,
+         inputKey: resource.inputKey,
++        remoteChildren: resource.remoteChildren,
+         source: resource.source,
+       },
+       vault,
+diff --git a/src/util/get-build-config.ts b/src/util/get-build-config.ts
+index cd1395aa6b40cb0778540c38383b1bc09bf87aa5..9f6dfc5c1ac5a37c4a4ab70120a4635a5c246557 100644
+--- a/src/util/get-build-config.ts
++++ b/src/util/get-build-config.ts
+@@ -31,6 +31,7 @@ import { resolveNetworkConfig } from "./network";
+ import { resolveHostUrl } from "./resolve-host-url";
+ import type { Rewrite } from "./rewrite";
+ import { compileSlugConfig } from "./slug-engine";
++import { fetchPublicResource } from "./public-fetch.ts";
+ import type { Store } from "./store";
+ import { createStoreRequestCache } from "./store-request-cache";
+ import { Tracer } from "./tracer";
+@@ -165,7 +166,7 @@ export async function getBuildConfig(options: BuildOptions, builtIns: BuildBuilt
+     write: normalizeConcurrency(concurrencyConfig.write, ioConcurrency),
+   };
+   const useNetworkCache = options.networkCache ?? true;
+-  const request = builtIns.fetch ?? globalThis.fetch;
++  const request = builtIns.fetch ?? fetchPublicResource;
+   const network = resolveNetworkConfig(config.network, { prefetch: options.prefetch });
+ 
+   const files = builtIns.fileHandler || new FileHandler(fs, cwd);
+diff --git a/src/util/make-slug-helper.ts b/src/util/make-slug-helper.ts
+index d3c1a474c886b7a4ceb380372a9132029eb7f00c..e9338738d03321570914a6f9ae895fd3101b3788 100644
+--- a/src/util/make-slug-helper.ts
++++ b/src/util/make-slug-helper.ts
+@@ -58,7 +58,7 @@ function getInlineTemplates(store: GenericStore) {
+   return Array.isArray(inlineTemplate) ? inlineTemplate : [inlineTemplate];
+ }
+ 
+-export function makeGetSlugHelper(store: GenericStore, slugs: BuildConfig["slugs"]) {
++function makeUncheckedGetSlugHelper(store: GenericStore, slugs: BuildConfig["slugs"]) {
+   const referencedTemplates = (store.slugTemplates || []).flatMap((slugTemplate) => {
+     const compiled = slugs[slugTemplate];
+     if (!compiled) {
+@@ -98,3 +98,21 @@ export function makeGetSlugHelper(store: GenericStore, slugs: BuildConfig["slugs
+     return getDefaultSlug(resource.id);
+   };
+ }
++
++/** Slugs become directory paths; encoded traversal and separators are unsafe too. */
++export function assertSafeSlug(slug: string) {
++  if (!slug || slug.startsWith("/") || slug.includes("\\")) throw new Error(`Unsafe IIIF slug: ${slug}`);
++  for (const segment of slug.split("/")) {
++    const decoded = decodeURIComponent(segment);
++    if (!decoded || decoded === "." || decoded === ".." || /[\/\\\x00-\x1f\x7f?#:]/.test(decoded)) throw new Error(`Unsafe IIIF slug: ${slug}`);
++  }
++  return slug;
++}
++export function makeGetSlugHelper(store: GenericStore, slugs: BuildConfig["slugs"]) {
++  const resolve = makeUncheckedGetSlugHelper(store, slugs);
++  return (resource: {id:string;type:string}) => {
++    const result = resolve(resource);
++    assertSafeSlug(result[0]);
++    return result;
++  };
++}
+diff --git a/src/util/public-fetch.ts b/src/util/public-fetch.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..18e1f196f28e9ce2d412e4fd743f469c731d23ea
+--- /dev/null
++++ b/src/util/public-fetch.ts
+@@ -0,0 +1,59 @@
++import { lookup } from "node:dns";
++import { get as httpGet } from "node:http";
++import { get as httpsGet } from "node:https";
++import { BlockList, isIP, type LookupFunction } from "node:net";
++
++const blocked = new BlockList();
++for (const [address, prefix] of [["0.0.0.0",8],["10.0.0.0",8],["100.64.0.0",10],["127.0.0.0",8],["169.254.0.0",16],["172.16.0.0",12],["192.0.0.0",24],["192.0.2.0",24],["192.168.0.0",16],["198.18.0.0",15],["198.51.100.0",24],["203.0.113.0",24],["224.0.0.0",4],["240.0.0.0",4]] as const) blocked.addSubnet(address,prefix,"ipv4");
++for (const [address,prefix] of [["::",128],["::1",128],["fc00::",7],["fe80::",10],["fec0::",10],["::",96],["2001::",32],["ff00::",8],["2001:db8::",32],["2002::",16],["64:ff9b::",96]] as const) blocked.addSubnet(address,prefix,"ipv6");
++export function assertPublicAddress(address: string) {
++  const family=isIP(address);
++  if (!family || blocked.check(address,family===4?"ipv4":"ipv6")) throw new Error("IIIF URLs must resolve to a public internet address.");
++}
++export function validatePublicUrl(value: string) {
++  const url=new URL(value);
++  if (!["https:","http:"].includes(url.protocol) || url.username || url.password) throw new Error("IIIF URLs must use HTTP(S) without credentials.");
++  if (url.port && url.port!=="80" && url.port!=="443") throw new Error("IIIF URLs must use a standard HTTP(S) port.");
++  const hostname=url.hostname.replace(/^\[|\]$/g,"");
++  if (isIP(hostname)) assertPublicAddress(hostname);
++  return url;
++}
++const publicLookup: LookupFunction=(hostname,options,callback)=>lookup(hostname,options,(error,address,family)=>{
++  if (error) return callback(error,address,family);
++  try { if (Array.isArray(address)) for (const entry of address) assertPublicAddress(entry.address); else assertPublicAddress(address); callback(null,address,family); }
++  catch (error) { callback(error as NodeJS.ErrnoException,address,family); }
++});
++
++/** Public IIIF fetches check the socket address and every redirect, with finite bytes and time. */
++export const fetchPublicResource: typeof fetch=async(input,init={})=>{
++  const requestInput=input instanceof Request?input:null;
++  if ((init.method||requestInput?.method||"GET").toUpperCase()!=="GET") throw new Error("IIIF fetching only supports GET.");
++  let url=validatePublicUrl(typeof input==="string"?input:input instanceof URL?input.href:input.url);
++  const deadline=AbortSignal.timeout(30_000);
++  const external=init.signal||requestInput?.signal;
++  const signal=external?AbortSignal.any([deadline,external]):deadline;
++  const headers: Record<string,string> = {};
++  new Headers(init.headers||requestInput?.headers||{Accept:"application/ld+json, application/json"}).forEach((value,key)=>{headers[key]=value;});
++  for (let redirects=0;redirects<=3;redirects++) {
++    const response=await new Promise<{status:number;headers:Headers;body?:Buffer;location?:string}>((resolve,reject)=>{
++      const request=(url.protocol==="https:"?httpsGet:httpGet)(url,{headers,lookup:publicLookup,signal},response=>{
++        const status=response.statusCode||0;
++        const responseHeaders=new Headers();
++        for (const [key,value] of Object.entries(response.headers)) if (value!==undefined) responseHeaders.set(key,Array.isArray(value)?value.join(", "):value);
++        if ([301,302,303,307,308].includes(status)&&response.headers.location) {resolve({status,headers:responseHeaders,location:response.headers.location});response.destroy();return;}
++        const chunks:Buffer[]=[];let bytes=0;
++        response.on("data",(chunk:Buffer)=>{bytes+=chunk.length;if(bytes>16*1024*1024) response.destroy(new Error("IIIF response exceeds 16 MiB."));else chunks.push(chunk);});
++        response.on("error",reject);
++        response.on("end",()=>resolve({status,headers:responseHeaders,body:Buffer.concat(chunks)}));
++      });
++      request.on("error",reject);
++    });
++    if (response.location) {
++      const next = validatePublicUrl(new URL(response.location,url).href);
++      if (next.origin !== url.origin) {delete headers.authorization; delete headers.cookie;}
++      url=next;continue;
++    }
++    return new Response([204,205,304].includes(response.status)?null:response.body,{status:response.status,headers:response.headers});
++  }
++  throw new Error("Too many IIIF redirects.");
++};
+diff --git a/src/util/slug-engine.ts b/src/util/slug-engine.ts
+index a3cba9de01da9fcafd4682c2ecee7e540dea693e..a8fc9e104837d268e96a0982c80e2a454bdeae13 100644
+--- a/src/util/slug-engine.ts
++++ b/src/util/slug-engine.ts
+@@ -60,7 +60,7 @@ function removeTrailingSlash(str: string) {
+ }
+ 
+ export function compileReverseSlugConfig(config: SlugConfig): CompiledSlugConfig {
+-  const pathSeparator = config.pathSeparator ? new RegExp(config.pathSeparator, "g") : null;
++  const pathSeparator = config.pathSeparator || null;
+   return (targetPath: string) => {
+     const domain = removeTrailingSlash(config.domain);
+     let path = removeTrailingSlash(targetPath);
+@@ -90,7 +90,7 @@ export function compileReverseSlugConfig(config: SlugConfig): CompiledSlugConfig
+       parts.push(prefix);
+     }
+     if (pathSeparator) {
+-      parts.push(path.replace(pathSeparator, "/"));
++      parts.push(path.replaceAll(pathSeparator, "/"));
+     } else {
+       parts.push(path);
+     }
+diff --git a/src/util/store.ts b/src/util/store.ts
+index 97df515a5f9d3c664f29dc9f8b3d049eed93ea50..ce7d4dcbb7435a0d713ab2c22cb1efd27cef011e 100644
+--- a/src/util/store.ts
++++ b/src/util/store.ts
+@@ -66,6 +66,8 @@ export interface ProtoResourceDirectory {
+      * Number of sub-resources (only used for estimation)
+      */
+     subResources?: number;
++    /** Canonical direct membership of a remote collection, including pages. */
++    remoteChildren?: string[];
+     virtual?: boolean;
+     /**
+      * Where this resource originated from.

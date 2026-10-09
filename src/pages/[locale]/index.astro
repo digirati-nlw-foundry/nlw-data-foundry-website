@@ -39,27 +39,25 @@ const title = getLocalizedString(homeCopy.title, locale);
 const description = getLocalizedString(homeCopy.summary, locale);
 ---
 
-<Layout locale={locale} title={title} description={description} pageType="homepage" section="home">
-  <section class="relative bg-[url('/catalogue_search.jpg')] min-h-[50lvh] bg-cover bg-center flex items-center justify-center p-8">
-    <div class="absolute inset-0 bg-black/30" aria-hidden="true"></div>
+<Layout locale={locale} title={title} description={description} pageType="homepage" section="home" bleed>
+  <section class="relative flex min-h-[26rem] items-center justify-center bg-[url('/catalogue_search.jpg')] bg-cover bg-center px-4 py-12 sm:px-6">
+    <div class="absolute inset-0 bg-slate-950/40" aria-hidden="true"></div>
 
-    <div class="relative z-10 bg-white rounded w-full max-w-2xl p-8 shadow-2xl">
-      <h2 class="text-2xl font-bold mb-2 text-center">{getLocalizedString(homeCopy.searchLabel, locale)}</h2>
-      <div class="mb-4">
-        <SearchForm locale={locale} variant="hero" />
-      </div>
+    <div class="relative z-10 w-full max-w-2xl rounded-md bg-white p-6 shadow-2xl sm:p-8">
+      <h1 class="mb-5 text-center text-2xl font-bold text-balance sm:text-3xl">{getLocalizedString(homeCopy.searchLabel, locale)}</h1>
+      <SearchForm locale={locale} variant="hero" />
     </div>
   </section>
 
   <div class="site-width">
-    <section class="py-8 px-4 flex flex-col gap-6">
-      <div class="flex items-center justify-between">
-        <h2 class="text-2xl font-bold mt-1">{getLocalizedString(homeCopy.featuredDatasets, locale)}</h2>
-        <a class="inline-flex items-center px-4 py-2 border border-gray-400 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors" href={`/${locale}/data`}>
+    <section class="flex flex-col gap-6 py-12">
+      <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        <h2 class="text-2xl font-bold">{getLocalizedString(homeCopy.featuredDatasets, locale)}</h2>
+        <a class="btn-secondary" href={`/${locale}/data`}>
           {locale === "en" ? "Browse all data" : "Pori'r holl ddata"}
         </a>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {
           homepageDatasets.map((entry) => (
             <ListingCard
@@ -78,14 +76,14 @@ const description = getLocalizedString(homeCopy.summary, locale);
 
     {
       featuredExhibitions.length > 0 && (
-        <section class="py-8 px-4 flex flex-col gap-6">
-          <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold mt-1">{getLocalizedString(homeCopy.featuredExhibitions, locale)}</h2>
-            <a class="inline-flex items-center px-4 py-2 border border-gray-400 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors" href={`/${locale}/exhibitions`}>
+        <section class="flex flex-col gap-6 border-t border-slate-200 py-12">
+          <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+            <h2 class="text-2xl font-bold">{getLocalizedString(homeCopy.featuredExhibitions, locale)}</h2>
+            <a class="btn-secondary" href={`/${locale}/exhibitions`}>
               {locale === "en" ? "Browse all exhibitions" : "Pori'r holl arddangosfeydd"}
             </a>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featuredExhibitions.map((entry) => (
               <ListingCard
                 locale={locale}

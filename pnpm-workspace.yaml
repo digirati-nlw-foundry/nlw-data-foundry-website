@@ -1,3 +1,7 @@
+verifyDepsBeforeRun: false
 allowBuilds:
   esbuild: true
   sharp: true
+  '@parcel/watcher': true
+patchedDependencies:
+  iiif-hss@1.0.6-next.2: patches/iiif-hss@1.0.6-next.2.patch

@@ -1,0 +1,26 @@
+---
+import ResourceCard from "../../../../components/iiif/ResourceCard.astro";
+import Layout from "../../../../layouts/Layout.astro";
+import { LOCALES, type Locale } from "../../../../lib/i18n";
+import { iiifLabel, iiifStoreId, type IiifSnippet } from "../../../../lib/iiif-navigation";
+import { iiif } from "../../../../lib/iiif.server";
+export async function getStaticPaths() {
+  const stores=await iiif.getAllStoreCollections();
+  return LOCALES.flatMap(locale=>(stores.items||[]).flatMap((store:IiifSnippet)=>{
+    const datasetId=iiifStoreId(store);
+    return datasetId?[{params:{locale,datasetId},props:{locale,datasetId,store}}]:[];
+  }));
+}
+const {locale,datasetId,store}=Astro.props as {locale:Locale;datasetId:string;store:IiifSnippet};
+const collection=await iiif.getStoreCollection(datasetId);
+const resources=(collection?.items||[]).filter((resource:IiifSnippet)=>resource["hss:slug"]);
+const title=iiifLabel(store.label,locale,datasetId);
+---
+<Layout locale={locale} title={title} description="" pageType="dataset" section="data">
+  <main class="site-width py-12">
+    <a href={`/${locale}/iiif/`} class="underline">{locale==="cy"?"Pob set ddata IIIF":"All IIIF datasets"}</a>
+    <h1 class="my-6 text-3xl font-semibold">{title}</h1>
+    <p class="mb-6">{resources.length} {locale==="cy"?"adnoddau IIIF":"IIIF resources"}</p>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">{resources.map((resource:IiifSnippet)=><ResourceCard resource={resource} locale={locale}/>)}</div>
+  </main>
+</Layout>

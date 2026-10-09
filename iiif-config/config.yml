@@ -1,0 +1,9 @@
+run:
+  - extract-runtime-hints
+  - extract-label-string
+  - extract-thumbnail
+  - extract-collection-thumbnail
+  - extract-remote-source
+  - extract-slug-source
+output:
+  includeSourceConfig: false

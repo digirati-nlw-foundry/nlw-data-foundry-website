@@ -17,7 +17,7 @@ export default defineConfig({
     react(),
     mdx({ gfm: true }),
     iiif({
-      serverUrl: process.env.IIIF_URL || undefined,
+      serverUrl: process.env.IIIF_URL || (process.env.DEPLOY_PRIME_URL ? `${process.env.DEPLOY_PRIME_URL}/iiif` : undefined),
     }),
     icon(),
   ],

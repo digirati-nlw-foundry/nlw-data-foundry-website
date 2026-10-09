@@ -1,16 +1,11 @@
 ---
 import { render } from "astro:content";
-import DatasetFileList from "../../../components/DatasetFileList.astro";
+import { iiif } from "../../../lib/iiif.server";
 import DatasetHero from "../../../components/DatasetHero.astro";
 import DatasetSidebar from "../../../components/DatasetSidebar.astro";
-import ArchivedFiles from "../../../components/markdown/astro/ArchivedFiles.astro";
-import CurrentFiles from "../../../components/markdown/astro/CurrentFiles.astro";
-import DataDictionary from "../../../components/markdown/astro/DataDictionary.astro";
-import DatasetFacts from "../../../components/markdown/astro/DatasetFacts.astro";
-import RightsUsage from "../../../components/markdown/astro/RightsUsage.astro";
-import VersionHistory from "../../../components/markdown/astro/VersionHistory.astro";
-import { Provider } from "../../../context/markdown-frontmatter";
+import { proseComponents } from "../../../components/markdown/mdx";
 import Layout from "../../../layouts/Layout.astro";
+import { bindDatasetBlocks } from "../../../lib/dataset-blocks";
 import { getDataCards, type SiteDataCard } from "../../../lib/data-cards";
 import { getLocalizedString, LOCALES, type Locale } from "../../../lib/i18n";
 
@@ -25,15 +20,6 @@ export async function getStaticPaths() {
   );
 }
 
-const components = {
-  DatasetFacts,
-  ArchivedFiles,
-  CurrentFiles,
-  DataDictionary,
-  RightsUsage,
-  VersionHistory,
-};
-
 const { card, locale } = Astro.props as {
   card: SiteDataCard;
   locale: Locale;
@@ -41,6 +27,12 @@ const { card, locale } = Astro.props as {
 
 const entry = card.entries[locale] ?? card.entries.en;
 const { Content } = await render(entry);
+// The hero owns the page's <h1>; demote any `# Title` in the card body.
+const components = {
+  ...proseComponents,
+  ...bindDatasetBlocks(entry.data, locale),
+  h1: "h2",
+};
 const title = getLocalizedString(card.title, locale);
 const description = getLocalizedString(card.description, locale);
 const tagLabels = card.tags.map((tag) => getLocalizedString(tag, locale));
@@ -50,58 +42,58 @@ const institutionLabels = card.institutions.map((institution) =>
 const hasBody = (entry.body || "").trim().length > 0;
 const datasetIdentifier = card.datasetId;
 const accent = card.accent ?? "var(--default-accent)";
+const iiifCollection = await iiif.getStoreCollection(card.datasetId);
+const iiifCount = iiifCollection?.items?.length || 0;
 const hasFiles = card.files.active.length > 0 || card.files.archived.length > 0;
 ---
 
-<Layout locale={locale} title={title} description={description} pageType="dataset" section="data" tags={tagLabels}>
-  <Provider frontmatter={entry.data}>
-    <DatasetHero
-      locale={locale}
-      title={title}
-      description={description}
-      datasetIdentifier={datasetIdentifier}
-      tagLabels={tagLabels}
-      accent={accent}
-    />
+<Layout locale={locale} title={title} description={description} pageType="dataset" section="data" tags={tagLabels} bleed>
+  <DatasetHero
+    locale={locale}
+    title={title}
+    description={description}
+    datasetIdentifier={datasetIdentifier}
+    tagLabels={tagLabels}
+    accent={accent}
+  />
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-16" style={`--accent: ${accent};`}>
+  <div
+    class="site-width grid grid-cols-1 gap-x-12 gap-y-10 py-10 sm:py-12 lg:grid-cols-[minmax(0,1fr)_20rem]"
+    style={`--accent: ${accent}; --dsb-accent: ${accent};`}
+  >
+    <div class="min-w-0 max-w-3xl">
+      {hasBody ? (
+        <div class="prose prose-nlw max-w-none">
+          <Content components={components} />
+        </div>
+      ) : (
+        <p class="rounded-md border border-dashed border-slate-300 px-6 py-12 text-center text-sm text-slate-600">
+          {locale === "en" ? "No additional content yet." : "Dim cynnwys ychwanegol eto."}
+        </p>
+      )}
 
-      <main class="lg:col-span-2 px-2">
-        {hasBody ? (
-          <div class="prose prose-lg prose-slate max-w-none
-            prose-headings:font-bold prose-headings:text-gray-900
-            prose-a:text-(--accent) prose-a:no-underline hover:prose-a:underline
-            prose-code:bg-gray-100 prose-code:rounded prose-code:px-1
-            prose-pre:bg-gray-900 prose-pre:text-gray-100">
-            <Content components={components} />
-          </div>
-        ) : (
-          <div class="flex flex-col items-center justify-center h-full min-h-48 rounded-xl border border-dashed border-gray-200 text-gray-400 text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mb-2 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M9 12h6m-3-3v6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            {locale === "en" ? "No additional content yet." : "Dim cynnwys ychwanegol eto."}
-          </div>
-        )}
-
-        {hasFiles && (
-          <DatasetFileList locale={locale} accent={accent} files={card.files} />
-        )}
-      </main>
-
-      <DatasetSidebar
-        locale={locale}
-        tagLabels={tagLabels}
-        datasetIdentifier={datasetIdentifier}
-        institutionLabels={institutionLabels}
-        accent={accent}
-        team={card.team}
-        rights={card.rights}
-        license={card.license}
-        updated={card.updated}
-        ingestedAt={card.ingestedAt}
-      />
-
+      {iiifCount > 0 && (
+        <section class="mt-12 rounded-md border border-slate-200 p-6">
+          <h2 class="mb-2 text-xl font-bold">IIIF</h2>
+          <a class="font-medium text-(--accent) underline underline-offset-4" href={`/${locale}/iiif/stores/${encodeURIComponent(card.datasetId)}/`}>
+            {locale === "cy" ? `Pori ${iiifCount} o adnoddau IIIF` : `Browse ${iiifCount} IIIF resources`}
+          </a>
+        </section>
+      )}
     </div>
-  </Provider>
+
+    <DatasetSidebar
+      locale={locale}
+      tagLabels={tagLabels}
+      datasetIdentifier={datasetIdentifier}
+      institutionLabels={institutionLabels}
+      accent={accent}
+      team={card.team}
+      rights={card.rights}
+      license={card.license}
+      updated={card.updated}
+      ingestedAt={card.ingestedAt}
+      files={hasFiles ? card.files : undefined}
+    />
+  </div>
 </Layout>

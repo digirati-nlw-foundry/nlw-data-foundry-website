@@ -1,4 +1,6 @@
 ---
+import type { SiteDataCardFileGroup } from "../lib/data-cards";
+import DatasetFileList from "./DatasetFileList.astro";
 import {
   formatDateTime,
   getLocalizedString,
@@ -17,6 +19,25 @@ interface Props {
   license?: string;
   updated?: LocalizedString;
   ingestedAt?: string;
+  files?: {
+    active: SiteDataCardFileGroup[];
+    archived: SiteDataCardFileGroup[];
+  };
+}
+
+const licenseLabels: [RegExp, string][] = [
+  [/creativecommons\.org\/publicdomain\/zero\/1\.0/, "CC0 1.0"],
+  [/creativecommons\.org\/licenses\/([a-z-]+)\/(\d\.\d)/, "CC $1 $2"],
+];
+
+function licenseLabel(value: string) {
+  for (const [pattern, label] of licenseLabels) {
+    const match = value.match(pattern);
+    if (match) {
+      return label.replace(/\$(\d)/g, (_, n) => match[Number(n)].toUpperCase());
+    }
+  }
+  return value.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 }
 
 const {
@@ -30,102 +51,110 @@ const {
   license,
   updated,
   ingestedAt,
+  files,
 } = Astro.props;
 ---
 
-<aside class="lg:col-span-1" style={`--accent: ${accent};`}>
-  <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 sticky top-6">
-    <p class="text-xs font-semibold uppercase tracking-widest text-(--accent) mb-1">
-      {locale === "en" ? "Dataset" : "Set ddata"}
-    </p>
-    <h2 class="text-xl font-bold text-gray-900 mb-5">
+<aside style={`--accent: ${accent};`}>
+  <div class="flex flex-col gap-6">
+  {files && <DatasetFileList locale={locale} files={files} />}
+  <div class="rounded-md border border-slate-200 bg-white p-6">
+    <h2 class="eyebrow mb-4">
       {locale === "en" ? "Key details" : "Manylion allweddol"}
     </h2>
 
-    <dl class="flex flex-col divide-y divide-gray-200">
+    <dl class="flex flex-col divide-y divide-slate-200">
       {institutionLabels.length > 0 && (
         <div class="py-3 first:pt-0 last:pb-0">
-          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+          <dt class="mb-1 text-xs font-bold uppercase tracking-wider text-slate-600">
             {locale === "en" ? "Institutions" : "Sefydliadau"}
           </dt>
-          <dd class="text-sm text-gray-800">{institutionLabels.join(", ")}</dd>
+          <dd class="text-sm leading-snug text-slate-900 [overflow-wrap:anywhere]">{institutionLabels.join(", ")}</dd>
         </div>
       )}
 
       {datasetIdentifier && (
         <div class="py-3 first:pt-0 last:pb-0">
-          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+          <dt class="mb-1 text-xs font-bold uppercase tracking-wider text-slate-600">
             {locale === "en" ? "Dataset ID" : "ID set ddata"}
           </dt>
-          <dd class="text-sm text-gray-800">{datasetIdentifier}</dd>
+          <dd class="text-sm leading-snug text-slate-900 [overflow-wrap:anywhere]">{datasetIdentifier}</dd>
         </div>
       )}
 
       {team && (
         <div class="py-3 first:pt-0 last:pb-0">
-          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+          <dt class="mb-1 text-xs font-bold uppercase tracking-wider text-slate-600">
             {locale === "en" ? "Team" : "Tîm"}
           </dt>
-          <dd class="text-sm text-gray-800">{getLocalizedString(team, locale)}</dd>
+          <dd class="text-sm leading-snug text-slate-900 [overflow-wrap:anywhere]">{getLocalizedString(team, locale)}</dd>
         </div>
       )}
 
       {rights && (
         <div class="py-3 first:pt-0 last:pb-0">
-          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+          <dt class="mb-1 text-xs font-bold uppercase tracking-wider text-slate-600">
             {locale === "en" ? "Rights" : "Hawliau"}
           </dt>
-          <dd class="text-sm text-gray-800">{getLocalizedString(rights, locale)}</dd>
+          <dd class="text-sm leading-snug text-slate-900 [overflow-wrap:anywhere]">{getLocalizedString(rights, locale)}</dd>
         </div>
       )}
 
       {license && (
         <div class="py-3 first:pt-0 last:pb-0">
-          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+          <dt class="mb-1 text-xs font-bold uppercase tracking-wider text-slate-600">
             {locale === "en" ? "License" : "Trwydded"}
           </dt>
-          <dd class="text-sm text-gray-800">{license}</dd>
+          <dd class="text-sm leading-snug text-slate-900 [overflow-wrap:anywhere]">
+            {/^https?:\/\//.test(license)
+              ? <a class="text-(--accent) underline underline-offset-2" href={license} title={license} rel="noopener">{licenseLabel(license)}</a>
+              : license}
+          </dd>
         </div>
       )}
 
       {updated && (
         <div class="py-3 first:pt-0 last:pb-0">
-          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+          <dt class="mb-1 text-xs font-bold uppercase tracking-wider text-slate-600">
             {locale === "en" ? "Updated" : "Diweddarwyd"}
           </dt>
-          <dd class="text-sm text-gray-800">{getLocalizedString(updated, locale)}</dd>
+          <dd class="text-sm leading-snug text-slate-900 [overflow-wrap:anywhere]">{getLocalizedString(updated, locale)}</dd>
         </div>
       )}
 
       {ingestedAt && (
         <div class="py-3 first:pt-0 last:pb-0">
-          <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+          <dt class="mb-1 text-xs font-bold uppercase tracking-wider text-slate-600">
             {locale === "en" ? "Ingested" : "Mewnforiwyd"}
           </dt>
-          <dd class="text-sm text-gray-800">{formatDateTime(ingestedAt, locale)}</dd>
+          <dd class="text-sm leading-snug text-slate-900 [overflow-wrap:anywhere]">{formatDateTime(ingestedAt, locale)}</dd>
         </div>
       )}
 
       <div class="py-3 first:pt-0 last:pb-0">
-        <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">
+        <dt class="mb-1 text-xs font-bold uppercase tracking-wider text-slate-600">
           {locale === "en" ? "Tags" : "Tagiau"}
         </dt>
         <dd>
           {tagLabels.length > 0 ? (
             <ul class="flex flex-wrap gap-1.5">
               {tagLabels.map((tag) => (
-                <li class="px-2 py-0.5 rounded-full text-xs font-medium bg-(--accent)/10 text-(--accent)">
-                  {tag}
+                <li>
+                  <a
+                    href={`/${locale}/search?tag=${encodeURIComponent(tag)}`}
+                    class="inline-block rounded-full bg-(--accent)/10 px-2.5 py-0.5 text-xs font-semibold text-(--accent) transition-colors hover:bg-(--accent)/20"
+                  >{tag}</a>
                 </li>
               ))}
             </ul>
           ) : (
-            <span class="text-sm text-gray-400 italic">
+            <span class="text-sm text-slate-600 italic">
               {locale === "en" ? "Not yet assigned" : "Heb eu neilltuo eto"}
             </span>
           )}
         </dd>
       </div>
     </dl>
+  </div>
   </div>
 </aside>

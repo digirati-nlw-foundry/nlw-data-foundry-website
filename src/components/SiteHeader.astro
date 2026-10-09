@@ -18,23 +18,23 @@ const alternateLocale = locale === "en" ? "cy" : "en";
 const alternateHref = swapLocalePath(currentPath, alternateLocale);
 ---
 
-<header class="bg-white border-b border-gray-200 shadow-sm" data-pagefind-ignore>
-  <div class="site-width px-5">
+<header class="relative z-20 border-b border-slate-200 bg-white" data-pagefind-ignore>
+  <div class="site-width">
 
     <!-- Top bar: logo + utility controls -->
-    <div class="flex items-center justify-between h-16 gap-4">
-      <a class="flex items-center shrink-0" href={buildLocalizedPath(locale)}>
+    <div class="flex h-16 items-center justify-between gap-4">
+      <a class="flex min-w-0 shrink items-center rounded-sm" href={buildLocalizedPath(locale)} aria-label={locale === "en" ? "National Library of Wales, home" : "Llyfrgell Genedlaethol Cymru, hafan"}>
         <img
           src="/llgc_logo.png"
           alt={locale === "en" ? "National Library of Wales" : "Llyfrgell Genedlaethol Cymru"}
-          class="h-10 w-auto"
+          class="h-7 w-auto max-w-full sm:h-10"
         />
       </a>
 
-      <div class="flex items-center gap-3">
+      <div class="flex shrink-0 items-center gap-2 sm:gap-3">
         <!-- Language switcher — always visible -->
         <a
-          class="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 text-gray-700 transition-colors"
+          class="btn-secondary px-3 py-1.5"
           href={alternateHref}
           hreflang={alternateLocale}
           lang={alternateLocale}
@@ -44,7 +44,7 @@ const alternateHref = swapLocalePath(currentPath, alternateLocale);
 
         <!-- Search button — always visible -->
         <a
-          class="bg-blue-800 p-2 rounded-full text-white hover:bg-blue-900 transition-colors"
+          class="hidden size-9 items-center justify-center rounded-full bg-brand text-white transition-colors hover:bg-brand-hover sm:flex"
           href={buildLocalizedPath(locale, "search")}
           aria-label={locale === "en" ? "Search" : "Chwilio"}
         >
@@ -54,7 +54,7 @@ const alternateHref = swapLocalePath(currentPath, alternateLocale);
         <!-- Hamburger — mobile only -->
         <button
           type="button"
-          class="lg:hidden flex items-center justify-center p-2 rounded text-gray-600 hover:bg-gray-100 transition-colors"
+          class="flex size-9 items-center justify-center rounded-sm text-slate-700 transition-colors hover:bg-slate-100 lg:hidden"
           aria-expanded="false"
           aria-controls="mobile-nav"
           aria-label={locale === "en" ? "Open menu" : "Agor y ddewislen"}
@@ -68,7 +68,7 @@ const alternateHref = swapLocalePath(currentPath, alternateLocale);
 
     <!-- Desktop nav — hidden below lg -->
     <nav
-      class="hidden lg:flex gap-1 pb-0"
+      class="-mx-3 hidden lg:flex"
       aria-label={locale === "en" ? "Primary" : "Prif lywio"}
     >
       {
@@ -82,11 +82,12 @@ const alternateHref = swapLocalePath(currentPath, alternateLocale);
           return (
             <a
               href={href}
+              aria-current={active ? "page" : undefined}
               class:list={[
-                "text-sm px-3 py-3 border-b-2 transition-colors whitespace-nowrap",
+                "-mb-px border-b-2 px-3 py-3 text-sm whitespace-nowrap transition-colors",
                 active
-                  ? "border-blue-800 text-blue-800 font-semibold"
-                  : "border-transparent text-gray-600 hover:text-blue-800 hover:border-blue-300",
+                  ? "border-brand font-bold text-brand"
+                  : "border-transparent font-medium text-slate-700 hover:border-slate-300 hover:text-brand",
               ]}
             >
               {getLocalizedString(item.label, locale)}
@@ -101,10 +102,10 @@ const alternateHref = swapLocalePath(currentPath, alternateLocale);
   <!-- Mobile nav drawer — toggled by JS -->
   <nav
     id="mobile-nav"
-    class="hidden lg:hidden border-t border-gray-200 bg-white"
+    class="hidden border-t border-slate-200 bg-white lg:hidden"
     aria-label={locale === "en" ? "Primary" : "Prif lywio"}
   >
-    <ul class="flex flex-col divide-y divide-gray-100 px-4 py-2">
+    <ul class="site-width flex flex-col divide-y divide-slate-100 py-2">
       {
         navItems.map((item) => {
           const href = buildLocalizedPath(locale, item.slug);
@@ -117,11 +118,12 @@ const alternateHref = swapLocalePath(currentPath, alternateLocale);
             <li>
               <a
                 href={href}
+                aria-current={active ? "page" : undefined}
                 class:list={[
-                  "flex items-center py-3 text-sm font-medium transition-colors",
+                  "flex items-center py-3 text-base transition-colors",
                   active
-                    ? "text-blue-800"
-                    : "text-gray-700 hover:text-blue-800",
+                    ? "font-bold text-brand"
+                    : "font-medium text-slate-700 hover:text-brand",
                 ]}
               >
                 {getLocalizedString(item.label, locale)}

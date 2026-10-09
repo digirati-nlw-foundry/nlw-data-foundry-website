@@ -27,7 +27,7 @@ const labels = {
 const copy = labels[locale];
 ---
 <form
-  class="flex w-full p-2"
+  class="flex w-full"
   action={buildLocalizedPath(locale, "search")}
   method="get"
   role="search"
@@ -35,15 +35,15 @@ const copy = labels[locale];
   <label class="sr-only" for={`search-${variant}`}>{copy.input}</label>
   <input
     id={`search-${variant}`}
-    class="flex-1 rounded-l-sm border border-gray-300 p-3"
+    class="h-12 min-w-0 flex-1 rounded-l-sm border border-r-0 border-slate-300 bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus-visible:z-10"
     type="search"
     name="q"
     value={query}
     placeholder={copy.placeholder}
     autocomplete="off"
   />
-  <button class="px-8 bg-blue-800 text-white rounded-r-sm text-sm flex gap-2 items-center hover:bg-blue-900 active:shadow-inner" type="submit">
-    <Icon name="mdi:magnify" class="w-5 h-5" />
-    {copy.button}
+  <button class="flex h-12 items-center gap-2 rounded-r-sm bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover sm:px-6" type="submit">
+    <Icon name="mdi:magnify" class="size-5" aria-hidden="true" />
+    <span class="sr-only sm:not-sr-only">{copy.button}</span>
   </button>
 </form>

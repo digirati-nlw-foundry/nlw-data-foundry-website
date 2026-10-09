@@ -1,65 +1,94 @@
-import type { DatasetBlockFrontmatter } from "./_helpers";
-import { getDatasetRights } from "./_helpers";
+import { getDatasetRights } from "./data";
+import { useDatasetBlockLanguage, useDatasetBlockText } from "./i18n";
+import { Section } from "./parts/Section";
+import type { DatasetBlockProps } from "./types";
+
+const isUrl = (value: string) => /^https?:\/\/\S+$/.test(value);
+const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+function Linkify({ value }: { value: string }) {
+  if (isUrl(value)) {
+    return (
+      <a href={value} rel="noreferrer noopener">
+        {value}
+      </a>
+    );
+  }
+  if (isEmail(value)) {
+    return <a href={`mailto:${value}`}>{value}</a>;
+  }
+  return <>{value}</>;
+}
+
+function WarningIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+    </svg>
+  );
+}
 
 export function RightsUsage({
   frontmatter,
-}: {
-  frontmatter: DatasetBlockFrontmatter;
-}) {
+  language: languageProp,
+}: DatasetBlockProps) {
+  const language = useDatasetBlockLanguage(languageProp);
+  const text = useDatasetBlockText(language);
   const rights = getDatasetRights(frontmatter);
 
   return (
-    <section className="space-y-4">
+    <Section className="dsb-rights" title={text("rightsUsage")}>
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">
-          Rights And Usage
-        </h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Rights metadata available for this dataset card.
+        <h3>{text("license")}</h3>
+        <p>
+          {rights.license ? (
+            <Linkify value={rights.license} />
+          ) : (
+            <span className="dsb-muted">{text("noLicense")}</span>
+          )}
         </p>
       </div>
 
-      <div className="space-y-3 text-sm text-slate-700">
-        <div className="rounded-md border border-slate-200 bg-slate-50 p-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            License
-          </p>
-          <p className="mt-1 text-slate-900">
-            {rights.license ?? "No license metadata is available."}
+      {rights.reuseGuidance ? (
+        <div>
+          <h3>{text("reuseGuidance")}</h3>
+          <p>{rights.reuseGuidance}</p>
+        </div>
+      ) : null}
+
+      {rights.citation ? (
+        <div>
+          <h3>{text("citation")}</h3>
+          <blockquote className="dsb-quote">{rights.citation}</blockquote>
+        </div>
+      ) : null}
+
+      {rights.contact ? (
+        <div>
+          <h3>{text("contact")}</h3>
+          <p>
+            <Linkify value={rights.contact} />
           </p>
         </div>
+      ) : null}
 
-        {rights.reuseGuidance ? (
+      {rights.sensitivityNotice ? (
+        <div className="dsb-notice" role="note">
+          <WarningIcon />
           <div>
-            <h3 className="text-base font-semibold text-slate-900">
-              Reuse Guidance
-            </h3>
-            <p className="mt-1">{rights.reuseGuidance}</p>
+            <h3>{text("sensitivityNotice")}</h3>
+            <p>{rights.sensitivityNotice}</p>
           </div>
-        ) : null}
-
-        {rights.citation ? (
-          <div>
-            <h3 className="text-base font-semibold text-slate-900">Citation</h3>
-            <p className="mt-1 rounded-md bg-slate-50 p-3 font-medium text-slate-800">
-              {rights.citation}
-            </p>
-          </div>
-        ) : null}
-
-        {rights.contact ? (
-          <div>
-            <h3 className="text-base font-semibold text-slate-900">Contact</h3>
-            <p className="mt-1">{rights.contact}</p>
-          </div>
-        ) : null}
-
-        {rights.sensitivityNotice ? (
-          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-900">
-            {rights.sensitivityNotice}
-          </div>
-        ) : null}
-      </div>
-    </section>
+        </div>
+      ) : null}
+    </Section>
   );
 }
