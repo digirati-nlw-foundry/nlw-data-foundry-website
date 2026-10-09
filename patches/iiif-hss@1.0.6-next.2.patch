@@ -65,7 +65,7 @@ diff --git a/build/chunk-BO2M7NLQ.js b/build/chunk-2KQIO4HQ.js
 similarity index 99%
 rename from build/chunk-BO2M7NLQ.js
 rename to build/chunk-2KQIO4HQ.js
-index edf4979ae8cacf809978efec009d6295f8187900..8a8265afbd3e891779c003ce538466947b5a4a61 100644
+index edf4979ae8cacf809978efec009d6295f8187900..06cfaac5a28eae35c0ac44391a6f63bd9285d400 100644
 --- a/build/chunk-BO2M7NLQ.js
 +++ b/build/chunk-2KQIO4HQ.js
 @@ -15,15 +15,17 @@ import {
@@ -91,6 +91,15 @@ index edf4979ae8cacf809978efec009d6295f8187900..8a8265afbd3e891779c003ce53846694
  
  // src/integrations/shared-iiif-runtime.ts
  import { existsSync as existsSync4 } from "node:fs";
+@@ -1768,7 +1770,7 @@ async function createServer(config, serverOptions = {}) {
+       if (options.dev && serverOptions.reloadConfig) config = await serverOptions.reloadConfig();
+       else if (options.dev && configSource && configSource.mode !== "custom") {
+         const refreshed = await resolveConfigSource(
+-          configSource.mode === "explicit" ? configSource.configPath : void 0,
++          configSource.configPath,
+           projectRoot
+         );
+         const { config: nextConfig, ...source } = refreshed;
 @@ -2605,6 +2607,9 @@ function createIiifRuntime(options = {}, lifecycle = {}) {
        await setConfigServerUrl(buildServerUrl);
      }
@@ -158,7 +167,7 @@ diff --git a/build/chunk-7Z3FAVBR.js b/build/chunk-6FARIE7W.js
 similarity index 97%
 rename from build/chunk-7Z3FAVBR.js
 rename to build/chunk-6FARIE7W.js
-index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387aef432d9 100644
+index 9d259f9180595217086ed7587033de1e4437c841..9aa554e5d9338f782133e2ec27acb2f85cbe5294 100644
 --- a/build/chunk-7Z3FAVBR.js
 +++ b/build/chunk-6FARIE7W.js
 @@ -1,11 +1,14 @@
@@ -323,7 +332,49 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
  // src/stores/iiif-memory.ts
  import { Vault } from "@iiif/helpers";
  import objectHash from "object-hash";
-@@ -1643,6 +1782,84 @@ function getCustomConfigSource(config) {
+@@ -1466,8 +1605,7 @@ function applyDefaultStores(inputConfig) {
+   }
+   return config;
+ }
+-async function loadIiifConfigFolder(projectRoot) {
+-  const iiifConfigRoot = join2(projectRoot, "iiif-config");
++async function loadIiifConfigFolder(projectRoot, iiifConfigRoot = join2(projectRoot, "iiif-config")) {
+   if (!fs.existsSync(iiifConfigRoot)) {
+     return null;
+   }
+@@ -1566,7 +1704,7 @@ async function loadIiifConfigFolder(projectRoot) {
+       mergedConfig.config[configName] = configValue;
+     }
+   }
+-  const watchPaths = [];
++  const watchPaths = [{ path: iiifConfigRoot, recursive: true }];
+   if (globalConfigPath && fs.existsSync(globalConfigPath)) {
+     watchPaths.push({ path: globalConfigPath, recursive: false });
+   }
+@@ -1590,8 +1728,9 @@ async function loadIiifConfigFolder(projectRoot) {
+   }
+   return {
+     mode: "folder",
++    configPath: iiifConfigRoot,
+     config: applyDefaultStores(mergedConfig),
+-    defaultScriptsPath: "./iiif-config/scripts",
++    defaultScriptsPath: scriptsDir,
+     watchPaths
+   };
+ }
+@@ -1599,6 +1738,11 @@ async function resolveConfigSource(configFile, projectRoot = cwd()) {
+   projectRoot = resolve2(projectRoot);
+   if (configFile) {
+     const configFilePath = isAbsolute2(configFile) ? configFile : resolve2(projectRoot, configFile);
++    if (fs.statSync(configFilePath).isDirectory()) {
++      const folderConfig = await loadIiifConfigFolder(projectRoot, configFilePath);
++      if (!folderConfig) throw new Error(`Missing IIIF config directory: ${configFilePath}`);
++      return folderConfig;
++    }
+     return {
+       mode: "explicit",
+       config: applyDefaultStores(await loadConfigFile(configFilePath)),
+@@ -1643,6 +1787,84 @@ function getCustomConfigSource(config) {
    };
  }
  
@@ -408,7 +459,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
  // src/commands/generate.ts
  import fs2 from "node:fs";
  import { join as join5 } from "node:path";
-@@ -2662,14 +2879,14 @@ var collectionThumbnail = {
+@@ -2662,14 +2884,14 @@ var collectionThumbnail = {
        if (resolved.has(root.id)) continue;
        const active = /* @__PURE__ */ new Set();
        const stack = [{ collection: root, index: 0, blocked: false }];
@@ -426,7 +477,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
          }
        };
        while (stack.length) {
-@@ -3169,6 +3386,12 @@ var package_default = {
+@@ -3169,6 +3391,12 @@ var package_default = {
          types: "./build/astro/client.d.ts",
          default: "./build/astro/client.js"
        }
@@ -439,7 +490,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
      }
    },
    typesVersions: {
-@@ -4448,6 +4671,7 @@ function toRuntimeHints(resource) {
+@@ -4448,6 +4676,7 @@ function toRuntimeHints(resource) {
    const portableSource = source.type === "remote" && typeof source.url === "string" ? { type: "remote", url: source.url } : source.type === "disk" ? { type: "disk" } : void 0;
    return {
      type,
@@ -447,7 +498,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
      ...portableSource ? { source: portableSource } : {},
      saveToDisk: source.type === "disk" || Boolean(resource.saveToDisk)
    };
-@@ -5033,140 +5257,12 @@ import fs8 from "node:fs";
+@@ -5033,140 +5262,12 @@ import fs8 from "node:fs";
  import { join as join20 } from "node:path";
  import { Vault as Vault3 } from "@iiif/helpers";
  import { copy as copy3, pathExists as pathExists2 } from "fs-extra/esm";
@@ -591,7 +642,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
          toReturn.push(...await IIIFRemoteStore.parse({ ...store, url, urls: void 0 }, api));
        }
        return toReturn;
-@@ -5174,18 +5270,25 @@ var IIIFRemoteStore = {
+@@ -5174,18 +5275,25 @@ var IIIFRemoteStore = {
      if (!store.url) {
        return [];
      }
@@ -619,7 +670,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
      const override = store.overrides ? `${store.overrides}/${slug3.startsWith(isManifest ? "manifests/" : "collections/") ? slug3.slice((isManifest ? "manifests/" : "collections/").length) : slug3}.json` : void 0;
      if (isManifest) {
        let source = {
-@@ -5205,6 +5308,7 @@ var IIIFRemoteStore = {
+@@ -5205,6 +5313,7 @@ var IIIFRemoteStore = {
        return [
          {
            type: "Manifest",
@@ -627,7 +678,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
            slug: slug3,
            slugSource,
            path: store.url,
-@@ -5218,6 +5322,8 @@ var IIIFRemoteStore = {
+@@ -5218,6 +5327,8 @@ var IIIFRemoteStore = {
      const allResources = [
        {
          type: "Collection",
@@ -636,7 +687,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
          slug: slug3,
          slugSource,
          path: store.url,
-@@ -5232,12 +5338,14 @@ var IIIFRemoteStore = {
+@@ -5232,12 +5343,14 @@ var IIIFRemoteStore = {
        collection,
        (url) => api.requestCache.fetch(url),
        (url, error) => {
@@ -652,7 +703,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
        allResources.push(...parsed);
      }
      return allResources;
-@@ -5295,6 +5403,7 @@ var IIIFRemoteStore = {
+@@ -5295,6 +5408,7 @@ var IIIFRemoteStore = {
          subResources: (res?.items || []).length,
          saveToDisk: resource.source.type === "disk" || store.saveManifests || false,
          inputKey: resource.inputKey,
@@ -660,7 +711,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
          source: resource.source
        },
        vault,
-@@ -6145,7 +6254,7 @@ async function getBuildConfig(options, builtIns) {
+@@ -6145,7 +6259,7 @@ async function getBuildConfig(options, builtIns) {
      write: normalizeConcurrency(concurrencyConfig.write, ioConcurrency)
    };
    const useNetworkCache = options.networkCache ?? true;
@@ -669,7 +720,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
    const network = resolveNetworkConfig(config.network, { prefetch: options.prefetch });
    const files = builtIns.fileHandler || new FileHandler(fs10, cwd7);
    const useBuiltInScripts = config.builtInScripts !== false;
-@@ -6550,7 +6659,7 @@ function getRemoteStoreRootUrls(storeConfig) {
+@@ -6550,7 +6664,7 @@ function getRemoteStoreRootUrls(storeConfig) {
      return [];
    }
    if (Array.isArray(storeConfig.urls) && storeConfig.urls.length) {
@@ -678,7 +729,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
    }
    if (typeof storeConfig.url === "string" && storeConfig.url) {
      return [storeConfig.url];
-@@ -6680,6 +6789,7 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
+@@ -6680,6 +6794,7 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
            }
          }
        }
@@ -686,7 +737,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
        const previous = parsedSlugs.get(resource.slug);
        if (previous && (previous.virtual || resource.virtual)) {
          const folder = resource.source.type === "disk" ? resource.source.filePath : null;
-@@ -6694,6 +6804,9 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
+@@ -6694,6 +6809,9 @@ async function parseStores(buildConfig, cache2 = EMPTY_CACHE, customFs, progress
          }
          throw new Error(`Conflicting collection slug "${resource.slug}": ${previous.path} and ${resource.path}`);
        }
@@ -696,7 +747,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
        parsedSlugs.set(resource.slug, resource);
        if (resource.source?.type === "disk") {
          filesToWatch.push(resource.source.filePath);
-@@ -7475,6 +7588,7 @@ async function loadStores({
+@@ -7475,6 +7593,7 @@ async function loadStores({
            } else {
              validCount++;
              const data = await files.loadJson(join28(resourceDir, "resource.json"));
@@ -704,7 +755,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
              data.inputKey = resource.inputKey;
              data.saveToDisk = resource.saveToDisk;
              await files.saveJson(join28(resourceDir, "resource.json"), data);
-@@ -8552,16 +8666,16 @@ async function emit({
+@@ -8552,16 +8671,16 @@ async function emit({
                  }
                  let hasSnippet = snippets[item.id];
                  if (!hasSnippet) {
@@ -728,7 +779,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
                          thumbnail: fallbackThumbnail || void 0
                        };
                      }
-@@ -9971,6 +10085,7 @@ export {
+@@ -9971,6 +10090,7 @@ export {
    readAllFiles,
    readFilteredFiles,
    rewritePath,
@@ -736,7 +787,7 @@ index 9d259f9180595217086ed7587033de1e4437c841..d6c75931f125cbb3373431bdb6fbc387
    IIIFMemoryStore,
    BUILD_STEP_ORDER,
    createEmptyBuildProgress,
-@@ -9983,6 +10098,8 @@ export {
+@@ -9983,6 +10103,8 @@ export {
    getConfig,
    getCustomConfigSource,
    resolveHostUrl,
@@ -892,15 +943,6 @@ index 7440563630fe32449f121fbf86b121bc21667e59..e33d7c46409f49d0d300d230fa80da21
  
  // src/dev/client.ts
  function normalizeSlug(input) {
-diff --git a/build/dev-ui/assets/index-OcnSA7Xy.js b/build/dev-ui/assets/index-OcnSA7Xy.js
-deleted file mode 100644
-index bb75057a4231685283d924d02515c6704eb39cd6..0000000000000000000000000000000000000000
-diff --git a/build/dev-ui/assets/index-i3EtIqkx.css b/build/dev-ui/assets/index-i3EtIqkx.css
-deleted file mode 100644
-index 90110a4917a104c24bf0bd17d151a17779cc50a9..0000000000000000000000000000000000000000
-diff --git a/build/dev-ui/index.html b/build/dev-ui/index.html
-deleted file mode 100644
-index a49e9fc805ada9f6e896b6b2bd5bf3ab07b32094..0000000000000000000000000000000000000000
 diff --git a/build/iiif-memory-BSi9qHqO.d.ts b/build/iiif-memory-ByXboWm7.d.ts
 similarity index 97%
 rename from build/iiif-memory-BSi9qHqO.d.ts
@@ -1783,10 +1825,10 @@ index e3e0e1ac49685ea87e58cc39d34a32f4ffdb879d..b027b73450ae55451327d87dd3304946
                        };
                      }
 diff --git a/build/shared-iiif-runtime-BASHAdiY.d.ts b/build/shared-iiif-runtime-BQNG5mh-.d.ts
-similarity index 97%
+similarity index 94%
 rename from build/shared-iiif-runtime-BASHAdiY.d.ts
 rename to build/shared-iiif-runtime-BQNG5mh-.d.ts
-index 498ff8c1da339be9c3a8c8026fd142a0a2b6e41e..0f453897630c31c530970fc3816ebd7ffc62947b 100644
+index 498ff8c1da339be9c3a8c8026fd142a0a2b6e41e..4c26ee22cb03762374039a8a0107f607b3f59e08 100644
 --- a/build/shared-iiif-runtime-BASHAdiY.d.ts
 +++ b/build/shared-iiif-runtime-BQNG5mh-.d.ts
 @@ -1,4 +1,4 @@
@@ -1795,6 +1837,15 @@ index 498ff8c1da339be9c3a8c8026fd142a0a2b6e41e..0f453897630c31c530970fc3816ebd7f
  
  type IiifServerBuildEvent = {
      type: "start";
+@@ -24,7 +24,7 @@ interface IIIFHSSSPluginOptions {
+      */
+     basePath?: string;
+     /**
+-     * Path to iiifrc.
++     * Path to an iiifrc file or IIIF configuration directory.
+      */
+     configFile?: string;
+     /**
 diff --git a/build/slugs.d.ts b/build/slugs.d.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..161b7c81f0055b4dd19ad80e23c5832717730c83
@@ -1872,23 +1923,6 @@ index db4da06fd0cd891dd4c23e49ac9c22c70c4f56b4..2e45e84ce503e0c61c09467692d37944
  
  // src/vite-plugin.ts
  import { relative } from "node:path";
-diff --git a/package.json b/package.json
-index 6b4599dcd1e269cef1ebfc0b883466c67bb2e089..cb7ea73f7bcee1e411fdc8d58c61d9497dea7587 100644
---- a/package.json
-+++ b/package.json
-@@ -105,6 +105,12 @@
-         "types": "./build/astro/client.d.ts",
-         "default": "./build/astro/client.js"
-       }
-+    },
-+    "./slugs": {
-+      "import": {
-+        "types": "./build/slugs.d.ts",
-+        "default": "./build/slugs.js"
-+      }
-     }
-   },
-   "typesVersions": {
 diff --git a/src/astro/server.ts b/src/astro/server.ts
 index c8102bef92c4cbdeacff8fa32594fe2bfa79e112..ac68c58756d5ec3d8c89c81daafca48d6dd87be5 100644
 --- a/src/astro/server.ts
@@ -1959,6 +1993,19 @@ index ba1ff64f61ecaf1aa550b9829852ab97b3ca2273..69a56800b8f565a53f18dcb1264dc84e
              data.inputKey = resource.inputKey;
              data.saveToDisk = resource.saveToDisk;
              await files.saveJson(join(resourceDir, "resource.json"), data);
+diff --git a/src/create-server.ts b/src/create-server.ts
+index b15173b02bce612038fb20ec970b76172faaf2b2..e0cd2e2087219057b72c1c6466faa8319300942a 100644
+--- a/src/create-server.ts
++++ b/src/create-server.ts
+@@ -171,7 +171,7 @@ export async function createServer(config: IIIFRC, serverOptions: IIIFServerOpti
+       if (options.dev && serverOptions.reloadConfig) config = await serverOptions.reloadConfig();
+       else if (options.dev && configSource && configSource.mode !== "custom") {
+         const refreshed = await resolveConfigSource(
+-          configSource.mode === "explicit" ? configSource.configPath : undefined,
++          configSource.configPath,
+           projectRoot
+         );
+         const { config: nextConfig, ...source } = refreshed;
 diff --git a/src/extract/extract-runtime-hints.ts b/src/extract/extract-runtime-hints.ts
 index a91a3719f53a48dbecbc47aa80afdf8e5c4205fc..34f44413065d58c7a06c83791a0ed541a93125b8 100644
 --- a/src/extract/extract-runtime-hints.ts
@@ -1984,9 +2031,18 @@ index a91a3719f53a48dbecbc47aa80afdf8e5c4205fc..34f44413065d58c7a06c83791a0ed541
      saveToDisk: source.type === "disk" || Boolean(resource.saveToDisk),
    };
 diff --git a/src/integrations/shared-iiif-runtime.ts b/src/integrations/shared-iiif-runtime.ts
-index a3f5a672b3bf013cf90b80856fac1670aa29b8c4..8665449b0c319980f5df4450fbb40716805c8e57 100644
+index a3f5a672b3bf013cf90b80856fac1670aa29b8c4..c861f9d8b4d72077c672f17c3abd9379f2f1aa59 100644
 --- a/src/integrations/shared-iiif-runtime.ts
 +++ b/src/integrations/shared-iiif-runtime.ts
+@@ -21,7 +21,7 @@ export interface IIIFHSSSPluginOptions {
+   basePath?: string;
+ 
+   /**
+-   * Path to iiifrc.
++   * Path to an iiifrc file or IIIF configuration directory.
+    */
+   configFile?: string;
+ 
 @@ -617,6 +617,10 @@ export function createIiifRuntime(
        await setConfigServerUrl(buildServerUrl);
      }
@@ -2182,6 +2238,52 @@ index cd1395aa6b40cb0778540c38383b1bc09bf87aa5..9f6dfc5c1ac5a37c4a4ab70120a4635a
    const network = resolveNetworkConfig(config.network, { prefetch: options.prefetch });
  
    const files = builtIns.fileHandler || new FileHandler(fs, cwd);
+diff --git a/src/util/get-config.ts b/src/util/get-config.ts
+index 0e0fa9f661779e0a87f31995984dde355a8783ff..a0c411d6ff39ca7db9869efbae4bd72ea04c321b 100644
+--- a/src/util/get-config.ts
++++ b/src/util/get-config.ts
+@@ -252,8 +252,7 @@ function applyDefaultStores(inputConfig: IIIFRC) {
+   return config;
+ }
+ 
+-async function loadIiifConfigFolder(projectRoot: string): Promise<ResolvedConfigSource | null> {
+-  const iiifConfigRoot = join(projectRoot, "iiif-config");
++async function loadIiifConfigFolder(projectRoot: string, iiifConfigRoot = join(projectRoot, "iiif-config")): Promise<ResolvedConfigSource | null> {
+   if (!fs.existsSync(iiifConfigRoot)) {
+     return null;
+   }
+@@ -372,7 +371,7 @@ async function loadIiifConfigFolder(projectRoot: string): Promise<ResolvedConfig
+     }
+   }
+ 
+-  const watchPaths: ConfigWatchPath[] = [];
++  const watchPaths: ConfigWatchPath[] = [{ path: iiifConfigRoot, recursive: true }];
+   if (globalConfigPath && fs.existsSync(globalConfigPath)) {
+     watchPaths.push({ path: globalConfigPath, recursive: false });
+   }
+@@ -398,8 +397,9 @@ async function loadIiifConfigFolder(projectRoot: string): Promise<ResolvedConfig
+ 
+   return {
+     mode: "folder",
++    configPath: iiifConfigRoot,
+     config: applyDefaultStores(mergedConfig),
+-    defaultScriptsPath: "./iiif-config/scripts",
++    defaultScriptsPath: scriptsDir,
+     watchPaths,
+   };
+ }
+@@ -409,6 +409,11 @@ export async function resolveConfigSource(configFile?: string, projectRoot = cwd
+ 
+   if (configFile) {
+     const configFilePath = isAbsolute(configFile) ? configFile : resolve(projectRoot, configFile);
++    if (fs.statSync(configFilePath).isDirectory()) {
++      const folderConfig = await loadIiifConfigFolder(projectRoot, configFilePath);
++      if (!folderConfig) throw new Error(`Missing IIIF config directory: ${configFilePath}`);
++      return folderConfig;
++    }
+     return {
+       mode: "explicit",
+       config: applyDefaultStores(await loadConfigFile(configFilePath)),
 diff --git a/src/util/make-slug-helper.ts b/src/util/make-slug-helper.ts
 index d3c1a474c886b7a4ceb380372a9132029eb7f00c..e9338738d03321570914a6f9ae895fd3101b3788 100644
 --- a/src/util/make-slug-helper.ts

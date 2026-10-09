@@ -1,6 +1,7 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { contentDirectory } from "../config/content.mjs";
 
 const localizedString = z.object({
   en: z.string().min(1),
@@ -58,7 +59,7 @@ const datasetFiles = z.object({
 const dataCards = defineCollection({
   loader: glob({
     pattern: "**/*.{en,cy}.{md,mdx}",
-    base: "./src/content/data-cards",
+    base: contentDirectory("data-cards"),
   }),
   schema: z.object({
     dataset_id: z.string().min(1).optional(),
@@ -88,7 +89,7 @@ const dataCards = defineCollection({
 });
 
 const exhibitions = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/exhibitions" }),
+  loader: glob({ pattern: "**/*.{md,mdx}", base: contentDirectory("exhibitions") }),
   schema: z.object({
     title: localizedString,
     summary: localizedString,
@@ -106,7 +107,7 @@ const exhibitions = defineCollection({
 const pages = defineCollection({
   loader: glob({
     pattern: "**/*.{en,cy}.{md,mdx}",
-    base: "./src/content/pages",
+    base: contentDirectory("pages"),
   }),
   schema: z.object({
     slug: z.string().min(1).optional(),

@@ -1,0 +1,14 @@
+.git
+node_modules
+dist
+.astro
+.iiif
+.netlify
+.env*
+*.env
+.npmrc
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+.DS_Store

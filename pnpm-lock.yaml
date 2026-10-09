@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  iiif-hss@1.0.6-next.2: e702953532929d95e770e99e8001eed39aec521b5466e77ddb272ced3527bdbb
+  iiif-hss@1.0.6-next.2: 38ad17d50334b1634f27b045e3789a6eca04608ec77999743a401368ef46ff53
 
 importers:
 
@@ -49,7 +49,7 @@ importers:
         version: 1.2.0
       iiif-hss:
         specifier: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77
-        version: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77(patch_hash=e702953532929d95e770e99e8001eed39aec521b5466e77ddb272ced3527bdbb)(@babel/runtime@7.29.7)(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0)
+        version: https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77(patch_hash=38ad17d50334b1634f27b045e3789a6eca04608ec77999743a401368ef46ff53)(@babel/runtime@7.29.7)(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0)
       react:
         specifier: ^19.2.4
         version: 19.3.0
@@ -8515,7 +8515,7 @@ snapshots:
 
   ignore@7.0.10: {}
 
-  iiif-hss@https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77(patch_hash=e702953532929d95e770e99e8001eed39aec521b5466e77ddb272ced3527bdbb)(@babel/runtime@7.29.7)(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0):
+  iiif-hss@https://pkg.pr.new/digirati-co-uk/headless-static-site/iiif-hss@7f47f4cc3e24dc2270825a81b85ef81d19bd6b77(patch_hash=38ad17d50334b1634f27b045e3789a6eca04608ec77999743a401368ef46ff53)(@babel/runtime@7.29.7)(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0):
     dependencies:
       '@atlas-viewer/atlas': 3.0.3(react-dom@19.3.0(react@19.3.0))(react-reconciler@0.29.2(react@19.3.0))(react@19.3.0)
       '@hono/node-server': 1.19.17(hono@4.13.11)

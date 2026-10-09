@@ -1,12 +1,11 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import type { Locale, LocalizedString } from "./i18n";
+import { localizedFileMatch } from "../../config/content.mjs";
 
 type PageEntry = CollectionEntry<"pages">;
 type PageGroup = Partial<Record<Locale, PageEntry>>;
 type CanonicalField = "slug" | "section";
 type LocalizedField = "title" | "description" | "intro";
-
-const pageFilePattern = /^src\/content\/pages\/(.+)\.(en|cy)\.(md|mdx)$/;
 
 export interface SitePage {
   id: string;
@@ -22,11 +21,11 @@ export interface SitePage {
 }
 
 function getEntryLocale(entry: PageEntry): Locale {
-  const match = entry.filePath?.match(pageFilePattern);
+  const match = localizedFileMatch(entry.filePath, "pages");
 
   if (!match) {
     throw new Error(
-      `Page entry "${entry.id}" must use the src/content/pages/**/name.en.md or name.cy.md convention.`,
+      `Page entry "${entry.id}" must use the pages/**/name.en.md or name.cy.md convention within CONTENT_ROOT.`,
     );
   }
 
@@ -34,11 +33,11 @@ function getEntryLocale(entry: PageEntry): Locale {
 }
 
 function getEntryKey(entry: PageEntry) {
-  const match = entry.filePath?.match(pageFilePattern);
+  const match = localizedFileMatch(entry.filePath, "pages");
 
   if (!match) {
     throw new Error(
-      `Page entry "${entry.id}" must use the src/content/pages/**/name.en.md or name.cy.md convention.`,
+      `Page entry "${entry.id}" must use the pages/**/name.en.md or name.cy.md convention within CONTENT_ROOT.`,
     );
   }
 

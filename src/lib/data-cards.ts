@@ -1,5 +1,6 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import type { Locale, LocalizedString } from "./i18n";
+import { localizedFileMatch } from "../../config/content.mjs";
 
 type DataCardEntry = CollectionEntry<"dataCards">;
 type DataCardGroup = Partial<Record<Locale, DataCardEntry>>;
@@ -13,9 +14,6 @@ type LocalizedListField = "tags" | "institutions";
 type DataCardFilesField = NonNullable<DataCardEntry["data"]["files"]>;
 type DataCardFileVersions = NonNullable<DataCardFilesField["active"]>;
 type DataCardFile = DataCardFileVersions[string][number];
-
-const dataCardFilePattern =
-  /^src\/content\/data-cards\/(.+)\.(en|cy)\.(md|mdx)$/;
 
 export interface SiteDataCardFile {
   fileName: string;
@@ -59,11 +57,11 @@ export interface SiteDataCard {
 }
 
 function getFileMatch(entry: DataCardEntry) {
-  const match = entry.filePath?.match(dataCardFilePattern);
+  const match = localizedFileMatch(entry.filePath, "data-cards");
 
   if (!match) {
     throw new Error(
-      `Data card "${entry.id}" must use the src/content/data-cards/**/name.en.md or name.cy.md convention.`,
+      `Data card "${entry.id}" must use the data-cards/**/name.en.md or name.cy.md convention within CONTENT_ROOT.`,
     );
   }
 
