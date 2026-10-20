@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schemas.example.org/iiif-hss/iiif-hss.store.schema.json",
+  "run": [
+    "extract-topics"
+  ],
+  "type": "iiif-remote",
+  "urls": [
+    "https://nlw-paulm.github.io/john-thomas-collection.json"
+  ],
+  "slugTemplate": {
+    "domain": "nlw-paulm.github.io",
+    "prefix": "/",
+    "type": "Collection"
+  }
+}
